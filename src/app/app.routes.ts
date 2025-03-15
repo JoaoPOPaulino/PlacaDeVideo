@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { PlacaDeVideoListComponent } from './components/PlacaDeVideo/placa-de-video-list/placa-de-video-list.component';
-import { PlacaDeVideoFormComponent } from './components/PlacaDeVideo/placa-de-video-form/placa-de-video-form.component';
 import { UsuarioListComponent } from './components/usuario/usuario-list/usuario-list.component';
 import { UsuarioFormComponent } from './components/usuario/usuario-form/usuario-form.component';
+import { AvaliacaoFormComponent } from './components/avaliacao/avaliacao-form/avaliacao-form.component';
+import { AvaliacaoListComponent } from './components/avaliacao/avaliacao-list/avaliacao-list.component';
+import { PlacaDeVideoListComponent } from './components/placa-de-video/placa-de-video-list/placa-de-video-list.component';
 
 export const routes: Routes = [
   {
@@ -13,7 +14,7 @@ export const routes: Routes = [
 
   {
     path: 'placasdevideo/new',
-    component: PlacaDeVideoFormComponent,
+    component: PlacaDeVideoListComponent,
     title: 'Nova Placa de Vídeo',
   },
   {
@@ -25,5 +26,15 @@ export const routes: Routes = [
     path: 'usuarios/new',
     component: UsuarioFormComponent,
     title: 'Novo Usuário',
+  },
+  {
+    path: 'avaliacao',
+    component: AvaliacaoListComponent,
+    title: 'Lista de Avaliações',
+  },
+  {
+    path: 'avaliacao/new',
+    component: AvaliacaoFormComponent,
+    title: 'Nova Avaliação',
   },
 ];
