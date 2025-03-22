@@ -2,11 +2,14 @@ import { NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { PlacaDeVideo } from '../../../models/placa-de-video/placa-de-video.model';
 import { PlacaDeVideoService } from '../../../services/placa-de-video.service';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-placa-de-video-list',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, MatToolbarModule, MatIconModule, RouterLink],
   templateUrl: './placa-de-video-list.component.html',
   styleUrl: './placa-de-video-list.component.css',
 })
