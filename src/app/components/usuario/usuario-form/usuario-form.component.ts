@@ -13,6 +13,7 @@ import {
 } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Usuario } from '../../../models/usuario/usuario.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-usuario-form',
@@ -24,6 +25,7 @@ import { Usuario } from '../../../models/usuario/usuario.model';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    CommonModule,
   ],
   templateUrl: './usuario-form.component.html',
   styleUrl: './usuario-form.component.css',

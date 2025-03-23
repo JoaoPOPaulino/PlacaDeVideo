@@ -7,8 +7,12 @@ import { PlacaDeVideoListComponent } from './components/placa-de-video/placa-de-
 import { PlacaDeVideoFormComponent } from './components/placa-de-video/placa-de-video-form/placa-de-video-form.component';
 import { placaDeVideoResolver } from './components/placa-de-video/placa-de-video.resolver';
 import { usuarioResolver } from './components/usuario/usuario.resolver';
+import { FabricanteFormComponent } from './components/fabricante/fabricante-form/fabricante-form.component';
+import { FabricanteListComponent } from './components/fabricante/fabricante-list/fabricante-list.component';
+import { fabricanteResolver } from './components/fabricante/fabricante.resolver';
 
 export const routes: Routes = [
+  //-------------------------------------------------------
   {
     path: 'placasdevideo',
     component: PlacaDeVideoListComponent,
@@ -17,14 +21,16 @@ export const routes: Routes = [
 
   {
     path: 'placasdevideo/new',
-    component: PlacaDeVideoListComponent,
+    component: PlacaDeVideoFormComponent,
     title: 'Nova Placa de Vídeo',
   },
   {
     path: 'placasdevideo/edit/:id',
     component: PlacaDeVideoFormComponent,
+    title: 'Edição de Placa de Vídeo',
     resolve: { placa: placaDeVideoResolver },
   },
+  //-------------------------------------------------------
   {
     path: 'usuarios',
     component: UsuarioListComponent,
@@ -38,16 +44,35 @@ export const routes: Routes = [
   {
     path: 'usuarios/edit/:id',
     component: UsuarioFormComponent,
+    title: 'Edição de Usuário',
     resolve: { usuario: usuarioResolver },
   },
+  //-------------------------------------------------------
   {
-    path: 'avaliacao',
+    path: 'avaliacoes',
     component: AvaliacaoListComponent,
     title: 'Lista de Avaliações',
   },
   {
-    path: 'avaliacao/new',
+    path: 'avaliacoes/new',
     component: AvaliacaoFormComponent,
     title: 'Nova Avaliação',
+  },
+  //-------------------------------------------------------
+  {
+    path: 'fabricantes',
+    component: FabricanteListComponent,
+    title: 'Lista de Fabricantes',
+  },
+  {
+    path: 'fabricantes/new',
+    component: FabricanteFormComponent,
+    title: 'Novo Fabricante',
+  },
+  {
+    path: 'fabricantes/edit/:id',
+    component: FabricanteFormComponent,
+    title: 'Edição de Fabricante',
+    resolve: { fabricante: fabricanteResolver },
   },
 ];

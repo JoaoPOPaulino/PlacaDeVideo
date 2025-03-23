@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { PlacaDeVideo } from '../../../models/placa-de-video/placa-de-video.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -24,6 +25,7 @@ import { PlacaDeVideo } from '../../../models/placa-de-video/placa-de-video.mode
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    CommonModule,
   ],
   templateUrl: './placa-de-video-form.component.html',
   styleUrl: './placa-de-video-form.component.css',
