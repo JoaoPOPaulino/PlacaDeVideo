@@ -7,7 +7,7 @@
     </div>
 </mat-toolbar>
 
-<table>
+<table mat-table[dataSource]="fabricantes" class="mat-elevation-z8">
     <!-- id Column -->
     <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef> No. </th>
