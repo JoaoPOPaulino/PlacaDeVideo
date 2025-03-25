@@ -80,18 +80,16 @@ export class FabricanteFormComponent {
   }
 
   excluir() {
-    if (this.formGroup.valid) {
-      const fabricantes = this.formGroup.value;
-      if (fabricantes.id != null) {
-        this.fabricanteService.delete(fabricantes).subscribe({
-          next: () => {
-            this.router.navigateByUrl('/fabricantes');
-          },
-          error: (er) => {
-            console.log('Erro ao excluir' + JSON.stringify(er));
-          },
-        });
-      }
+    const fabricante = this.formGroup.value;
+    if ((fabricante.id! = null)) {
+      this.fabricanteService.delete(fabricante).subscribe({
+        next: () => {
+          this.router.navigateByUrl('/fabricantes');
+        },
+        error: (err) => {
+          console.log('Erro ao excluir' + JSON.stringify(err));
+        },
+      });
     }
   }
 }

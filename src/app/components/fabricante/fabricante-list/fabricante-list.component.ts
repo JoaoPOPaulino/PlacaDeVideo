@@ -34,29 +34,55 @@ export class FabricanteListComponent implements OnInit {
   constructor(private fabricanteService: FabricanteService) {}
 
   ngOnInit(): void {
-    this.loadFabricantes();
-    this.loadTotalRecords();
-  }
-
-  loadFabricantes(): void {
-    this.fabricanteService
-      .findAll(this.page, this.pageSize)
-      .subscribe((data) => {
+    console.log('Componente inicializado! Carregando fabricantes...');
+    this.fabricanteService.findAll(this.page, this.pageSize).subscribe(
+      (data) => {
+        console.log('Fabricantes recebidos:', data);
         this.fabricantes = data;
-        console.log('Fabricantes carregados:', data);
-      });
-  }
+      },
+      (error) => {
+        console.error('Erro ao buscar fabricantes:', error);
+      }
+    );
 
-  loadTotalRecords(): void {
-    this.fabricanteService.count().subscribe((data) => {
-      console.log('Fabricantes carregados:', data);
-      this.totalRecords = data;
-    });
+    this.fabricanteService.count().subscribe(
+      (data) => {
+        console.log('Total de fabricantes:', data);
+        this.totalRecords = data;
+      },
+      (error) => {
+        console.error('Erro ao buscar total de fabricantes:', error);
+      }
+    );
   }
 
   paginar(event: PageEvent): void {
+    console.log(
+      'Mudando página:',
+      event.pageIndex,
+      'Tamanho da página:',
+      event.pageSize
+    );
     this.page = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadFabricantes();
+    this.loadFabricantes(); // Chama apenas a função necessária
+  }
+
+  loadFabricantes(): void {
+    console.log(
+      'Carregando fabricantes na página',
+      this.page,
+      'com tamanho',
+      this.pageSize
+    );
+    this.fabricanteService.findAll(this.page, this.pageSize).subscribe(
+      (data) => {
+        console.log('Fabricantes atualizados:', data);
+        this.fabricantes = data;
+      },
+      (error) => {
+        console.error('Erro ao carregar fabricantes:', error);
+      }
+    );
   }
 }
