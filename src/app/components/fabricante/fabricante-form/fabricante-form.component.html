@@ -1,11 +1,13 @@
-<mat-toolbar color="primary" class="toolbar-title"> Cadastro de Fabricante </mat-toolbar>
+<mat-toolbar color="primary" class="toolbar-title">
+    {{ formGroup.get('id')?.value ? 'Editar Fabricante' : 'Cadastro de Fabricante' }}
+  </mat-toolbar>
 <div class="form-container">
     <mat-card>
         <mat-card-content>
             <form [formGroup]="formGroup">
                 <mat-form-field appearance="fill" class="full-width-input">
                     <mat-label> Nome </mat-label>
-                    <input matInput="text" formControlName="nome">
+                    <input formControlName="nome">
                     <mat-error *ngIf="formGroup.get('nome')
                                     && formGroup.get('nome')?.invalid
                                     && formGroup.get('nome')?.touched">

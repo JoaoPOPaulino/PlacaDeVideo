@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-fabricante-list',
@@ -35,27 +36,22 @@ export class FabricanteListComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('Componente inicializado! Carregando fabricantes...');
-    this.fabricanteService.findAll(this.page, this.pageSize).subscribe(
-      (data) => {
-        console.log('Fabricantes recebidos:', data);
-        this.fabricantes = data;
-      },
-      (error) => {
-        console.error('Erro ao buscar fabricantes:', error);
-      }
-    );
 
-    this.fabricanteService.count().subscribe(
-      (data) => {
-        console.log('Total de fabricantes:', data);
-        this.totalRecords = data;
+    forkJoin({
+      fabricantes: this.fabricanteService.findAll(this.page, this.pageSize),
+      total: this.fabricanteService.count(),
+    }).subscribe({
+      next: ({ fabricantes, total }) => {
+        console.log('Fabricantes recebidos:', fabricantes);
+        console.log('Total de fabricantes:', total);
+        this.fabricantes = fabricantes;
+        this.totalRecords = total;
       },
-      (error) => {
-        console.error('Erro ao buscar total de fabricantes:', error);
-      }
-    );
+      error: (error) => {
+        console.error('Erro ao buscar dados:', error);
+      },
+    });
   }
-
   paginar(event: PageEvent): void {
     console.log(
       'Mudando página:',

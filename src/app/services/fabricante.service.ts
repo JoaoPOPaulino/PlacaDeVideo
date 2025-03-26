@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Fabricante } from '../models/placa-de-video/fabricante.model';
@@ -12,17 +12,12 @@ export class FabricanteService {
   constructor(private httpClient: HttpClient) {}
 
   findAll(page?: number, pageSize?: number): Observable<Fabricante[]> {
-    let params = {};
-
+    let params = new HttpParams();
     if (page !== undefined && pageSize !== undefined) {
-      params = {
-        page: page.toString(),
-        page_size: pageSize.toString(),
-      };
+      params = params
+        .set('page', page.toString())
+        .set('page_size', pageSize.toString());
     }
-
-    console.log(this.url);
-    console.log({ params });
 
     return this.httpClient.get<Fabricante[]>(this.url, { params });
   }
@@ -46,7 +41,7 @@ export class FabricanteService {
     );
   }
 
-  delete(fabricante: Fabricante): Observable<any> {
-    return this.httpClient.delete<Fabricante>(`${this.url}/${fabricante.id}`);
+  delete(id: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.url}/${id}`);
   }
 }

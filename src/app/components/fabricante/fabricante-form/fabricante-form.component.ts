@@ -80,14 +80,14 @@ export class FabricanteFormComponent {
   }
 
   excluir() {
-    const fabricante = this.formGroup.value;
-    if ((fabricante.id! = null)) {
-      this.fabricanteService.delete(fabricante).subscribe({
+    const id = this.formGroup.get('id')?.value;
+    if (id) {
+      this.fabricanteService.delete(id).subscribe({
         next: () => {
           this.router.navigateByUrl('/fabricantes');
         },
         error: (err) => {
-          console.log('Erro ao excluir' + JSON.stringify(err));
+          console.error('Erro ao excluir:', err);
         },
       });
     }
