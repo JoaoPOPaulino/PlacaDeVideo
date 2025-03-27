@@ -81,15 +81,17 @@ export class FabricanteFormComponent {
 
   excluir() {
     const id = this.formGroup.get('id')?.value;
-    if (id) {
-      this.fabricanteService.delete(id).subscribe({
-        next: () => {
-          this.router.navigateByUrl('/fabricantes');
-        },
-        error: (err) => {
-          console.error('Erro ao excluir:', err);
-        },
-      });
+    if (confirm('Tem certeza que deseja excluir este fabricante?')) {
+      if (id) {
+        this.fabricanteService.delete(id).subscribe({
+          next: () => {
+            this.router.navigateByUrl('/fabricantes');
+          },
+          error: (err) => {
+            console.error('Erro ao excluir:', err);
+          },
+        });
+      }
     }
   }
 }

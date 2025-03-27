@@ -7,7 +7,7 @@
             <form [formGroup]="formGroup">
                 <mat-form-field appearance="fill" class="full-width-input">
                     <mat-label> Nome </mat-label>
-                    <input formControlName="nome">
+                    <input matInput type="text" formControlName="nome">
                     <mat-error *ngIf="formGroup.get('nome')
                                     && formGroup.get('nome')?.invalid
                                     && formGroup.get('nome')?.touched">

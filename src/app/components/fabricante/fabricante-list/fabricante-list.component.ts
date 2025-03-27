@@ -81,4 +81,28 @@ export class FabricanteListComponent implements OnInit {
       }
     );
   }
+
+  excluir(id: number): void {
+    if (confirm('Tem certeza que deseja excluir este fabricante?')) {
+      this.fabricanteService.delete(id).subscribe({
+        next: () => {
+          console.log(`Fabricante ${id} excluído com sucesso!`);
+          this.carregarFabricante();
+        },
+        error: (error) => {
+          console.error('Erro ao excluir fabricante:', error);
+        },
+      });
+    }
+  }
+  carregarFabricante() {
+    this.fabricanteService.findAll().subscribe({
+      next: (fabricantes) => {
+        this.fabricantes = fabricantes;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar fabricantes:', error);
+      },
+    });
+  }
 }

@@ -1,32 +1,89 @@
-.toolbar-title{
+.toolbar-title {
+    flex: 1;
+    text-align: center;
     display: flex;
     justify-content: center;
-    font-size: x-large;
-}
-
-.full-width-input{
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-mat-card{
-    max-width: 800px;
-    margin: 2rem auto;
-}
-
-mat-card-actions{
+    align-items: center;
+  }
+  
+.form-container {
     display: flex;
-    justify-content: flex-end;
-}
-
-.form-container{
+    justify-content: center;
     padding: 2rem;
 }
 
-button[mat-raised-button]{
-    width: 120px;
+mat-card {
+    width: 100%;
+    max-width: 600px; /* Tamanho máximo do card */
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border-radius: 8px; /* Bordas arredondadas */
+    padding: 16px;
 }
 
-button[mat-raised-button]:not(:last-child){
-    margin-right: 1rem;
+mat-card-content {
+    padding-bottom: 16px; /* Espaço inferior para o conteúdo */
+}
+
+mat-form-field {
+    width: 100%;
+    margin-bottom: 16px; /* Espaçamento entre campos de formulário */
+}
+
+mat-card-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    gap: 10px; /* Espaçamento entre os botões */
+}
+
+button[mat-raised-button] {
+    min-width: 120px; /* Largura mínima dos botões */
+    padding: 8px 16px; /* Mais espaço interno nos botões */
+    font-size: 0.875rem;
+    border-radius: 4px; /* Bordas arredondadas para os botões */
+    transition: background-color 0.3s ease; /* Animação suave ao passar o mouse */
+}
+
+button[mat-raised-button]:hover {
+    background-color: #303f9f;  /* Efeito de hover para os botões */
+}
+
+button[mat-raised-button][color="primary"] {
+    background-color: #3f51b5; /* Cor principal */
+    color: white;
+}
+
+button[mat-raised-button][color="warn"] {
+    background-color: #f44336; /* Cor de alerta */
+    color: white;
+}
+
+/* Estilo para mat-error */
+mat-error {
+    color: #f44336; /* Cor de erro */
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+/* Estilos do table */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Evitar espaços entre células */
+    margin-top: 20px; /* Espaçamento superior para tabelas */
+}
+
+.mat-column-id {
+    width: 5em;
+    text-align: center;
+    padding-right: 24px;
+}
+
+.mat-column-nome {
+    flex-grow: 1;
+}
+
+.mat-column-acao {
+    width: 10em;
+    text-align: center;
 }
