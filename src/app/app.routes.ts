@@ -10,6 +10,9 @@ import { usuarioResolver } from './components/usuario/usuario.resolver';
 import { FabricanteFormComponent } from './components/fabricante/fabricante-form/fabricante-form.component';
 import { FabricanteListComponent } from './components/fabricante/fabricante-list/fabricante-list.component';
 import { fabricanteResolver } from './components/fabricante/fabricante.resolver';
+import { EspecificacaoTecnicaListComponent } from './components/especificacao-tecnica/especificacao-tecnica-list/especificacao-tecnica-list.component';
+import { EspecificacaoTecnicaFormComponent } from './components/especificacao-tecnica/especificacao-tecnica-form/especificacao-tecnica-form.component';
+import { especificacaoTecnicaResolver } from './components/especificacao-tecnica/especificacao-tecnica.resolver';
 
 export const routes: Routes = [
   //-------------------------------------------------------
@@ -74,5 +77,39 @@ export const routes: Routes = [
     component: FabricanteFormComponent,
     title: 'Edição de Fabricante',
     resolve: { fabricante: fabricanteResolver },
+  },
+  //-------------------------------------------------------
+  {
+    path: 'especificacoes-tecnicas',
+    component: EspecificacaoTecnicaListComponent,
+    title: 'Lista de Especificações Técnicas',
+  },
+  {
+    path: 'especificacoes-tecnicas/new',
+    component: EspecificacaoTecnicaFormComponent,
+    title: 'Nova Especificação Técnica',
+  },
+  {
+    path: 'especificacoes-tecnicas/edit/:id',
+    component: EspecificacaoTecnicaFormComponent,
+    title: 'Edição de Especificação Técnica',
+    resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
+  },
+  //---------------------------------------------------------
+  {
+    path: 'placasdevideo',
+    component: PlacaDeVideoListComponent,
+    title: 'Lista de Placas de Vídeo',
+  },
+  {
+    path: 'placasdevideo/new',
+    component: PlacaDeVideoFormComponent,
+    title: 'Nova Placa de Vídeo',
+  },
+  {
+    path: 'placasdevideo/edit/:id',
+    component: PlacaDeVideoFormComponent,
+    title: 'Edição de Placa de Vídeo',
+    resolve: { placa: placaDeVideoResolver },
   },
 ];

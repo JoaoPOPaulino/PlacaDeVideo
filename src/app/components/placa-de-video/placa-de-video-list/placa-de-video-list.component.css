@@ -1,31 +1,90 @@
-.toobar-title {
+.toolbar-title {
     flex: 1;
     text-align: center;
 }
 
-.flex-container {
+.placa-toolbar {
+    margin-bottom: 20px;
+  }
+  
+  .flex-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-}
-
-.mat-column-id{
-    width: 5em;
-    border-right: 1px solid currentColor;
-    padding-right: 24px;
-    text-align: center;
-}
-
-.mat-column-nome{
+  }
+  
+  .table-container {
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  
+  table {
     width: 100%;
-}
-
-.mat-column-fabricante {
+    margin-bottom: 20px;
+  }
+  
+  .mat-column-id {
+    width: 60px;
+  }
+  
+  .mat-column-acao {
+    width: 120px;
     text-align: center;
-    width: 5em;
-}
-
-.mat-column-acao{
-    text-align: center;
-    min-width: 10em;
-}
+  }
+  
+  .categoria-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    color: white;
+  }
+  
+  .entrada {
+    background-color: #4CAF50; /* Verde */
+  }
+  
+  .intermediaria {
+    background-color: #2196F3; /* Azul */
+  }
+  
+  .alto-desempenho {
+    background-color: #F44336; /* Vermelho */
+  }
+  
+  .estoque-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: 500;
+  }
+  
+  .estoque-baixo {
+    background-color: #FFEBEE;
+    color: #D32F2F;
+  }
+  
+  .estoque-medio {
+    background-color: #FFF8E1;
+    color: #FFA000;
+  }
+  
+  .estoque-ok {
+    background-color: #E8F5E9;
+    color: #388E3C;
+  }
+  
+  .mat-paginator {
+    background-color: transparent;
+  }
+  
+  @media (max-width: 768px) {
+    .table-container {
+      padding: 0 10px;
+    }
+    
+    .mat-column-preco,
+    .mat-column-categoria {
+      display: none;
+    }
+  }

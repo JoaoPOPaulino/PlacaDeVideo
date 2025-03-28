@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { PlacaDeVideo } from '../../../models/placa-de-video/placa-de-video.model';
-import { PlacaDeVideoService } from '../../../services/placa-de-video.service';
+import { EspecificacaoTecnica } from '../../../models/placa-de-video/especificacao-tecnica.model';
+import { EspecificacaoTecnicaService } from '../../../services/especificacao-tecnica.service';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { forkJoin } from 'rxjs';
 
 @Component({
-  selector: 'app-placa-de-video-list',
+  selector: 'app-especificacao-tecnica-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -22,25 +22,24 @@ import { forkJoin } from 'rxjs';
     MatTableModule,
     MatButtonModule,
   ],
-  templateUrl: './placa-de-video-list.component.html',
-  styleUrl: './placa-de-video-list.component.css',
+  templateUrl: './especificacao-tecnica-list.component.html',
+  styleUrl: './especificacao-tecnica-list.component.css',
 })
-export class PlacaDeVideoListComponent implements OnInit {
+export class EspecificacaoTecnicaListComponent implements OnInit {
   displayedColumns: string[] = [
     'id',
-    'nome',
-    'preco',
-    'fabricante',
-    'categoria',
-    'estoque',
+    'memoria',
+    'clock',
+    'barramento',
+    'consumoEnergia',
     'acao',
   ];
-  placas: PlacaDeVideo[] = [];
+  especificacoes: EspecificacaoTecnica[] = [];
   totalRecords = 0;
   pageSize = 2;
   page = 0;
 
-  constructor(private placaService: PlacaDeVideoService) {}
+  constructor(private especificacaoService: EspecificacaoTecnicaService) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -48,11 +47,14 @@ export class PlacaDeVideoListComponent implements OnInit {
 
   loadData(): void {
     forkJoin({
-      placas: this.placaService.findAll(this.page, this.pageSize),
-      total: this.placaService.count(),
+      especificacoes: this.especificacaoService.findAll(
+        this.page,
+        this.pageSize
+      ),
+      total: this.especificacaoService.count(),
     }).subscribe({
-      next: ({ placas, total }) => {
-        this.placas = placas;
+      next: ({ especificacoes, total }) => {
+        this.especificacoes = especificacoes;
         this.totalRecords = total;
       },
       error: (error) => {
@@ -68,8 +70,8 @@ export class PlacaDeVideoListComponent implements OnInit {
   }
 
   excluir(id: number): void {
-    if (confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
-      this.placaService.delete(id).subscribe({
+    if (confirm('Tem certeza que deseja excluir esta especificação técnica?')) {
+      this.especificacaoService.delete(id).subscribe({
         next: () => {
           this.loadData();
         },

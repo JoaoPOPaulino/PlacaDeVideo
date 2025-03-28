@@ -1,0 +1,59 @@
+<mat-toolbar color="primary" class="toolbar-title">
+    {{ formGroup.get('id')?.value ? 'Editar Especificação Técnica' : 'Nova Especificação Técnica' }}
+  </mat-toolbar>
+  
+  <div class="form-container">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="formGroup">
+          <!-- Memória -->
+          <mat-form-field appearance="fill" class="full-width-input">
+            <mat-label>Memória</mat-label>
+            <input matInput type="text" formControlName="memoria">
+            <mat-error *ngIf="formGroup.get('memoria')?.invalid && formGroup.get('memoria')?.touched">
+              Memória é obrigatória
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Clock -->
+          <mat-form-field appearance="fill" class="full-width-input">
+            <mat-label>Clock</mat-label>
+            <input matInput type="text" formControlName="clock">
+            <mat-error *ngIf="formGroup.get('clock')?.invalid && formGroup.get('clock')?.touched">
+              Clock é obrigatório
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Barramento -->
+          <mat-form-field appearance="fill" class="full-width-input">
+            <mat-label>Barramento</mat-label>
+            <input matInput type="text" formControlName="barramento">
+            <mat-error *ngIf="formGroup.get('barramento')?.invalid && formGroup.get('barramento')?.touched">
+              Barramento é obrigatório
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Consumo de Energia -->
+          <mat-form-field appearance="fill" class="full-width-input">
+            <mat-label>Consumo de Energia</mat-label>
+            <input matInput type="text" formControlName="consumoEnergia">
+            <mat-error *ngIf="formGroup.get('consumoEnergia')?.invalid && formGroup.get('consumoEnergia')?.touched">
+              Consumo de energia é obrigatório
+            </mat-error>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+  
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid">
+          Salvar
+        </button>
+        <button mat-raised-button *ngIf="formGroup.get('id')?.value" color="warn" (click)="excluir()">
+          Excluir
+        </button>
+        <button mat-raised-button routerLink="/especificacoes-tecnicas">
+          Cancelar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>

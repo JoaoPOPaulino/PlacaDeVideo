@@ -4,8 +4,8 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { PlacaDeVideo } from '../../models/placa-de-video/placa-de-video.model';
-import { inject } from '@angular/core';
 import { PlacaDeVideoService } from '../../services/placa-de-video.service';
+import { inject } from '@angular/core';
 
 export const placaDeVideoResolver: ResolveFn<PlacaDeVideo> = (
   route: ActivatedRouteSnapshot,
