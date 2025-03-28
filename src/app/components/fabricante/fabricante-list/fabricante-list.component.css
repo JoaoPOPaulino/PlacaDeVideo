@@ -1,30 +1,51 @@
+
 .toolbar-title {
     flex: 1;
     text-align: center;
 }
 
-.flex-container {
+.placa-toolbar {
+    margin-bottom: 20px;
+  }
+  
+  .flex-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    justify-content: space-between;
-}
-
-.mat-column-id {
-    width: 5em;
-    text-align: center;
-    padding-right: 24px;
-}
-
-.mat-column-nome {
-    flex-grow: 1;
-}
-
-.mat-column-acao {
-    width: 10em;
-    text-align: center;
-}
-
-table {
+  }
+  
+  .table-container {
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  
+  table {
     width: 100%;
-}
+    margin-bottom: 20px;
+  }
+  
+  .mat-column-id {
+    width: 60px;
+    text-align: center;
+  }
+  
+  .mat-column-nome {
+    padding-left: 16px; /* Mesmo alinhamento da coluna Nome das placas */
+  }
+  
+  .mat-column-acao {
+    width: 120px;
+    text-align: center;
+  }
+  
+  .mat-paginator {
+    background-color: transparent;
+  }
+  
+  /* Responsividade igual à tabela de placas */
+  @media (max-width: 768px) {
+    .table-container {
+      padding: 0 10px;
+    }
+  }

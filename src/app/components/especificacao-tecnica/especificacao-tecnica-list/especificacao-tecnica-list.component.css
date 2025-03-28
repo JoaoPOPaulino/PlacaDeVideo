@@ -1,56 +1,66 @@
-/* Mantive os mesmos estilos do Fabricante, apenas ajustando para mais colunas */
-.toolbar-title {
-    flex: 1;
-    text-align: center;
-}
-
-.flex-container {
+/* Herda todos os estilos da tabela de placas */
+.placa-toolbar {
+    margin-bottom: 20px;
+  }
+  
+  .flex-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    justify-content: space-between;
-}
-
-/* Ajustes para a tabela com mais colunas */
-.mat-column-id {
-    width: 5em;
-    text-align: center;
-    padding-right: 24px;
-}
-
-.mat-column-memoria {
-    width: 12em;
-}
-
-.mat-column-clock {
-    width: 8em;
-}
-
-.mat-column-barramento {
-    width: 8em;
-}
-
-.mat-column-consumoEnergia {
-    width: 8em;
-}
-
-.mat-column-acao {
-    width: 10em;
-    text-align: center;
-}
-
-table {
+  }
+  
+  .table-container {
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  
+  table {
     width: 100%;
-    margin-top: 1rem;
-}
-
-/* Estilos do paginador */
-mat-paginator {
-    margin-top: 1rem;
-    background: transparent;
-}
-
-/* Botões de ação */
-button[mat-icon-button] {
-    margin: 0 4px;
-}
+    margin-bottom: 20px;
+  }
+  
+  /* Larguras das colunas (ajustadas para o conteúdo específico) */
+  .mat-column-id {
+    width: 60px;
+    text-align: center;
+  }
+  
+  .mat-column-memoria {
+    width: 120px;
+  }
+  
+  .mat-column-clock {
+    width: 100px;
+  }
+  
+  .mat-column-barramento {
+    width: 100px;
+  }
+  
+  .mat-column-consumoEnergia {
+    width: 100px;
+  }
+  
+  .mat-column-acao {
+    width: 120px;
+    text-align: center;
+  }
+  
+  .mat-paginator {
+    background-color: transparent;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .table-container {
+      padding: 0 10px;
+    }
+    
+    /* Esconder colunas menos importantes em mobile */
+    .mat-column-clock,
+    .mat-column-barramento,
+    .mat-column-consumoEnergia {
+      display: none;
+    }
+  }
