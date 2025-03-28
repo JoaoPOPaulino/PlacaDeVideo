@@ -1,4 +1,9 @@
 /* Herda todos os estilos da tabela de placas */
+.toolbar-title {
+  flex: 1;
+  text-align: center;
+}
+
 .placa-toolbar {
     margin-bottom: 20px;
   }
