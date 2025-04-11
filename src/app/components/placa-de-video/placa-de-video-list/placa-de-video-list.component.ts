@@ -37,7 +37,7 @@ export class PlacaDeVideoListComponent implements OnInit {
   ];
   placas: PlacaDeVideo[] = [];
   totalRecords = 0;
-  pageSize = 2;
+  pageSize = 5;
   page = 0;
 
   constructor(private placaService: PlacaDeVideoService) {}

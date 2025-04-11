@@ -29,7 +29,7 @@ export class FabricanteListComponent implements OnInit {
   displayedColumns: string[] = ['id', 'nome', 'acao'];
   fabricantes: Fabricante[] = [];
   totalRecords = 0;
-  pageSize = 2;
+  pageSize = 5;
   page = 0;
 
   constructor(private fabricanteService: FabricanteService) {}
@@ -52,6 +52,7 @@ export class FabricanteListComponent implements OnInit {
       },
     });
   }
+
   paginar(event: PageEvent): void {
     console.log(
       'Mudando página:',
@@ -61,25 +62,23 @@ export class FabricanteListComponent implements OnInit {
     );
     this.page = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadFabricantes(); // Chama apenas a função necessária
+    this.loadFabricantes();
   }
 
   loadFabricantes(): void {
-    console.log(
-      'Carregando fabricantes na página',
-      this.page,
-      'com tamanho',
-      this.pageSize
-    );
-    this.fabricanteService.findAll(this.page, this.pageSize).subscribe(
-      (data) => {
-        console.log('Fabricantes atualizados:', data);
-        this.fabricantes = data;
+    forkJoin({
+      fabricantes: this.fabricanteService.findAll(this.page, this.pageSize),
+      total: this.fabricanteService.count(),
+    }).subscribe({
+      next: ({ fabricantes, total }) => {
+        this.fabricantes = fabricantes;
+        this.totalRecords = total;
       },
-      (error) => {
-        console.error('Erro ao carregar fabricantes:', error);
-      }
-    );
+      error: (error) => {
+        console.error('Erro ao buscar dados:', error);
+        alert('Erro ao carregar fabricantes');
+      },
+    });
   }
 
   excluir(id: number): void {
@@ -87,22 +86,20 @@ export class FabricanteListComponent implements OnInit {
       this.fabricanteService.delete(id).subscribe({
         next: () => {
           console.log(`Fabricante ${id} excluído com sucesso!`);
-          this.carregarFabricante();
+          // Atualiza a paginação corretamente
+          if (this.fabricantes.length === 1 && this.page > 0) {
+            this.page--;
+          }
+          this.loadFabricantes();
         },
         error: (error) => {
           console.error('Erro ao excluir fabricante:', error);
+          // Adicione feedback para o usuário
+          alert(
+            'Não foi possível excluir o fabricante. Verifique se não há placas de vídeo associadas.'
+          );
         },
       });
     }
-  }
-  carregarFabricante() {
-    this.fabricanteService.findAll().subscribe({
-      next: (fabricantes) => {
-        this.fabricantes = fabricantes;
-      },
-      error: (error) => {
-        console.error('Erro ao carregar fabricantes:', error);
-      },
-    });
   }
 }

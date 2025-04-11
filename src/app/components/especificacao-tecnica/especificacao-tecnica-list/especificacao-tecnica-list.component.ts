@@ -36,16 +36,16 @@ export class EspecificacaoTecnicaListComponent implements OnInit {
   ];
   especificacoes: EspecificacaoTecnica[] = [];
   totalRecords = 0;
-  pageSize = 2;
+  pageSize = 5;
   page = 0;
 
   constructor(private especificacaoService: EspecificacaoTecnicaService) {}
 
   ngOnInit(): void {
-    this.loadData();
+    this.loadEspecificacaos();
   }
 
-  loadData(): void {
+  loadEspecificacaos(): void {
     forkJoin({
       especificacoes: this.especificacaoService.findAll(
         this.page,
@@ -66,17 +66,26 @@ export class EspecificacaoTecnicaListComponent implements OnInit {
   paginar(event: PageEvent): void {
     this.page = event.pageIndex;
     this.pageSize = event.pageSize;
-    this.loadData();
+    this.loadEspecificacaos();
   }
 
   excluir(id: number): void {
-    if (confirm('Tem certeza que deseja excluir esta especificação técnica?')) {
+    if (confirm('Tem certeza que deseja excluir este especificacao?')) {
       this.especificacaoService.delete(id).subscribe({
         next: () => {
-          this.loadData();
+          console.log(`Especificacao ${id} excluído com sucesso!`);
+          // Atualiza a paginação corretamente
+          if (this.especificacoes.length === 1 && this.page > 0) {
+            this.page--;
+          }
+          this.loadEspecificacaos();
         },
         error: (error) => {
-          console.error('Erro ao excluir:', error);
+          console.error('Erro ao excluir especificacao:', error);
+          // Adicione feedback para o usuário
+          alert(
+            'Não foi possível excluir o especificacao. Verifique se não há placas de vídeo associadas.'
+          );
         },
       });
     }

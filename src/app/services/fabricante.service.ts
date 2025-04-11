@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { catchError, Observable } from 'rxjs';
 import { Fabricante } from '../models/placa-de-video/fabricante.model';
 
 @Injectable({
@@ -42,6 +42,11 @@ export class FabricanteService {
   }
 
   delete(id: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.url}/${id}`);
+    return this.httpClient.delete<any>(`${this.url}/${id}`).pipe(
+      catchError((error) => {
+        console.error('Erro na requisição DELETE:', error);
+        throw error;
+      })
+    );
   }
 }

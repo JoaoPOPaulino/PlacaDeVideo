@@ -13,103 +13,112 @@ import { fabricanteResolver } from './components/fabricante/fabricante.resolver'
 import { EspecificacaoTecnicaListComponent } from './components/especificacao-tecnica/especificacao-tecnica-list/especificacao-tecnica-list.component';
 import { EspecificacaoTecnicaFormComponent } from './components/especificacao-tecnica/especificacao-tecnica-form/especificacao-tecnica-form.component';
 import { especificacaoTecnicaResolver } from './components/especificacao-tecnica/especificacao-tecnica.resolver';
+import { AdminTemplateComponent } from './components/template/admin-template/admin-template.component';
 
 export const routes: Routes = [
   //-------------------------------------------------------
   {
-    path: 'placasdevideo',
-    component: PlacaDeVideoListComponent,
-    title: 'Lista de Placas de Vídeo',
-  },
+    path: 'admin',
+    component: AdminTemplateComponent,
+    title: 'Administrativo',
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'placasdevideo' },
+      {
+        path: 'placasdevideo',
+        component: PlacaDeVideoListComponent,
+        title: 'Lista de Placas de Vídeo',
+      },
 
-  {
-    path: 'placasdevideo/new',
-    component: PlacaDeVideoFormComponent,
-    title: 'Nova Placa de Vídeo',
-  },
-  {
-    path: 'placasdevideo/edit/:id',
-    component: PlacaDeVideoFormComponent,
-    title: 'Edição de Placa de Vídeo',
-    resolve: { placa: placaDeVideoResolver },
-  },
-  //-------------------------------------------------------
-  {
-    path: 'usuarios',
-    component: UsuarioListComponent,
-    title: 'Lista de Usuários',
-  },
-  {
-    path: 'usuarios/new',
-    component: UsuarioFormComponent,
-    title: 'Novo Usuário',
-  },
-  {
-    path: 'usuarios/edit/:id',
-    component: UsuarioFormComponent,
-    title: 'Edição de Usuário',
-    resolve: { usuario: usuarioResolver },
-  },
-  //-------------------------------------------------------
-  {
-    path: 'avaliacoes',
-    component: AvaliacaoListComponent,
-    title: 'Lista de Avaliações',
-  },
-  {
-    path: 'avaliacoes/new',
-    component: AvaliacaoFormComponent,
-    title: 'Nova Avaliação',
-  },
-  //-------------------------------------------------------
-  {
-    path: 'fabricantes',
-    component: FabricanteListComponent,
-    title: 'Lista de Fabricantes',
-  },
-  {
-    path: 'fabricantes/new',
-    component: FabricanteFormComponent,
-    title: 'Novo Fabricante',
-  },
-  {
-    path: 'fabricantes/edit/:id',
-    component: FabricanteFormComponent,
-    title: 'Edição de Fabricante',
-    resolve: { fabricante: fabricanteResolver },
-  },
-  //-------------------------------------------------------
-  {
-    path: 'especificacoes-tecnicas',
-    component: EspecificacaoTecnicaListComponent,
-    title: 'Lista de Especificações Técnicas',
-  },
-  {
-    path: 'especificacoes-tecnicas/new',
-    component: EspecificacaoTecnicaFormComponent,
-    title: 'Nova Especificação Técnica',
-  },
-  {
-    path: 'especificacoes-tecnicas/edit/:id',
-    component: EspecificacaoTecnicaFormComponent,
-    title: 'Edição de Especificação Técnica',
-    resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
-  },
-  //---------------------------------------------------------
-  {
-    path: 'placasdevideo',
-    component: PlacaDeVideoListComponent,
-    title: 'Lista de Placas de Vídeo',
-  },
-  {
-    path: 'placasdevideo/new',
-    component: PlacaDeVideoFormComponent,
-    title: 'Nova Placa de Vídeo',
-  },
-  {
-    path: 'placasdevideo/edit/:id',
-    component: PlacaDeVideoFormComponent,
-    title: 'Edição de Placa de Vídeo',
-    resolve: { placa: placaDeVideoResolver },
+      {
+        path: 'placasdevideo/new',
+        component: PlacaDeVideoFormComponent,
+        title: 'Nova Placa de Vídeo',
+      },
+      {
+        path: 'placasdevideo/edit/:id',
+        component: PlacaDeVideoFormComponent,
+        title: 'Edição de Placa de Vídeo',
+        resolve: { placa: placaDeVideoResolver },
+      },
+      //-------------------------------------------------------
+      {
+        path: 'usuarios',
+        component: UsuarioListComponent,
+        title: 'Lista de Usuários',
+      },
+      {
+        path: 'usuarios/new',
+        component: UsuarioFormComponent,
+        title: 'Novo Usuário',
+      },
+      {
+        path: 'usuarios/edit/:id',
+        component: UsuarioFormComponent,
+        title: 'Edição de Usuário',
+        resolve: { usuario: usuarioResolver },
+      },
+      //-------------------------------------------------------
+      {
+        path: 'avaliacoes',
+        component: AvaliacaoListComponent,
+        title: 'Lista de Avaliações',
+      },
+      {
+        path: 'avaliacoes/new',
+        component: AvaliacaoFormComponent,
+        title: 'Nova Avaliação',
+      },
+      //-------------------------------------------------------
+      {
+        path: 'fabricantes',
+        component: FabricanteListComponent,
+        title: 'Lista de Fabricantes',
+      },
+      {
+        path: 'fabricantes/new',
+        component: FabricanteFormComponent,
+        title: 'Novo Fabricante',
+      },
+      {
+        path: 'fabricantes/edit/:id',
+        component: FabricanteFormComponent,
+        title: 'Edição de Fabricante',
+        resolve: { fabricante: fabricanteResolver },
+      },
+      //-------------------------------------------------------
+      {
+        path: 'especificacoes-tecnicas',
+        component: EspecificacaoTecnicaListComponent,
+        title: 'Lista de Especificações Técnicas',
+      },
+      {
+        path: 'especificacoes-tecnicas/new',
+        component: EspecificacaoTecnicaFormComponent,
+        title: 'Nova Especificação Técnica',
+      },
+      {
+        path: 'especificacoes-tecnicas/edit/:id',
+        component: EspecificacaoTecnicaFormComponent,
+        title: 'Edição de Especificação Técnica',
+        resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
+      },
+      //---------------------------------------------------------
+      {
+        path: 'placasdevideo',
+        component: PlacaDeVideoListComponent,
+        title: 'Lista de Placas de Vídeo',
+      },
+      {
+        path: 'placasdevideo/new',
+        component: PlacaDeVideoFormComponent,
+        title: 'Nova Placa de Vídeo',
+      },
+      {
+        path: 'placasdevideo/edit/:id',
+        component: PlacaDeVideoFormComponent,
+        title: 'Edição de Placa de Vídeo',
+        resolve: { placa: placaDeVideoResolver },
+      },
+    ],
   },
 ];

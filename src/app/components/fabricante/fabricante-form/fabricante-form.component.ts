@@ -60,7 +60,7 @@ export class FabricanteFormComponent {
       if (fabricante.id == null) {
         this.fabricanteService.insert(fabricante).subscribe({
           next: (fabricanteCadastrado) => {
-            this.router.navigateByUrl('/fabricantes');
+            this.router.navigateByUrl('/admin/fabricantes');
           },
           error: (er) => {
             console.log('Erro ao incluir' + JSON.stringify(er));
@@ -69,7 +69,7 @@ export class FabricanteFormComponent {
       } else {
         this.fabricanteService.update(fabricante).subscribe({
           next: (fabricanteAlterado) => {
-            this.router.navigateByUrl('/fabricantes');
+            this.router.navigateByUrl('/admin/fabricantes');
           },
           error: (er) => {
             console.log('Erro ao alterar' + JSON.stringify(er));
@@ -85,7 +85,7 @@ export class FabricanteFormComponent {
       if (id) {
         this.fabricanteService.delete(id).subscribe({
           next: () => {
-            this.router.navigateByUrl('/fabricantes');
+            this.router.navigateByUrl('/admin/fabricantes');
           },
           error: (err) => {
             console.error('Erro ao excluir:', err);

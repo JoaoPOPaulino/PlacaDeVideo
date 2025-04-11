@@ -77,7 +77,7 @@ export class EspecificacaoTecnicaFormComponent {
       if (especificacao.id == null) {
         this.especificacaoService.insert(especificacao).subscribe({
           next: () => {
-            this.router.navigateByUrl('/especificacoes-tecnicas');
+            this.router.navigateByUrl('/admin/especificacoes-tecnicas');
           },
           error: (err) => {
             console.error('Erro ao incluir:', err);
@@ -86,7 +86,7 @@ export class EspecificacaoTecnicaFormComponent {
       } else {
         this.especificacaoService.update(especificacao).subscribe({
           next: () => {
-            this.router.navigateByUrl('/especificacoes-tecnicas');
+            this.router.navigateByUrl('/admin/especificacoes-tecnicas');
           },
           error: (err) => {
             console.error('Erro ao alterar:', err);
@@ -102,7 +102,7 @@ export class EspecificacaoTecnicaFormComponent {
       if (id) {
         this.especificacaoService.delete(id).subscribe({
           next: () => {
-            this.router.navigateByUrl('/especificacoes-tecnicas');
+            this.router.navigateByUrl('/admin/especificacoes-tecnicas');
           },
           error: (err) => {
             console.error('Erro ao excluir:', err);
