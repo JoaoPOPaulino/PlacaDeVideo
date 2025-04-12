@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { SidebarService } from '../../../services/sidebar.service';
 import { MatListItem, MatNavList } from '@angular/material/list';
 import {
@@ -7,12 +7,15 @@ import {
   MatDrawerContent,
 } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { RouterOutlet, RouterModule, RouterLinkActive } from '@angular/router';
+import { CommonModule, NgClass } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
+    CommonModule,
     MatDrawer,
     MatSidenavModule,
     MatToolbarModule,
@@ -21,16 +24,17 @@ import { RouterOutlet, RouterModule } from '@angular/router';
     MatListItem,
     RouterOutlet,
     RouterModule,
+    RouterLinkActive,
+    NgClass,
+    MatIcon,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
   @ViewChild('drawer') public drawer!: MatDrawer;
 
   constructor(private sideBarService: SidebarService) {}
-
-  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.sideBarService.sideNavToggleSubject.subscribe(() => {

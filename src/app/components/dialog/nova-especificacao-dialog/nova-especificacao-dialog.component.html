@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Nova Especificação</h2>
+
+<mat-dialog-content class="conteudo-dialog">
+  <form [formGroup]="formGroup" class="form-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Memória</mat-label>
+      <input matInput formControlName="memoria" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Clock</mat-label>
+      <input matInput formControlName="clock" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Barramento</mat-label>
+      <input matInput formControlName="barramento" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Consumo de Energia</mat-label>
+      <input matInput formControlName="consumoEnergia" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="salvar()">Salvar</button>
+</mat-dialog-actions>

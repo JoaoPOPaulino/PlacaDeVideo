@@ -1,22 +1,17 @@
-// src/app/pipes/categoria.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
-import { Categoria } from '../models/placa-de-video/categoria';
+import {
+  Categoria,
+  getCategoriaLabel,
+} from '../models/placa-de-video/categoria';
 
 @Pipe({
   name: 'categoriaLabel',
-  standalone: true, // Importante para componentes standalone
+  standalone: true,
 })
 export class CategoriaPipe implements PipeTransform {
-  transform(value: Categoria): string {
-    switch (value) {
-      case Categoria.ENTRADA:
-        return 'Entrada';
-      case Categoria.INTERMEDIARIA:
-        return 'Intermediária';
-      case Categoria.ALTO_DESEMPENHO:
-        return 'Alto Desempenho';
-      default:
-        return 'Desconhecida';
-    }
+  transform(value: Categoria | string): string {
+    const categoria =
+      typeof value === 'string' ? Categoria.fromValue(value) : value;
+    return getCategoriaLabel(categoria);
   }
 }

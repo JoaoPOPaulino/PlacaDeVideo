@@ -14,6 +14,8 @@ import { EspecificacaoTecnicaListComponent } from './components/especificacao-te
 import { EspecificacaoTecnicaFormComponent } from './components/especificacao-tecnica/especificacao-tecnica-form/especificacao-tecnica-form.component';
 import { especificacaoTecnicaResolver } from './components/especificacao-tecnica/especificacao-tecnica.resolver';
 import { AdminTemplateComponent } from './components/template/admin-template/admin-template.component';
+import { HomeComponent } from './components/pages/home/home.component';
+import { NotFoundComponent } from './components/pages/not-found/not-found.component';
 
 export const routes: Routes = [
   //-------------------------------------------------------
@@ -22,7 +24,17 @@ export const routes: Routes = [
     component: AdminTemplateComponent,
     title: 'Administrativo',
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'placasdevideo' },
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full',
+      },
+      {
+        path: 'home',
+        component: HomeComponent,
+        title: 'Dashboard',
+      },
+      //------------------------------------------------------
       {
         path: 'placasdevideo',
         component: PlacaDeVideoListComponent,
@@ -120,5 +132,15 @@ export const routes: Routes = [
         resolve: { placa: placaDeVideoResolver },
       },
     ],
+  },
+  //-------------------------------------------------------------------------
+  {
+    path: '404',
+    component: NotFoundComponent,
+    title: 'Página não encontrada',
+  },
+  {
+    path: '**',
+    redirectTo: '/404',
   },
 ];

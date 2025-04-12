@@ -1,114 +1,113 @@
-/* Estilos gerais */
 .placa-toolbar {
   margin-bottom: 20px;
+  padding: 0 16px;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center; /* Centraliza os itens */
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative; /* Permite posicionamento absoluto do botão */
 }
 
 .toolbar-title {
-  flex: 1;
+  font-size: 1.2rem;
   text-align: center;
 }
-.flex-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+
+/* Posiciona o botão à direita */
+.flex-container button {
+  position: absolute;
+  right: 16px;
 }
 
 .search-container {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
+  margin: 20px 0;
+  padding: 0 16px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .search-field {
-  width: 100%;
-  max-width: 500px;
+  width: 50%;
 }
 
-/* Layout dos cards */
 .cards-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
   padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .placa-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .placa-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* Container da imagem */
 .image-container {
-  position: relative;
-  width: 100%;
   height: 200px;
-  background-color: #f5f5f5; /* Cor de fundo enquanto carrega */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  overflow: hidden;
 }
 
-/* Estilo da imagem */
-.placa-card img {
+.image-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transition: transform 0.3s ease;
 }
 
-/* Placeholder quando não tem imagem */
+.placa-card:hover .image-container img {
+  transform: scale(1.05);
+}
+
 .image-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   color: #666;
-  background-color: #f0f0f0;
-}
-
-.image-placeholder mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
-}
-
-/* Conteúdo dos cards */
-.card-details {
-  padding: 16px;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+  padding: 0 16px;
 }
 
 .detail-label {
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.6);
+  font-weight: bold;
+  color: #555;
 }
 
 .detail-value {
   text-align: right;
 }
 
-/* Badges */
 .categoria-badge {
   padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: 4px;
   color: white;
+  display: inline-block;
+  font-size: 0.9em;
 }
 
 .entrada {
@@ -123,87 +122,57 @@
   background-color: #F44336; /* Vermelho */
 }
 
-.estoque-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
 .estoque-baixo {
-  background-color: #FFCDD2;
-  color: #C62828;
+  color: #F44336;
+  font-weight: bold;
 }
 
 .estoque-medio {
-  background-color: #FFF9C4;
-  color: #F9A825;
+  color: #FFC107;
+  font-weight: bold;
 }
 
 .estoque-ok {
-  background-color: #C8E6C9;
-  color: #2E7D32;
+  color: #4CAF50;
+}
+
+.debug-button {
+  margin: 20px auto;
+  display: block;
+}
+
+.debug-info {
+  font-size: 0.8em;
+  opacity: 0.7;
+  margin-left: 5px;
 }
 
 /* Responsividade */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .cards-container {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .search-field {
+    width: 80%;
   }
 }
 
-/* Container da imagem */
-.image-container {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  background-color: #f5f5f5;
-  overflow: hidden;
-}
-
-/* Estilo da imagem */
-.placa-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: opacity 0.5s ease;
-  opacity: 0;
-}
-
-.placa-card img.loaded {
-  opacity: 1;
-}
-
-/* Placeholder */
-.image-placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.image-placeholder mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
-}
-
-.placa-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: opacity 0.3s ease;
-  opacity: 0;
-  background-color: #f5f5f5;
-}
-
-.placa-card img.loaded {
-  opacity: 1;
+@media (max-width: 480px) {
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .toolbar-title {
+    font-size: 1rem;
+    padding-left: 40px; /* Compensa o espaço do botão */
+  }
+  
+  .search-field {
+    width: 100%;
+  }
+  
+  .placa-toolbar {
+    padding: 10px;
+  }
 }

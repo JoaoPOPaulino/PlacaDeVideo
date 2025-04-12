@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { PlacaDeVideo } from '../models/placa-de-video/placa-de-video.model';
 import { Categoria } from '../models/placa-de-video/categoria';
 
@@ -27,7 +27,9 @@ export class PlacaDeVideoService {
       params = params.set('nome', searchTerm);
     }
 
-    return this.httpClient.get<PlacaDeVideo[]>(url, { params });
+    return this.httpClient
+      .get<PlacaDeVideo[]>(url, { params })
+      .pipe(map((placas) => placas.map((placa) => this.convertToModel(placa))));
   }
 
   count(searchTerm?: string): Observable<number> {
@@ -39,7 +41,9 @@ export class PlacaDeVideoService {
   }
 
   findById(id: string): Observable<PlacaDeVideo> {
-    return this.httpClient.get<PlacaDeVideo>(`${this.url}/${id}`);
+    return this.httpClient
+      .get<PlacaDeVideo>(`${this.url}/${id}`)
+      .pipe(map((placa) => this.convertToModel(placa)));
   }
 
   insert(placa: PlacaDeVideo): Observable<PlacaDeVideo> {
@@ -56,31 +60,6 @@ export class PlacaDeVideoService {
     return this.httpClient.delete<any>(`${this.url}/${id}`);
   }
 
-  private convertToDTO(placa: PlacaDeVideo): any {
-    return {
-      nome: placa.nome,
-      preco: placa.preco,
-      nomeImagem: placa.nomeImagem,
-      idFabricante: placa.fabricante.id,
-      idCategoria: this.getCategoriaId(placa.categoria),
-      estoque: placa.estoque,
-      idEspecificacaoTecnica: placa.especificacaoTecnica.id,
-    };
-  }
-
-  private getCategoriaId(categoria: Categoria): number {
-    switch (categoria) {
-      case Categoria.ENTRADA:
-        return 1;
-      case Categoria.INTERMEDIARIA:
-        return 2;
-      case Categoria.ALTO_DESEMPENHO:
-        return 3;
-      default:
-        return 1;
-    }
-  }
-
   uploadImage(placaId: number, file: File): Observable<PlacaDeVideo> {
     const formData = new FormData();
     formData.append('nomeImagem', file.name);
@@ -90,5 +69,32 @@ export class PlacaDeVideoService {
       `${this.url}/${placaId}/upload/imagem`,
       formData
     );
+  }
+
+  private convertToModel(placa: any): PlacaDeVideo {
+    const result = new PlacaDeVideo();
+    Object.assign(result, placa);
+
+    // Conversão segura da categoria
+    if (placa.categoria) {
+      result.categoria = Categoria.fromValue(placa.categoria);
+    } else {
+      console.warn('Categoria não encontrada, usando padrão ENTRADA');
+      result.categoria = Categoria.ENTRADA;
+    }
+
+    return result;
+  }
+
+  private convertToDTO(placa: PlacaDeVideo): any {
+    return {
+      nome: placa.nome,
+      preco: placa.preco,
+      nomeImagem: placa.nomeImagem,
+      idFabricante: placa.fabricante.id,
+      idCategoria: Categoria.toId(placa.categoria),
+      estoque: placa.estoque,
+      idEspecificacaoTecnica: placa.especificacaoTecnica.id,
+    };
   }
 }

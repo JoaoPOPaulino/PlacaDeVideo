@@ -23,6 +23,8 @@ import { EspecificacaoTecnica } from '../../../models/placa-de-video/especificac
 import { forkJoin } from 'rxjs';
 import { Categoria } from '../../../models/placa-de-video/categoria';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { NovaEspecificacaoDialogComponent } from '../../dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -62,7 +64,8 @@ export class PlacaDeVideoFormComponent implements OnInit {
     private fabricanteService: FabricanteService,
     private especificacaoService: EspecificacaoTecnicaService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     const placa: PlacaDeVideo = this.activatedRoute.snapshot.data['placa'];
 
@@ -260,5 +263,17 @@ export class PlacaDeVideoFormComponent implements OnInit {
         '_blank'
       );
     }
+  }
+  abrirDialogNovaEspecificacao(): void {
+    const dialogRef = this.dialog.open(NovaEspecificacaoDialogComponent, {
+      width: '400px',
+    });
+
+    dialogRef.afterClosed().subscribe((novaEspecificacao) => {
+      if (novaEspecificacao) {
+        this.especificacoes.push(novaEspecificacao);
+        this.formGroup.patchValue({ especificacaoTecnica: novaEspecificacao });
+      }
+    });
   }
 }

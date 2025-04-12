@@ -9,7 +9,7 @@
 
 <div class="search-container">
   <mat-form-field appearance="outline" class="search-field">
-    <mat-label>Pesquisar placas</mat-label>
+    <mat-label>Pesquisar Placas de Vídeo</mat-label>
     <input matInput [(ngModel)]="searchTerm" (keyup.enter)="pesquisar()">
     <button matSuffix mat-icon-button (click)="pesquisar()">
       <mat-icon>search</mat-icon>
@@ -30,14 +30,11 @@
     <div class="image-container">
       <img *ngIf="placa.nomeImagem"
            [src]="getImageUrl(placa.nomeImagem)"
-           (load)="markImageLoaded(placa.id)"
            (error)="handleImageError($event)"
-           [class.loaded]="isImageLoaded(placa.id)"
            alt="{{ placa.nome }}">
-      
-      <div class="image-placeholder" *ngIf="!isImageLoaded(placa.id)">
+      <div class="image-placeholder" *ngIf="!placa.nomeImagem">
         <mat-icon>image</mat-icon>
-        <span>{{ placa.nomeImagem ? 'Carregando...' : 'Sem imagem' }}</span>
+        <span>Sem imagem</span>
       </div>
     </div>
     
@@ -53,6 +50,9 @@
           <span class="detail-value">
             <span class="categoria-badge" [ngClass]="getBadgeClass(placa.categoria)">
               {{ placa.categoria | categoriaLabel }}
+              <span class="debug-info" *ngIf="showDebugInfo">
+                (ID: {{ getCategoriaId(placa.categoria) }})
+              </span>
             </span>
           </span>
         </div>
@@ -79,9 +79,13 @@
   </mat-card>
 </div>
 
-<mat-paginator [pageSizeOptions]="[8, 16, 24, 32]" 
-               [pageSize]="pageSize" 
-               [length]="totalRecords"
-               showFirstLastButtons
-               (page)="paginar($event)">
+<mat-paginator [length]="totalRecords"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="[8, 16, 24, 32]"
+               (page)="paginar($event)"
+               showFirstLastButtons>
 </mat-paginator>
+
+<button mat-button (click)="toggleDebugInfo()" class="debug-button">
+  {{ showDebugInfo ? 'Ocultar Debug' : 'Mostrar Debug' }}
+</button>

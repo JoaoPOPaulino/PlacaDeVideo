@@ -1,0 +1,19 @@
+<!-- not-found.component.html -->
+<div class="not-found-container">
+    <mat-card class="not-found-card">
+      <mat-card-content>
+        <h1>404</h1>
+        <h2>Página não encontrada</h2>
+        <p>A página que você está procurando não existe ou foi movida.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/admin/home">
+          Voltar para a página inicial
+        </button>
+        <button mat-stroked-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar à página anterior
+          </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>

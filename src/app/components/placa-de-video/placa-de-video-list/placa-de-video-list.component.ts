@@ -11,7 +11,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, fromEvent } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { CategoriaPipe } from '../../../pipes/categoria.pipe';
 import { Categoria } from '../../../models/placa-de-video/categoria';
 
@@ -32,7 +33,7 @@ import { Categoria } from '../../../models/placa-de-video/categoria';
     CategoriaPipe,
   ],
   templateUrl: './placa-de-video-list.component.html',
-  styleUrl: './placa-de-video-list.component.css',
+  styleUrls: ['./placa-de-video-list.component.css'],
 })
 export class PlacaDeVideoListComponent implements OnInit {
   placas: PlacaDeVideo[] = [];
@@ -40,12 +41,49 @@ export class PlacaDeVideoListComponent implements OnInit {
   pageSize = 8;
   page = 0;
   searchTerm = '';
-  imageLoaded = false;
+  showDebugInfo = false;
 
   constructor(private placaService: PlacaDeVideoService) {}
 
   ngOnInit(): void {
+    this.calculatePageSize();
     this.loadData();
+
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(200))
+      .subscribe(() => {
+        this.calculatePageSize();
+      });
+  }
+
+  calculatePageSize(): void {
+    const cardWidth = 280; // Largura base do card
+    const container = document.querySelector('.cards-container');
+    if (container) {
+      const containerWidth = container.clientWidth;
+      const cardsPerRow = Math.floor(containerWidth / cardWidth);
+      this.pageSize = Math.max(4, cardsPerRow * 2); // Mostra pelo menos 2 linhas
+    }
+  }
+
+  handleImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    if (imgElement) {
+      imgElement.src = 'assets/images/default-card.png';
+    }
+  }
+
+  getCategoriaId(categoria: Categoria): number {
+    switch (categoria) {
+      case Categoria.ENTRADA:
+        return 1;
+      case Categoria.INTERMEDIARIA:
+        return 2;
+      case Categoria.ALTO_DESEMPENHO:
+        return 3;
+      default:
+        return 0;
+    }
   }
 
   loadData(): void {
@@ -77,7 +115,6 @@ export class PlacaDeVideoListComponent implements OnInit {
 
   pesquisar(): void {
     this.page = 0;
-    console.log('Termo de pesquisa:', this.searchTerm);
     this.loadData();
   }
 
@@ -123,19 +160,7 @@ export class PlacaDeVideoListComponent implements OnInit {
     return `${this.placaService.url}/download/imagem/${imageName}`;
   }
 
-  handleImageError(event: Event): void {
-    const target = event.target as HTMLImageElement;
-    target.src = 'assets/images/default-card.png';
-    this.imageLoaded = true;
-  }
-
-  imageLoadedMap = new Set<number>();
-
-  isImageLoaded(id: number): boolean {
-    return this.imageLoadedMap.has(id);
-  }
-
-  markImageLoaded(id: number): void {
-    this.imageLoadedMap.add(id);
+  toggleDebugInfo(): void {
+    this.showDebugInfo = !this.showDebugInfo;
   }
 }

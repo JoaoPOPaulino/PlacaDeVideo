@@ -1,18 +1,34 @@
-<mat-drawer-container class="container">
-
-    <mat-drawer #drawer mode="side" opened>
-        <mat-toolbar>
-            <span>Menu</span>
-        </mat-toolbar>
-        <mat-nav-list>
-            <mat-list-item>Home</mat-list-item>
-            <mat-list-item routerLink="/admin/placasdevideo">Controle de Placas de Vídeo</mat-list-item>
-            <mat-list-item routerLink="/admin/fabricantes">Controle de fabricantes</mat-list-item>
-            <mat-list-item routerLink="/admin/especificacoes-tecnicas">Controle de Especificações Técnicas</mat-list-item>
-        </mat-nav-list>
+<!-- sidebar.component.html -->
+<mat-drawer-container class="container" autosize>
+    <mat-drawer #drawer mode="side" opened class="sidebar">
+      <mat-toolbar class="sidebar-toolbar">
+        <span>Menu</span>
+      </mat-toolbar>
+      
+      <mat-nav-list>
+        <a mat-list-item routerLink="/admin/home" routerLinkActive="active">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </a>
+        
+        <a mat-list-item routerLink="/admin/placasdevideo" routerLinkActive="active">
+          <mat-icon>memory</mat-icon>
+          <span>Placas de Vídeo</span>
+        </a>
+        
+        <a mat-list-item routerLink="/admin/fabricantes" routerLinkActive="active">
+          <mat-icon>factory</mat-icon>
+          <span>Fabricantes</span>
+        </a>
+        
+        <a mat-list-item routerLink="/admin/especificacoes-tecnicas" routerLinkActive="active">
+          <mat-icon>build</mat-icon>
+          <span>Especificações Técnicas</span>
+        </a>
+      </mat-nav-list>
     </mat-drawer>
-
-    <mat-drawer-content>
-        <router-outlet></router-outlet>
+  
+    <mat-drawer-content class="content">
+      <router-outlet></router-outlet>
     </mat-drawer-content>
-</mat-drawer-container>
+  </mat-drawer-container>

@@ -1,5 +1,84 @@
-.toolbar-title{
+/* footer.component.css */
+mat-toolbar {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 0 20px;
+    height: 60px;
+  }
+  
+  .footer-content {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .github-buttons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .toolbar-title {
     flex: 1;
     text-align: center;
     font-size: small;
-}
+    margin: 0 20px;
+  }
+  
+  /* Estilos dos Botões GitHub */
+  .github-btn {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    position: relative;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .svgContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+  
+  .BG {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #333, #555);
+    z-index: 1;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  
+  .github-btn:hover .BG {
+    transform: scale(1.1);
+    background: linear-gradient(45deg, #444, #666);
+  }
+  
+  .github-btn:hover .svgContainer {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(0.9);
+  }
+  
+  .github-btn svg {
+    width: 24px;
+    height: 24px;
+    transition: all 0.3s ease;
+  }
+  
+  .github-btn:hover svg {
+    transform: scale(1.2);
+  }

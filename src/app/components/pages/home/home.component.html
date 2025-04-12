@@ -1,0 +1,68 @@
+<!-- home.component.html -->
+<div class="home-container">
+    <h1 class="page-title">Dashboard</h1>
+    
+    <div class="cards-grid">
+      <!-- Card de Placas de Vídeo -->
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <mat-icon class="card-icon">inventory_2</mat-icon>
+          <h2>Placas de Vídeo</h2>
+        </div>
+        
+        <div class="card-content">
+          <span class="card-value">{{ loading ? '--' : totalPlacas }}</span>
+          <span class="card-label">em estoque</span>
+        </div>
+        
+        <div class="card-actions">
+          <button mat-raised-button color="primary" routerLink="/admin/placasdevideo">
+            <mat-icon>list</mat-icon>
+            Ver Todas
+          </button>
+        </div>
+      </mat-card>
+  
+      <!-- Card de Especificações Técnicas -->
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <mat-icon class="card-icon">memory</mat-icon>
+          <h2>Especificações Técnicas</h2>
+        </div>
+        
+        <div class="card-content">
+          <span class="card-value">{{ loading ? '--' : totalEspecificacoes }}</span>
+          <span class="card-label">cadastradas</span>
+        </div>
+        
+        <div class="card-actions">
+          <button mat-raised-button color="primary" routerLink="/admin/especificacoes-tecnicas">
+            <mat-icon>list</mat-icon>
+            Ver Todas
+          </button>
+        </div>
+      </mat-card>
+
+      <!-- Card de Fabricantes -->
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <mat-icon class="card-icon">factory</mat-icon>
+          <h2>Fabricantes</h2>
+        </div>
+        
+        <div class="card-content">
+          <span class="card-value">{{ loading ? '--' : totalFabricante }}</span>
+          <span class="card-label">cadastradas</span>
+        </div>
+        
+        <div class="card-actions">
+          <button mat-raised-button color="primary" routerLink="/admin/fabricantes">
+            <mat-icon>list</mat-icon>
+            Ver Todas
+          </button>
+        </div>
+      </mat-card>
+
+      
+    </div>
+  </div>
