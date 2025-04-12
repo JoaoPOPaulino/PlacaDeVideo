@@ -1,92 +1,86 @@
 <mat-toolbar color="primary" class="placa-toolbar">
-    <div class="flex-container">
-      <span class="toolbar-title">Controle de Placas de Vídeo</span>
-      <button mat-fab color="accent" routerLink="/placasdevideo/new" matTooltip="Adicionar nova placa">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-  </mat-toolbar>
-  
-  <div class="table-container">
-    <table mat-table [dataSource]="placas" class="mat-elevation-z8">
-      <!-- Coluna ID -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let element">{{element.id}}</td>
-      </ng-container>
-  
-      <!-- Coluna Nome -->
-      <ng-container matColumnDef="nome">
-        <th mat-header-cell *matHeaderCellDef>Nome</th>
-        <td mat-cell *matCellDef="let element">{{element.nome}}</td>
-      </ng-container>
-  
-      <!-- Coluna Preço -->
-      <ng-container matColumnDef="preco">
-        <th mat-header-cell *matHeaderCellDef>Preço</th>
-        <td mat-cell *matCellDef="let element">{{element.preco | currency:'BRL':'symbol':'1.2-2'}}</td>
-      </ng-container>
-  
-      <!-- Coluna Fabricante -->
-      <ng-container matColumnDef="fabricante">
-        <th mat-header-cell *matHeaderCellDef>Fabricante</th>
-        <td mat-cell *matCellDef="let element">{{element.fabricante.nome}}</td>
-      </ng-container>
-  
-      <!-- Coluna Categoria -->
-      <ng-container matColumnDef="categoria">
-        <th mat-header-cell *matHeaderCellDef>Categoria</th>
-        <td mat-cell *matCellDef="let element">
-          <span class="categoria-badge" [ngClass]="{
-            'entrada': element.categoria === 'ENTRADA',
-            'intermediaria': element.categoria === 'INTERMEDIARIA',
-            'alto-desempenho': element.categoria === 'ALTO_DESEMPENHO'
-          }">
-            {{element.categoria === 'ENTRADA' ? 'Entrada' : 
-              element.categoria === 'INTERMEDIARIA' ? 'Intermediária' : 'Alto Desempenho'}}
-          </span>
-        </td>
-      </ng-container>
-  
-      <!-- Coluna Estoque -->
-      <ng-container matColumnDef="estoque">
-        <th mat-header-cell *matHeaderCellDef>Estoque</th>
-        <td mat-cell *matCellDef="let element">
-          <span class="estoque-badge" [ngClass]="{
-            'estoque-baixo': element.estoque < 5,
-            'estoque-medio': element.estoque >= 5 && element.estoque < 10,
-            'estoque-ok': element.estoque >= 10
-          }">
-            {{element.estoque}}
-          </span>
-        </td>
-      </ng-container>
-  
-      <!-- Coluna Ações -->
-      <ng-container matColumnDef="acao">
-        <th mat-header-cell *matHeaderCellDef>Ações</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="primary" 
-                  routerLink="/placasdevideo/edit/{{element.id}}"
-                  matTooltip="Editar">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" 
-                  (click)="excluir(element.id)"
-                  matTooltip="Excluir">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-  
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  
-    <mat-paginator [pageSizeOptions]="[2, 5, 10, 20]" 
-                   [pageSize]="pageSize" 
-                   [length]="totalRecords"
-                   showFirstLastButtons
-                   (page)="paginar($event)">
-    </mat-paginator>
+  <div class="flex-container">
+    <span class="toolbar-title">Catálogo de Placas de Vídeo</span>
+    <button mat-fab color="accent" [routerLink]="['new']" matTooltip="Adicionar nova placa">
+      <mat-icon>add</mat-icon>
+    </button>
   </div>
+</mat-toolbar>
+
+<div class="search-container">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Pesquisar placas</mat-label>
+    <input matInput [(ngModel)]="searchTerm" (keyup.enter)="pesquisar()">
+    <button matSuffix mat-icon-button (click)="pesquisar()">
+      <mat-icon>search</mat-icon>
+    </button>
+    <button matSuffix mat-icon-button *ngIf="searchTerm" (click)="limparPesquisa()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+<div class="cards-container">
+  <mat-card *ngFor="let placa of placas" class="placa-card">
+    <mat-card-header>
+      <mat-card-title>{{placa.nome}}</mat-card-title>
+      <mat-card-subtitle>{{placa.fabricante.nome}}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <div class="image-container">
+      <img *ngIf="placa.nomeImagem"
+      [src]="'assets/images/' + placa.nomeImagem"
+      (load)="imageLoaded = true"
+      (error)="handleImageError($event)"
+      alt="{{ placa.nome }}">
+           
+      <div class="image-placeholder" *ngIf="!imageLoaded">
+        <mat-icon>image</mat-icon>
+        <span>Carregando imagem...</span>
+      </div>
+    </div>
+    
+    <mat-card-content>
+      <div class="card-details">
+        <div class="detail-row">
+          <span class="detail-label">Preço:</span>
+          <span class="detail-value">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Categoria:</span>
+          <span class="detail-value">
+            <span class="categoria-badge" [ngClass]="getBadgeClass(placa.categoria)">
+              {{ placa.categoria | categoriaLabel }}
+            </span>
+          </span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Estoque:</span>
+          <span class="detail-value">
+            <span class="estoque-badge" [ngClass]="getEstoqueClass(placa.estoque)">
+              {{placa.estoque}}
+            </span>
+          </span>
+        </div>
+      </div>
+    </mat-card-content>
+    
+    <mat-card-actions align="end">
+      <button mat-icon-button color="primary" [routerLink]="['edit', placa.id]" matTooltip="Editar">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="excluir(placa.id)" matTooltip="Excluir">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<mat-paginator [pageSizeOptions]="[8, 16, 24, 32]" 
+               [pageSize]="pageSize" 
+               [length]="totalRecords"
+               showFirstLastButtons
+               (page)="paginar($event)">
+</mat-paginator>

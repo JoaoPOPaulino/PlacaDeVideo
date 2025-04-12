@@ -12,18 +12,30 @@ export class PlacaDeVideoService {
 
   constructor(private httpClient: HttpClient) {}
 
-  findAll(page?: number, pageSize?: number): Observable<PlacaDeVideo[]> {
-    let params = new HttpParams();
-    if (page !== undefined && pageSize !== undefined) {
-      params = params
-        .set('page', page.toString())
-        .set('pageSize', pageSize.toString());
+  findAll(
+    page: number = 0,
+    pageSize: number = 8,
+    searchTerm?: string
+  ): Observable<PlacaDeVideo[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    const url = searchTerm ? `${this.url}/search` : this.url;
+
+    if (searchTerm) {
+      params = params.set('nome', searchTerm);
     }
-    return this.httpClient.get<PlacaDeVideo[]>(this.url, { params });
+
+    return this.httpClient.get<PlacaDeVideo[]>(url, { params });
   }
 
-  count(): Observable<number> {
-    return this.httpClient.get<number>(`${this.url}/count`);
+  count(searchTerm?: string): Observable<number> {
+    const params = searchTerm
+      ? new HttpParams().set('nome', searchTerm)
+      : new HttpParams();
+
+    return this.httpClient.get<number>(`${this.url}/count`, { params });
   }
 
   findById(id: string): Observable<PlacaDeVideo> {

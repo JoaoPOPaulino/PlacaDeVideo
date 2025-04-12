@@ -54,7 +54,7 @@ export class EspecificacaoTecnicaListComponent implements OnInit {
       total: this.especificacaoService.count(),
     }).subscribe({
       next: ({ especificacoes, total }) => {
-        this.especificacoes = especificacoes;
+        this.especificacoes = especificacoes.sort((a, b) => a.id - b.id);
         this.totalRecords = total;
       },
       error: (error) => {

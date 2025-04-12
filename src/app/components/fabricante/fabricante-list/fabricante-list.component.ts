@@ -71,7 +71,7 @@ export class FabricanteListComponent implements OnInit {
       total: this.fabricanteService.count(),
     }).subscribe({
       next: ({ fabricantes, total }) => {
-        this.fabricantes = fabricantes;
+        this.fabricantes = fabricantes.sort((a, b) => a.id - b.id);
         this.totalRecords = total;
       },
       error: (error) => {

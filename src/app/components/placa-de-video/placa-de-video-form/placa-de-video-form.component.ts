@@ -160,7 +160,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       if (placa.id == null) {
         this.placaService.insert(placa).subscribe({
           next: (placaCadastrada) => {
-            this.router.navigateByUrl('/placasdevideo');
+            this.router.navigateByUrl('/admin/placasdevideo');
           },
           error: (error) => {
             console.error('Erro completo:', error);
@@ -175,7 +175,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       } else {
         this.placaService.update(placa).subscribe({
           next: (placaAlterada) => {
-            this.router.navigateByUrl('/placasdevideo');
+            this.router.navigateByUrl('/admin/placasdevideo');
           },
           error: (er) => {
             console.log('Erro ao alterar' + JSON.stringify(er));
@@ -203,7 +203,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       if (id) {
         this.placaService.delete(id).subscribe({
           next: () => {
-            this.router.navigateByUrl('/placasdevideo');
+            this.router.navigateByUrl('/admin/placasdevideo');
           },
           error: (error) => {
             console.error('Erro ao excluir:', error);
