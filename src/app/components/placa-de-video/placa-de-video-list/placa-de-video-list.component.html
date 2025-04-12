@@ -29,14 +29,15 @@
     
     <div class="image-container">
       <img *ngIf="placa.nomeImagem"
-      [src]="'assets/images/' + placa.nomeImagem"
-      (load)="imageLoaded = true"
-      (error)="handleImageError($event)"
-      alt="{{ placa.nome }}">
-           
-      <div class="image-placeholder" *ngIf="!imageLoaded">
+           [src]="getImageUrl(placa.nomeImagem)"
+           (load)="markImageLoaded(placa.id)"
+           (error)="handleImageError($event)"
+           [class.loaded]="isImageLoaded(placa.id)"
+           alt="{{ placa.nome }}">
+      
+      <div class="image-placeholder" *ngIf="!isImageLoaded(placa.id)">
         <mat-icon>image</mat-icon>
-        <span>Carregando imagem...</span>
+        <span>{{ placa.nomeImagem ? 'Carregando...' : 'Sem imagem' }}</span>
       </div>
     </div>
     

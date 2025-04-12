@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { PlacaDeVideo } from '../models/placa-de-video/placa-de-video.model';
 import { Categoria } from '../models/placa-de-video/categoria';
 
@@ -8,7 +8,7 @@ import { Categoria } from '../models/placa-de-video/categoria';
   providedIn: 'root',
 })
 export class PlacaDeVideoService {
-  private url = 'http://localhost:8080/placas-de-video';
+  public readonly url = 'http://localhost:8080/placas-de-video';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -48,7 +48,6 @@ export class PlacaDeVideoService {
   }
 
   update(placa: PlacaDeVideo): Observable<any> {
-    // Adaptar o objeto para o formato que o backend espera
     const placaDTO = this.convertToDTO(placa);
     return this.httpClient.put(`${this.url}/${placa.id}`, placaDTO);
   }
@@ -80,5 +79,16 @@ export class PlacaDeVideoService {
       default:
         return 1;
     }
+  }
+
+  uploadImage(placaId: number, file: File): Observable<PlacaDeVideo> {
+    const formData = new FormData();
+    formData.append('nomeImagem', file.name);
+    formData.append('imagem', file);
+
+    return this.httpClient.patch<PlacaDeVideo>(
+      `${this.url}/${placaId}/upload/imagem`,
+      formData
+    );
   }
 }

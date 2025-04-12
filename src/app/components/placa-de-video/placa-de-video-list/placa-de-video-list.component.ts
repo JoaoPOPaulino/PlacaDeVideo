@@ -119,14 +119,14 @@ export class PlacaDeVideoListComponent implements OnInit {
   }
 
   getImageUrl(imageName: string): string {
-    if (!imageName) return 'assets/images/default-card.jpg';
-    return `assets/images/${imageName}`;
+    if (!imageName) return 'assets/images/default-card.png';
+    return `${this.placaService.url}/download/imagem/${imageName}`;
   }
 
   handleImageError(event: Event): void {
     const target = event.target as HTMLImageElement;
     target.src = 'assets/images/default-card.png';
-    this.imageLoaded = true; // evita que o placeholder continue aparecendo
+    this.imageLoaded = true;
   }
 
   imageLoadedMap = new Set<number>();

@@ -22,6 +22,7 @@ import { Fabricante } from '../../../models/placa-de-video/fabricante.model';
 import { EspecificacaoTecnica } from '../../../models/placa-de-video/especificacao-tecnica.model';
 import { forkJoin } from 'rxjs';
 import { Categoria } from '../../../models/placa-de-video/categoria';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -38,6 +39,7 @@ import { Categoria } from '../../../models/placa-de-video/categoria';
     MatIconModule,
     MatCardModule,
     MatSelectModule,
+    MatProgressBarModule,
   ],
   templateUrl: './placa-de-video-form.component.html',
   styleUrl: './placa-de-video-form.component.css',
@@ -51,6 +53,8 @@ export class PlacaDeVideoFormComponent implements OnInit {
     { id: Categoria.INTERMEDIARIA, label: 'Intermediária' },
     { id: Categoria.ALTO_DESEMPENHO, label: 'Alto Desempenho' },
   ];
+  selectedFile: File | null = null;
+  uploading = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -210,6 +214,51 @@ export class PlacaDeVideoFormComponent implements OnInit {
           },
         });
       }
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.formGroup.patchValue({ nomeImagem: file.name });
+    }
+  }
+  removeImage(): void {
+    if (confirm('Remover a imagem atual?')) {
+      this.formGroup.patchValue({ nomeImagem: '' });
+      this.selectedFile = null;
+    }
+  }
+
+  uploadImage(): void {
+    if (!this.selectedFile || !this.formGroup.get('id')?.value) return;
+
+    this.uploading = true;
+    this.placaService
+      .uploadImage(this.formGroup.get('id')?.value, this.selectedFile)
+      .subscribe({
+        next: (placaAtualizada) => {
+          this.formGroup.patchValue({
+            nomeImagem: placaAtualizada.nomeImagem,
+          });
+          this.selectedFile = null;
+          this.uploading = false;
+        },
+        error: (err) => {
+          console.error('Erro no upload:', err);
+          this.uploading = false;
+        },
+      });
+  }
+
+  previewImage(): void {
+    const nomeImagem = this.formGroup.get('nomeImagem')?.value;
+    if (nomeImagem) {
+      window.open(
+        `${this.placaService.url}/download/imagem/${nomeImagem}`,
+        '_blank'
+      );
     }
   }
 }
