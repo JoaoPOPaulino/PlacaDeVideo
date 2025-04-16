@@ -63,6 +63,27 @@
         </div>
       </mat-card>
 
+      <!-- Card de Usuários -->
+      <mat-card class="dashboard-card">
+        <div class="card-header">
+          <mat-icon class="card-icon">groups</mat-icon>
+          <h2>Usuários</h2>
+        </div>
+        
+        <div class="card-content">
+          <span class="card-value">{{ loading ? '--' : totalUsuarios }}</span>
+          <span class="card-label">cadastrados</span>
+        </div>
+        
+        <div class="card-actions">
+          <button mat-raised-button color="primary" routerLink="/admin/usuarios">
+            <mat-icon>list</mat-icon>
+            Ver Todas
+          </button>
+        </div>
+      </mat-card>
+      
+
       
     </div>
   </div>

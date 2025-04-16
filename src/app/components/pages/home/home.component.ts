@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FabricanteService } from '../../../services/fabricante.service';
+import { UsuarioService } from '../../../services/usuario.service';
 
 @Component({
   selector: 'app-home',
@@ -26,12 +27,14 @@ export class HomeComponent {
   totalPlacas = 0;
   totalEspecificacoes = 0;
   totalFabricante = 0;
+  totalUsuarios = 0;
   loading = true;
 
   constructor(
     private placaService: PlacaDeVideoService,
     private especificacaoService: EspecificacaoTecnicaService,
-    private fabricanteService: FabricanteService
+    private fabricanteService: FabricanteService,
+    private usuarioService: UsuarioService
   ) {
     this.carregarDados();
   }
@@ -50,6 +53,11 @@ export class HomeComponent {
     this.fabricanteService.count().subscribe({
       next: (res) => (this.totalFabricante = res),
       error: (err) => console.error('Erro ao carregar fabricantes:', err),
+    });
+
+    this.usuarioService.count().subscribe({
+      next: (res) => (this.totalUsuarios = res),
+      error: (err) => console.error('Erro ao carregar usuários:', err),
       complete: () => (this.loading = false),
     });
   }
