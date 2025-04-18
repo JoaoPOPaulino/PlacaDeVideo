@@ -8,7 +8,7 @@ import { Perfil } from '../models/usuario/perfil';
   providedIn: 'root',
 })
 export class UsuarioService {
-  private url = 'http://localhost:8080/usuario';
+  private url = 'http://localhost:8080/usuarios';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -44,8 +44,8 @@ export class UsuarioService {
     return this.httpClient.put<Usuario>(`${this.url}/${usuario.id}`, usuario);
   }
 
-  delete(usuario: Usuario): Observable<any> {
-    return this.httpClient.delete<Usuario>(`${this.url}/${usuario.id}`);
+  delete(id: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.url}/${id}`);
   }
 
   count(searchTerm?: string): Observable<number> {

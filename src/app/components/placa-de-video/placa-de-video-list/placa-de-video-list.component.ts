@@ -57,12 +57,12 @@ export class PlacaDeVideoListComponent implements OnInit {
   }
 
   calculatePageSize(): void {
-    const cardWidth = 280; // Largura base do card
+    const cardWidth = 280;
     const container = document.querySelector('.cards-container');
     if (container) {
       const containerWidth = container.clientWidth;
       const cardsPerRow = Math.floor(containerWidth / cardWidth);
-      this.pageSize = Math.max(4, cardsPerRow * 2); // Mostra pelo menos 2 linhas
+      this.pageSize = Math.max(4, cardsPerRow * 2);
     }
   }
 

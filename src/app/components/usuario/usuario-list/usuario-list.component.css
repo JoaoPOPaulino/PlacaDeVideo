@@ -1,31 +1,140 @@
-.toobar-title {
-    flex: 1;
-    text-align: center;
+/* Estilos para o toolbar - mantendo consistência */
+.placa-toolbar {
+  margin-bottom: 20px;
+  padding: 0 16px;
 }
 
 .flex-container {
-    display: flex;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.mat-column-id{
-    width: 5em;
-    border-right: 1px solid currentColor;
-    padding-right: 24px;
-    text-align: center;
+.toolbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 1.2rem;
 }
 
-.mat-column-nome{
-    width: 100%;
+/* Estilos para a barra de pesquisa */
+.search-container {
+  margin: 20px 0;
+  padding: 0 16px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Estilos para a tabela */
+.table-container {
+  padding: 0 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+/* Estilos para as colunas */
+.mat-column-id {
+  width: 80px;
+  text-align: center;
+  padding-right: 16px;
+}
+
+.mat-column-nome {
+  min-width: 200px;
+  padding-left: 16px;
 }
 
 .mat-column-login {
-    text-align: center;
-    width: 5em;
+  min-width: 150px;
+  padding-left: 16px;
 }
 
-.mat-column-acao{
-    text-align: center;
-    min-width: 10em;
+.mat-column-perfil {
+  width: 150px;
+  text-align: center;
+}
+
+.mat-column-acao {
+  width: 130px;
+  text-align: center;
+}
+
+/* Estilos para os badges de perfil */
+.admin {
+  background-color: #f44336; /* Vermelho para admin */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 0.8em;
+  display: inline-block;
+}
+
+.usuario {
+  background-color: #2196F3; /* Azul para usuário */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 0.8em;
+  display: inline-block;
+}
+
+/* Estilos para o paginador */
+.mat-paginator {
+  background-color: transparent;
+  margin-top: 16px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .search-field {
+    width: 90%;
+  }
+  
+  .mat-column-login,
+  .mat-column-perfil {
+    display: none;
+  }
+  
+  .mat-column-nome {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar-title {
+    font-size: 1rem;
+  }
+  
+  .placa-toolbar {
+    padding: 10px;
+  }
+  
+  .table-container {
+    padding: 0 8px;
+  }
+  
+  .mat-column-id {
+    width: 60px;
+  }
+  
+  .mat-column-acao {
+    width: 110px;
+  }
 }
