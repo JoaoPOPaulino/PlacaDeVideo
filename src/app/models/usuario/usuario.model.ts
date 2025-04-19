@@ -11,4 +11,6 @@ export class Usuario {
   telefone!: Telefone[];
   endereco!: Endereco[];
   perfil!: Perfil;
+  telefones: any;
+  enderecos: any;
 }

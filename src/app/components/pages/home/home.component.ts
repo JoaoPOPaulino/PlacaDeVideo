@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { PlacaDeVideoService } from '../../../services/placa-de-video.service';
 import { EspecificacaoTecnicaService } from '../../../services/especificacao-tecnica.service';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -21,6 +21,7 @@ import { UsuarioService } from '../../../services/usuario.service';
     MatCardModule,
     MatIconModule,
     MatButtonModule,
+    MatIcon
   ],
 })
 export class HomeComponent {
@@ -53,6 +54,7 @@ export class HomeComponent {
     this.fabricanteService.count().subscribe({
       next: (res) => (this.totalFabricante = res),
       error: (err) => console.error('Erro ao carregar fabricantes:', err),
+      complete: () => (this.loading = false),
     });
 
     this.usuarioService.count().subscribe({
