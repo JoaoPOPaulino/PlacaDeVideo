@@ -1,0 +1,6 @@
+/* components/template/public-template/public-template.component.css */
+.content {
+    min-height: calc(100vh - 120px); /* Ajuste conforme altura do header+footer */
+    padding: 20px;
+    background-color: #f5f5f5;
+  }
