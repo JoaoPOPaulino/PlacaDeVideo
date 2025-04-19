@@ -16,8 +16,27 @@ import { especificacaoTecnicaResolver } from './components/especificacao-tecnica
 import { AdminTemplateComponent } from './components/template/admin-template/admin-template.component';
 import { HomeComponent } from './components/pages/home/home.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
+import { PublicTemplateComponent } from './components/template/public-template/public-template.component';
+import { PublicHomeComponent } from './components/pages/public-home/public-home.component';
 
 export const routes: Routes = [
+  {
+    path: '',
+    component: PublicTemplateComponent,
+    children: [
+      {
+        path: '',
+        component: PublicHomeComponent,
+        title: 'TechGPUs - Página Inicial'
+      },
+      {
+        path: 'produtos',
+        component: PlacaDeVideoListComponent,
+        title: 'TechGPUs - Produtos'
+      }
+      // ... outras rotas públicas
+    ]
+  },
   //-------------------------------------------------------
   {
     path: 'admin',

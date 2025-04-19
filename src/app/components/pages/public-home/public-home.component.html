@@ -1,0 +1,30 @@
+<!-- public-home.component.html -->
+<section class="hero">
+    <div class="hero-content">
+      <h1>As melhores placas de vídeo do mercado</h1>
+      <p>Encontre a placa perfeita para seu setup gamer</p>
+      <a mat-raised-button color="primary" routerLink="/produtos">Ver Produtos</a>
+    </div>
+  </section>
+  
+  <section class="featured-products">
+    <h2>Destaques</h2>
+    
+    <mat-spinner *ngIf="loading" diameter="50"></mat-spinner>
+    
+    <div class="products-grid" *ngIf="!loading">
+      <mat-card *ngFor="let product of featuredProducts" class="product-card">
+        <img [src]="getImageUrl(product.imagem)" alt="{{product.nome}}" class="product-image">
+        <mat-card-content>
+          <h3>{{product.nome}}</h3>
+          <p class="price">{{product.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [routerLink]="['/produto', product.id]">Detalhes</button>
+          <button mat-button color="accent">
+            <mat-icon>add_shopping_cart</mat-icon> Carrinho
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </section>
