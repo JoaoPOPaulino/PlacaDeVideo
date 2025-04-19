@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommonModule, NgIf } from '@angular/common';
@@ -17,6 +17,7 @@ import { NovoTelefoneDialogComponent } from '../../dialog/novo-telefone-dialog/n
 import { NovoEnderecoDialogComponent } from '../../dialog/novo-endereco-dialog/novo-endereco-dialog.component';
 import { MatList, MatListItem } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-form',
@@ -88,6 +89,53 @@ export class UsuarioFormComponent implements OnInit {
     if (usuario) {
       this.carregarDadosUsuario(usuario);
     }
+
+    this.setupLoginValidation();
+  }
+
+  setupLoginValidation() {
+    const loginControl = this.formGroup.get('login');
+    if (loginControl) {
+      loginControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap(value => this.validateLogin(value))
+        )
+        .subscribe();
+    }
+  }
+
+  validateLogin(login: string): Observable<boolean> {
+    if (!login || login.length < 3) {
+      return of(false);
+    }
+
+    const currentId = this.formGroup.get('id')?.value;
+    if (currentId) {
+      const originalUser = this.activatedRoute.snapshot.data['usuario'];
+      if (originalUser && originalUser.login === login) {
+        return of(false);
+      }
+    }
+
+    return this.usuarioService.checkLoginExists(login).pipe(
+      map(exists => {
+        if (exists) {
+          this.formGroup.get('login')?.setErrors({ loginExists: true });
+        }
+        return exists;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  loginValidator(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      return this.validateLogin(control.value).pipe(
+        map(exists => exists ? { loginExists: true } : null)
+      );
+    };
   }
 
   carregarDadosUsuario(usuario: Usuario): void {
@@ -111,44 +159,44 @@ export class UsuarioFormComponent implements OnInit {
     if (this.formGroup.invalid || this.isLoading) {
       return;
     }
-
+  
     this.isLoading = true;
     const formData = this.formGroup.value;
     
     const usuario = {
       ...formData,
-      idPerfil: formData.perfil,
+      perfil: formData.perfil, // Já é o ID numérico
       telefones: this.telefones,
       enderecos: this.enderecos
     };
-
-    // Handle password for updates
+  
+    // Remove senha se estiver vazia (para atualização)
     if (usuario.id && !usuario.senha) {
       delete usuario.senha;
     }
-
-    // Set default password for new users
+  
+    // Define senha padrão para novos usuários
     if (!usuario.id && !usuario.senha) {
       usuario.senha = '123456';
     }
-
+  
     const operation = usuario.id 
       ? this.usuarioService.update(usuario, usuario.id)
       : this.usuarioService.insert(usuario);
-
+  
     operation.subscribe({
       next: () => {
         this.snackBar.open('Usuário salvo com sucesso!', 'Fechar', { duration: 3000 });
         this.router.navigateByUrl('/admin/usuarios');
       },
       error: (err) => {
-        console.error('Error:', err);
-        this.isLoading = false;
-        let errorMessage = 'Erro ao salvar usuário';
-        if (err.error?.message) {
-          errorMessage += `: ${err.error.message}`;
+        console.error('Erro detalhado:', err);
+        const errorMessage = err.message || 'Erro ao salvar usuário';
+        this.snackBar.open(errorMessage, 'Fechar', { duration: 5000, panelClass: ['error-snackbar'] });
+        
+        if (err.message.includes('Login já está em uso')) {
+          this.formGroup.get('login')?.setErrors({ loginExists: true });
         }
-        this.snackBar.open(errorMessage, 'Fechar', { duration: 5000 });
       },
       complete: () => this.isLoading = false
     });

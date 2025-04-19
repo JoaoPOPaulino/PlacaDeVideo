@@ -32,6 +32,9 @@
             <mat-error *ngIf="formGroup.get('login')?.hasError('minlength')">
               Login deve ter pelo menos 3 caracteres
             </mat-error>
+            <mat-error *ngIf="formGroup.get('login')?.hasError('loginExists')">
+              Este login já está em uso
+            </mat-error>
           </mat-form-field>
   
           <!-- Email -->
