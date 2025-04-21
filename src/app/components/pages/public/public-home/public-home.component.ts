@@ -1,6 +1,6 @@
 // public-home.component.ts
 import { Component } from '@angular/core';
-import { PlacaDeVideoService } from '../../../services/placa-de-video.service';
+import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -19,8 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatCardModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatIconModule
-  ]
+    MatIconModule,
+  ],
 })
 export class PublicHomeComponent {
   featuredProducts: any[] = [];
@@ -39,7 +39,7 @@ export class PublicHomeComponent {
       error: (err) => {
         console.error('Erro ao carregar produtos:', err);
         this.loading = false;
-      }
+      },
     });
   }
 
