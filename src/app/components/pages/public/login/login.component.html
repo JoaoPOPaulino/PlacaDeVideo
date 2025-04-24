@@ -1,1 +1,25 @@
-<p>login works!</p>
+<mat-card>
+    <h2>Entrar</h2>
+    <form (ngSubmit)="login()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email ou Nome de Usuário</mat-label>
+        <input matInput [(ngModel)]="identificador" name="identificador" required />
+      </mat-form-field>
+  
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Senha</mat-label>
+        <input matInput [type]="hide ? 'password' : 'text'" [(ngModel)]="senha" name="senha" required />
+        <button mat-icon-button matSuffix type="button" (click)="toggleVisibility()">
+          <mat-icon>{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </mat-form-field>      
+  
+      <button mat-raised-button color="primary" type="submit">Entrar</button>
+    </form>
+  
+    <div class="extra-options">
+      <a routerLink="/cadastro">Criar Conta</a>
+      <a routerLink="/recuperar-senha">Esqueci a Senha</a>
+    </div>
+  </mat-card>
+  

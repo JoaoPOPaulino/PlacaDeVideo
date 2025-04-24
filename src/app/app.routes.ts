@@ -17,7 +17,8 @@ import { AdminTemplateComponent } from './components/template/admin-template/adm
 import { HomeComponent } from './components/pages/home/home.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
 import { PublicTemplateComponent } from './components/template/public/public-template/public-template.component';
-import { PublicHomeComponent } from './components/pages/public/public-home/public-home/public-home.component';
+import { PublicHomeComponent } from './components/pages/public/public-home/public-home.component';
+import { LoginComponent } from './components/pages/public/login/login.component';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,16 @@ export const routes: Routes = [
         component: PublicHomeComponent,
         title: 'NexusGPU - Melhores Placas de Vídeo',
       },
+      {
+        path: 'login',
+        component: LoginComponent,
+        title: 'Login',
+      },
+      {
+        path: 'cadastro',
+        component: UsuarioFormComponent,
+        data: { isPublic: true }
+      }
     ],
   },
 

@@ -4,6 +4,7 @@ import {
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  FormsModule,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../services/auth.service';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -20,46 +22,40 @@ import { AuthService } from '../../../../services/auth.service';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
     RouterModule,
+    MatIcon
   ],
 })
 export class LoginComponent {
-  loginForm: FormGroup;
-  loading = false;
+  identificador = '';
+  senha = '';
   errorMessage = '';
+  hide = true;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-    });
-  }
+  constructor(private authService: AuthService, private router: Router){}
 
-  onSubmit() {
-    if (this.loginForm.invalid) return;
 
-    this.loading = true;
-    this.errorMessage = '';
-
-    const { email, password } = this.loginForm.value;
-
-    this.authService.login(email, password).subscribe({
+  login() {
+    console.log('Login com:', this.identificador, this.senha);
+  
+    this.authService.login(this.identificador, this.senha).subscribe({
       next: () => {
-        this.router.navigate(['/minha-conta']);
+        this.router.navigate(['/']); // Redireciona para home ou onde preferir
       },
       error: (err) => {
-        this.errorMessage = err.error.message || 'Erro ao fazer login';
-        this.loading = false;
+        console.error('Erro ao fazer login', err);
+        this.errorMessage = 'Usuário ou senha inválidos.';
       },
     });
+  }
+  
+  toggleVisibility() {
+    this.hide = !this.hide;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -41,6 +41,7 @@ import { catchError, debounceTime, distinctUntilChanged, map, Observable, of, sw
   styleUrl: './usuario-form.component.css',
 })
 export class UsuarioFormComponent implements OnInit {
+  @Input() isPublic = false;
   formGroup: FormGroup;
   perfis = [
     { id: Perfil.USER, label: 'Usuário' },
@@ -75,16 +76,28 @@ export class UsuarioFormComponent implements OnInit {
       ],
       senha: [
         '',
-        [Validators.minLength(4)]
+        this.isPublic ? [Validators.required, Validators.minLength(4)] : [Validators.minLength(4)]
       ],
       perfil: [
         usuario?.perfil || Perfil.USER,
         Validators.required
-      ]
+      ],
+      telefones: this.isPublic ? [] : this.telefones,
+      enderecos: this.isPublic ? [] : this.enderecos
     });
   }
 
   ngOnInit(): void {
+    const routeData = this.activatedRoute.snapshot.data;
+    if (routeData['isPublic']) {
+      this.isPublic = true;
+    }
+
+    if (this.isPublic){
+      this.formGroup.get('perfil')?.setValue(Perfil.USER);
+      this.formGroup.get('perfil')?.disable();
+    }
+
     const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'];
     if (usuario) {
       this.carregarDadosUsuario(usuario);
@@ -187,7 +200,8 @@ export class UsuarioFormComponent implements OnInit {
     operation.subscribe({
       next: () => {
         this.snackBar.open('Usuário salvo com sucesso!', 'Fechar', { duration: 3000 });
-        this.router.navigateByUrl('/admin/usuarios');
+        const redirectUrl = this.isPublic ? '/' : '/admin/usuarios';
+        this.router.navigateByUrl(redirectUrl);
       },
       error: (err) => {
         console.error('Erro detalhado:', err);

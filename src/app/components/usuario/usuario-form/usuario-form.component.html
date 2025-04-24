@@ -62,20 +62,23 @@
           </mat-form-field>
   
           <!-- Perfil -->
-          <mat-form-field appearance="outline" class="full-width-input">
-            <mat-label>Perfil</mat-label>
-            <mat-select formControlName="perfil" required>
-              <mat-option *ngFor="let perfil of perfis" [value]="perfil.id">
-                {{perfil.label}}
-              </mat-option>
-            </mat-select>
-            <mat-icon matSuffix>security</mat-icon>
-            <mat-error *ngIf="formGroup.get('perfil')?.hasError('required')">
-              Perfil é obrigatório
-            </mat-error>
-          </mat-form-field>
+          <div *ngIf="!isPublic">
+            <mat-form-field appearance="outline" class="full-width-input">
+              <mat-label>Perfil</mat-label>
+              <mat-select formControlName="perfil">
+                <mat-option *ngFor="let perfil of perfis" [value]="perfil.id">
+                  {{ perfil.label }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="formGroup.get('perfil')?.hasError('required')">
+                Perfil é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-          <div class="section-container">
+
+          <!-- Seção de Telefone -->
+          <div class="section-container" *ngIf="!isPublic">
             <div class="section-header">
               <h3>Telefones</h3>
               <button mat-mini-fab color="primary" (click)="abrirDialogNovoTelefone()" type="button">
@@ -95,7 +98,7 @@
           </div>
   
           <!-- Seção de Endereços -->
-          <div class="section-container">
+          <div class="section-container" *ngIf="!isPublic">
             <div class="section-header">
               <h3>Endereços</h3>
               <button mat-mini-fab color="primary" (click)="abrirDialogNovoEndereco()" type="button">
@@ -124,7 +127,7 @@
           <mat-icon>save</mat-icon>
           Salvar
         </button>
-        <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value">
+        <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value && !isPublic">
           <mat-icon>delete</mat-icon>
           Excluir
         </button>

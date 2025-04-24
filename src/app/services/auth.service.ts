@@ -12,9 +12,9 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string) {
+  login(identificador: string, password: string) {
     return this.http
-      .post<{ token: string }>(`${this.url}/login`, { email, password })
+      .post<{ token: string }>(`${this.url}/login`, { identificador, password })
       .pipe(
         tap((response) => {
           localStorage.setItem('token', response.token);
