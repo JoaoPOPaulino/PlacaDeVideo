@@ -1,67 +1,62 @@
-<!-- components/template/header-public/header-public.component.html -->
 <mat-toolbar color="primary" class="public-header">
-    <div class="header-container">
-      <!-- Logo e Nome -->
-      <a routerLink="/" class="brand">
-        <mat-icon class="logo-icon">memory</mat-icon>
-        <span class="brand-name">NexusGPU</span>
-      </a>
-  
-      <!-- Menu principal (desktop) -->
-      <nav class="main-nav">
-        <a mat-button routerLink="/produtos" routerLinkActive="active">Produtos</a>
-        <a mat-button routerLink="/ofertas" routerLinkActive="active">Ofertas</a>
-        <a mat-button routerLink="/sobre" routerLinkActive="active">Sobre Nós</a>
-      </nav>
-  
-      <!-- Ícones de ação -->
-      <div class="action-icons">
-        <button mat-icon-button [matMenuTriggerFor]="searchMenu">
-          <mat-icon>search</mat-icon>
-        </button>
-        
-        <button mat-icon-button routerLink="/carrinho">
-          <mat-icon>shopping_cart</mat-icon>
-          <span class="badge">0</span>
-        </button>
-        
-        <button mat-icon-button [matMenuTriggerFor]="userMenu">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-      </div>
-  
-      <!-- Menu mobile -->
-      <button mat-icon-button class="menu-button" (click)="isMenuOpen = !isMenuOpen">
-        <mat-icon>menu</mat-icon>
-      </button>
-    </div>
-  
-    <!-- Menu mobile dropdown -->
-    <div class="mobile-menu" [class.open]="isMenuOpen">
+  <div class="header-container">
+    <!-- Logo e Nome -->
+    <a routerLink="/" class="brand">
+      <mat-icon class="logo-icon">memory</mat-icon>
+      <span class="brand-name">NexusGPU</span>
+    </a>
+
+    <!-- Menu principal (desktop) -->
+    <nav class="main-nav">
       <a mat-button routerLink="/produtos" routerLinkActive="active">Produtos</a>
       <a mat-button routerLink="/ofertas" routerLinkActive="active">Ofertas</a>
       <a mat-button routerLink="/sobre" routerLinkActive="active">Sobre Nós</a>
-      <a mat-button routerLink="/login" routerLinkActive="active">Login</a>
-    </div>
-  </mat-toolbar>
-  
-  <!-- Menus -->
-  <mat-menu #searchMenu="matMenu">
-    <div class="search-menu">
-      <input type="text" placeholder="Buscar produtos..." />
-      <button mat-icon-button>
+    </nav>
+
+    <!-- Ícones de ação -->
+    <div class="action-icons">
+      <button mat-icon-button [matMenuTriggerFor]="searchMenu">
         <mat-icon>search</mat-icon>
       </button>
+
+      <button mat-icon-button routerLink="/carrinho">
+        <mat-icon>shopping_cart</mat-icon>
+        <span class="badge">0</span>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
     </div>
-  </mat-menu>
-  
-  <mat-menu #userMenu="matMenu">
+  </div>
+</mat-toolbar>
+
+<!-- Menus -->
+<mat-menu #searchMenu="matMenu">
+  <div class="search-menu">
+    <input type="text" placeholder="Buscar produtos..." />
+    <button mat-icon-button>
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+</mat-menu>
+
+<mat-menu #userMenu="matMenu">
+  <ng-container *ngIf="!isLoggedIn; else loggedInMenu">
     <button mat-menu-item routerLink="/login">
       <mat-icon>login</mat-icon>
       <span>Login</span>
     </button>
+  </ng-container>
+
+  <ng-template #loggedInMenu>
     <button mat-menu-item routerLink="/minha-conta">
       <mat-icon>account_circle</mat-icon>
       <span>Minha Conta</span>
     </button>
-  </mat-menu>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Sair</span>
+    </button>
+  </ng-template>
+</mat-menu>

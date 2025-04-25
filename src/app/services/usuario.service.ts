@@ -148,4 +148,11 @@ export class UsuarioService {
 
     return result;
   }
+
+  login(identificador: string, senha: string) {
+    return this.httpClient.post<{ token: string }>('http://localhost:8080/auth/login', {
+      email: identificador,
+      password: senha
+    });
+  }
 }

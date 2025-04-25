@@ -19,6 +19,7 @@ import { NotFoundComponent } from './components/pages/not-found/not-found.compon
 import { PublicTemplateComponent } from './components/template/public/public-template/public-template.component';
 import { PublicHomeComponent } from './components/pages/public/public-home/public-home.component';
 import { LoginComponent } from './components/pages/public/login/login.component';
+import { SobreComponent } from './components/pages/public/sobre/sobre.component';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,11 @@ export const routes: Routes = [
         path: 'cadastro',
         component: UsuarioFormComponent,
         data: { isPublic: true }
+      },
+      {
+        path: 'sobre',
+        component: SobreComponent,
+        title: 'Sobre Nós'
       }
     ],
   },

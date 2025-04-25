@@ -200,6 +200,24 @@ export class UsuarioFormComponent implements OnInit {
     operation.subscribe({
       next: () => {
         this.snackBar.open('Usuário salvo com sucesso!', 'Fechar', { duration: 3000 });
+
+        if (this.isPublic){
+          const identificador = usuario.email || usuario.login;
+          const senha = usuario.senha;
+
+          this.usuarioService.login(identificador, senha).subscribe({
+            next: (res) => {
+              localStorage.setItem('token', res.token);
+              this.router.navigateByUrl('/');
+            },
+            error: () => {
+              this.snackBar.open('Cadastro realizado, mas houve erro ao fazer ao fazer login automático.', 'Fechar', {duration: 4000});
+              this.router.navigateByUrl('/login');
+            }
+          });
+        }else{
+          this.router.navigateByUrl('/admin/usuarios');
+        }
         const redirectUrl = this.isPublic ? '/' : '/admin/usuarios';
         this.router.navigateByUrl(redirectUrl);
       },
