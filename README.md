@@ -1,27 +1,36 @@
-# Placa
+Nexus GPU
+Projeto desenvolvido para a disciplina Tópicos de Programação II da UNITINS, sob orientação do professor Jânio Junior.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.8.
+Nexus GPU é um e-commerce focado na venda de placas de vídeo, oferecendo uma plataforma moderna e eficiente para usuários que buscam performance e qualidade.
 
-## Development server
+Tecnologias utilizadas
+Angular – Framework principal para o desenvolvimento do frontend.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Como rodar o projeto
 
-## Code scaffolding
+1. Clone o repositório:
+   
+  git clone https://github.com/seu-usuario/nexus-gpu.git4
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. Instale as dependências:
+   
+  npm install
 
-## Build
+3. Rode o projeto:
+   
+  ng serve
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+4. Acesse no navegador:
 
-## Running unit tests
+  http://localhost:4200
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Colaboradores:
 
-## Running end-to-end tests
+João Pedro de Oliveira
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Luiz Cláudio
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Licença:
+
+Este projeto é acadêmico, desenvolvido exclusivamente para fins educacionais.
