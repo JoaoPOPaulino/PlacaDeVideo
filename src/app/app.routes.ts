@@ -20,6 +20,7 @@ import { PublicTemplateComponent } from './components/template/public/public-tem
 import { PublicHomeComponent } from './components/pages/public/public-home/public-home.component';
 import { LoginComponent } from './components/pages/public/login/login.component';
 import { SobreComponent } from './components/pages/public/sobre/sobre.component';
+import { CadastroComponent } from './components/pages/public/cadastro/cadastro.component';
 
 export const routes: Routes = [
   {
@@ -38,7 +39,8 @@ export const routes: Routes = [
       },
       {
         path: 'cadastro',
-        component: UsuarioFormComponent,
+        component: CadastroComponent,
+        title: 'Cadastro',
         data: { isPublic: true }
       },
       {

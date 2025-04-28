@@ -1,19 +1,16 @@
 import { Component } from '@angular/core';
 import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
   FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../../services/auth.service';
-import { MatIcon } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +26,7 @@ import { MatIcon } from '@angular/material/icon';
     MatInputModule,
     MatFormFieldModule,
     RouterModule,
-    MatIcon
+    MatIconModule
   ],
 })
 export class LoginComponent {
@@ -38,15 +35,14 @@ export class LoginComponent {
   errorMessage = '';
   hide = true;
 
-  constructor(private authService: AuthService, private router: Router){}
-
+  constructor(private authService: AuthService, private router: Router) {}
 
   login() {
     console.log('Login com:', this.identificador, this.senha);
-  
+
     this.authService.login(this.identificador, this.senha).subscribe({
       next: () => {
-        this.router.navigate(['/']); // Redireciona para home ou onde preferir
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Erro ao fazer login', err);
@@ -54,7 +50,7 @@ export class LoginComponent {
       },
     });
   }
-  
+
   toggleVisibility() {
     this.hide = !this.hide;
   }

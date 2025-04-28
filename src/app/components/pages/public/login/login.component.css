@@ -1,52 +1,70 @@
 :host {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f5f5f5; /* fundo clean cinza claro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%); /* Se quiser, pode tirar, depende do seu fundo já */
+}
+
+mat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  animation: fadeInUp 0.7s ease forwards;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-weight: 700;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+button[type='submit'] {
+  width: 100%;
+  margin-top: 1rem;
+  font-weight: bold;
+  background-color: #6200ea; /* Roxo vibrante */
+  color: white;
+}
+
+button[type='submit']:hover {
+  background-color: #3700b3;
+}
+
+.extra-options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.extra-options a {
+  color: #6200ea;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.extra-options a:hover {
+  text-decoration: underline;
+}
+
+/* Animação */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  
-  mat-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  h2 {
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: 600;
-  }
-  
-  .full-width {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-  
-  button[type='submit'] {
-    width: 100%;
-    margin-top: 1rem;
-    font-weight: bold;
-  }
-  
-  .extra-options {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-  }
-  
-  .extra-options a {
-    color: #1976d2;
-    font-weight: 500;
-    text-decoration: none;
-    transition: 0.3s ease;
-  }
-  
-  .extra-options a:hover {
-    text-decoration: underline;
-  }
-  
+}

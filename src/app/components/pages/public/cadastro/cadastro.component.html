@@ -1,1 +1,40 @@
-<p>cadastro works!</p>
+<div class="container">
+    <mat-card class="card">
+      <h2 class="title">Criar Conta</h2>
+  
+      <form [formGroup]="formGroup" (ngSubmit)="criarConta()" class="form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" required>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" required type="email">
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Login</mat-label>
+          <input matInput formControlName="login" required>
+          <mat-error *ngIf="formGroup.get('login')?.hasError('loginExists')">
+            Este login já está em uso
+          </mat-error>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput formControlName="senha" required type="password">
+        </mat-form-field>
+  
+        <button mat-raised-button color="primary" class="btn-submit" type="submit" [disabled]="isLoading || formGroup.invalid">
+          <mat-icon *ngIf="isLoading" class="loading">autorenew</mat-icon>
+          Criar Conta
+        </button>
+      </form>
+  
+      <p class="login-link">
+        Já tem uma conta? <a routerLink="/login">Entrar</a>
+      </p>
+    </mat-card>
+  </div>
+  
