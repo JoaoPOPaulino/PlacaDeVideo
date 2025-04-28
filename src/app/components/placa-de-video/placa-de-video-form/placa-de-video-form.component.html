@@ -86,7 +86,9 @@
             <mat-option *ngFor="let espec of especificacoes" [value]="espec">
               {{espec.memoria}} | {{espec.clock}} | {{espec.barramento}} | {{espec.consumoEnergia}}
             </mat-option>
-            <button mat-button (click)="abrirDialogNovaEspecificacao()">+ Nova Especificação</button>
+            <mat-option (click)="abrirDialogNovaEspecificacao()" class="nova-opcao">
+              ➕ Nova Especificação
+            </mat-option>
           </mat-select>
           <mat-icon matSuffix>build</mat-icon>
           <mat-error *ngIf="formGroup.get('especificacaoTecnica')?.hasError('required')">

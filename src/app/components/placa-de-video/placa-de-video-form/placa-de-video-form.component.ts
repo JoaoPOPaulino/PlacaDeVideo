@@ -15,16 +15,19 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { forkJoin } from 'rxjs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDivider } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { PlacaDeVideo } from '../../../models/placa-de-video/placa-de-video.model';
-import { FabricanteService } from '../../../services/fabricante.service';
-import { EspecificacaoTecnicaService } from '../../../services/especificacao-tecnica.service';
 import { Fabricante } from '../../../models/placa-de-video/fabricante.model';
 import { EspecificacaoTecnica } from '../../../models/placa-de-video/especificacao-tecnica.model';
-import { forkJoin } from 'rxjs';
 import { Categoria } from '../../../models/placa-de-video/categoria';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { FabricanteService } from '../../../services/fabricante.service';
+import { EspecificacaoTecnicaService } from '../../../services/especificacao-tecnica.service';
 import { NovaEspecificacaoDialogComponent } from '../../dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -42,12 +45,13 @@ import { MatDialog } from '@angular/material/dialog';
     MatCardModule,
     MatSelectModule,
     MatProgressBarModule,
+    MatDivider,
   ],
   templateUrl: './placa-de-video-form.component.html',
   styleUrl: './placa-de-video-form.component.css',
 })
 export class PlacaDeVideoFormComponent implements OnInit {
-  formGroup: FormGroup;
+  formGroup!: FormGroup;
   fabricantes: Fabricante[] = [];
   especificacoes: EspecificacaoTecnica[] = [];
   categorias = [
@@ -59,74 +63,37 @@ export class PlacaDeVideoFormComponent implements OnInit {
   uploading = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private placaService: PlacaDeVideoService,
     private fabricanteService: FabricanteService,
     private especificacaoService: EspecificacaoTecnicaService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private dialog: MatDialog
-  ) {
-    const placa: PlacaDeVideo = this.activatedRoute.snapshot.data['placa'];
-
-    this.formGroup = this.formBuilder.group({
-      id: [placa && placa.id ? placa.id : null],
-      nome: [
-        placa && placa.nome ? placa.nome : '',
-        [Validators.required, Validators.minLength(3)],
-      ],
-      preco: [
-        placa && placa.preco ? placa.preco : 0,
-        [Validators.required, Validators.min(0)],
-      ],
-      nomeImagem: [placa && placa.nomeImagem ? placa.nomeImagem : ''],
-      especificacaoTecnica: [
-        placa && placa.especificacaoTecnica ? placa.especificacaoTecnica : null,
-        Validators.required,
-      ],
-      fabricante: [
-        placa && placa.fabricante ? placa.fabricante : null,
-        Validators.required,
-      ],
-      categoria: [
-        placa && placa.categoria
-          ? this.categorias.find((c) => c.id === placa.categoria)?.id
-          : Categoria.ENTRADA,
-        Validators.required,
-      ],
-      estoque: [
-        placa && placa.estoque ? placa.estoque : 0,
-        [Validators.required, Validators.min(0)],
-      ],
-    });
-  }
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
+    this.initForm();
     this.loadDependencies();
-
-    const placa: PlacaDeVideo = this.activatedRoute.snapshot.data['placa'];
-
-    if (placa) {
-      this.carregarDadosPlaca(placa);
-    }
   }
 
-  carregarDadosPlaca(placa: PlacaDeVideo): void {
-    this.formGroup.patchValue({
-      id: placa.id,
-      nome: placa.nome,
-      preco: placa.preco,
-      nomeImagem: placa.nomeImagem,
-      estoque: placa.estoque,
-      categoria: this.categorias.find((c) => c.id === placa.categoria)?.id,
-      fabricante: this.fabricantes.find((f) => f.id === placa.fabricante.id),
-      especificacaoTecnica: this.especificacoes.find(
-        (e) => e.id === placa.especificacaoTecnica.id
-      ),
+  private initForm(): void {
+    const placa = this.route.snapshot.data['placa'] as PlacaDeVideo;
+
+    this.formGroup = this.fb.group({
+      id: [placa?.id ?? null],
+      nome: [placa?.nome ?? '', [Validators.required, Validators.minLength(3)]],
+      preco: [placa?.preco ?? 0, [Validators.required, Validators.min(0)]],
+      nomeImagem: [placa?.nomeImagem ?? ''],
+      especificacaoTecnica: [placa?.especificacaoTecnica ?? null, Validators.required],
+      fabricante: [placa?.fabricante ?? null, Validators.required],
+      categoria: [placa?.categoria ?? Categoria.ENTRADA, Validators.required],
+      estoque: [placa?.estoque ?? 0, [Validators.required, Validators.min(0)]],
     });
   }
 
-  loadDependencies(): void {
+  private loadDependencies(): void {
     forkJoin({
       fabricantes: this.fabricanteService.findAll(),
       especificacoes: this.especificacaoService.findAll(),
@@ -134,99 +101,59 @@ export class PlacaDeVideoFormComponent implements OnInit {
       next: ({ fabricantes, especificacoes }) => {
         this.fabricantes = fabricantes;
         this.especificacoes = especificacoes;
-
-        const placa: PlacaDeVideo = this.activatedRoute.snapshot.data['placa'];
-        if (placa) {
-          this.carregarDadosPlaca(placa);
-        }
       },
       error: (error) => {
         console.error('Erro ao carregar dependências:', error);
       },
     });
   }
+
   salvar(): void {
-    console.log('Formulário válido?', this.formGroup.valid);
-    console.log('Valores do formulário:', this.formGroup.value);
-
-    if (this.formGroup.valid) {
-      const formValue = this.formGroup.value;
-      const placa: PlacaDeVideo = {
-        id: formValue.id,
-        nome: formValue.nome,
-        preco: formValue.preco,
-        nomeImagem: formValue.nomeImagem,
-        estoque: formValue.estoque,
-        categoria: formValue.categoria,
-        fabricante: formValue.fabricante,
-        especificacaoTecnica: formValue.especificacaoTecnica,
-      };
-
-      console.log('Objeto placa antes de enviar:', placa);
-
-      if (placa.id == null) {
-        this.placaService.insert(placa).subscribe({
-          next: (placaCadastrada) => {
-            this.router.navigateByUrl('/admin/placasdevideo');
-          },
-          error: (error) => {
-            console.error('Erro completo:', error);
-            console.error('Mensagem de erro:', error.message);
-            console.error('Status:', error.status);
-            console.error('Detalhes:', error.error);
-            alert(
-              'Erro ao salvar placa de vídeo. Verifique os dados e tente novamente.'
-            );
-          },
-        });
-      } else {
-        this.placaService.update(placa).subscribe({
-          next: (placaAlterada) => {
-            this.router.navigateByUrl('/admin/placasdevideo');
-          },
-          error: (er) => {
-            console.log('Erro ao alterar' + JSON.stringify(er));
-          },
-        });
-      }
-    } else {
-      console.log('Erros no formulário:', this.formGroup.errors);
-      console.log('Erros no campo nome:', this.formGroup.get('nome')?.errors);
-      console.log('Erros no campo preco:', this.formGroup.get('preco')?.errors);
-      console.log(
-        'Erros no campo fabricante:',
-        this.formGroup.get('fabricante')?.errors
-      );
-      console.log(
-        'Erros no campo especificacaoTecnica:',
-        this.formGroup.get('especificacaoTecnica')?.errors
-      );
+    if (this.formGroup.invalid) {
+      this.snackBar.open('Formulário inválido. Verifique os campos obrigatórios.', 'Fechar', { duration: 3000 });
+      return;
     }
+
+    const placa: PlacaDeVideo = this.formGroup.value;
+
+    const request = placa.id ? this.placaService.update(placa) : this.placaService.insert(placa);
+
+    request.subscribe({
+      next: () => {
+        this.snackBar.open('Placa salva com sucesso!', 'Fechar', { duration: 3000 });
+        this.router.navigateByUrl('/admin/placasdevideo');
+      },
+      error: (error) => {
+        console.error('Erro ao salvar placa:', error);
+        this.snackBar.open('Erro ao salvar placa. Tente novamente.', 'Fechar', { duration: 3000 });
+      },
+    });
   }
 
   excluir(): void {
     const id = this.formGroup.get('id')?.value;
-    if (confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
-      if (id) {
-        this.placaService.delete(id).subscribe({
-          next: () => {
-            this.router.navigateByUrl('/admin/placasdevideo');
-          },
-          error: (error) => {
-            console.error('Erro ao excluir:', error);
-          },
-        });
-      }
+    if (id && confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
+      this.placaService.delete(id).subscribe({
+        next: () => {
+          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', { duration: 3000 });
+          this.router.navigateByUrl('/admin/placasdevideo');
+        },
+        error: (error) => {
+          console.error('Erro ao excluir placa:', error);
+          this.snackBar.open('Erro ao excluir placa.', 'Fechar', { duration: 3000 });
+        },
+      });
     }
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
       this.selectedFile = file;
       this.formGroup.patchValue({ nomeImagem: file.name });
     }
   }
+
   removeImage(): void {
     if (confirm('Remover a imagem atual?')) {
       this.formGroup.patchValue({ nomeImagem: '' });
@@ -238,38 +165,30 @@ export class PlacaDeVideoFormComponent implements OnInit {
     if (!this.selectedFile || !this.formGroup.get('id')?.value) return;
 
     this.uploading = true;
-    this.placaService
-      .uploadImage(this.formGroup.get('id')?.value, this.selectedFile)
-      .subscribe({
-        next: (placaAtualizada) => {
-          this.formGroup.patchValue({
-            nomeImagem: placaAtualizada.nomeImagem,
-          });
-          this.selectedFile = null;
-          this.uploading = false;
-        },
-        error: (err) => {
-          console.error('Erro no upload:', err);
-          this.uploading = false;
-        },
-      });
+    this.placaService.uploadImage(this.formGroup.get('id')!.value, this.selectedFile).subscribe({
+      next: (placaAtualizada) => {
+        this.formGroup.patchValue({ nomeImagem: placaAtualizada.nomeImagem });
+        this.selectedFile = null;
+        this.uploading = false;
+      },
+      error: (err) => {
+        console.error('Erro no upload:', err);
+        this.uploading = false;
+      },
+    });
   }
 
   previewImage(): void {
     const nomeImagem = this.formGroup.get('nomeImagem')?.value;
     if (nomeImagem) {
-      window.open(
-        `${this.placaService.url}/download/imagem/${nomeImagem}`,
-        '_blank'
-      );
+      window.open(`${this.placaService.url}/download/imagem/${nomeImagem}`, '_blank');
     }
   }
-  abrirDialogNovaEspecificacao(): void {
-    const dialogRef = this.dialog.open(NovaEspecificacaoDialogComponent, {
-      width: '400px',
-    });
 
-    dialogRef.afterClosed().subscribe((novaEspecificacao) => {
+  abrirDialogNovaEspecificacao(): void {
+    const dialogRef = this.dialog.open(NovaEspecificacaoDialogComponent, { width: '400px' });
+
+    dialogRef.afterClosed().subscribe((novaEspecificacao: EspecificacaoTecnica) => {
       if (novaEspecificacao) {
         this.especificacoes.push(novaEspecificacao);
         this.formGroup.patchValue({ especificacaoTecnica: novaEspecificacao });

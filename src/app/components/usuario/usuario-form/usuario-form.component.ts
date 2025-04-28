@@ -1,47 +1,48 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { UsuarioService } from '../../../services/usuario.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CommonModule, NgIf } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
 import { Usuario } from '../../../models/usuario/usuario.model';
 import { Perfil } from '../../../models/usuario/perfil';
-import { MatDialog } from '@angular/material/dialog';
 import { NovoTelefoneDialogComponent } from '../../dialog/novo-telefone-dialog/novo-telefone-dialog.component';
 import { NovoEnderecoDialogComponent } from '../../dialog/novo-endereco-dialog/novo-endereco-dialog.component';
-import { MatList, MatListItem } from '@angular/material/list';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, debounceTime, distinctUntilChanged, map, Observable, of, switchMap } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-usuario-form',
+  templateUrl: './usuario-form.component.html',
+  styleUrls: ['./usuario-form.component.css'],
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    NgIf,
     ReactiveFormsModule,
+    FormsModule,
+    RouterModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
-    MatToolbarModule,
     MatIconModule,
+    MatButtonModule,
     MatCardModule,
+    MatToolbarModule,
+    MatSnackBarModule,
     MatSelectModule,
-    MatList,
-    MatListItem
+    MatListModule,
+    MatDialogModule,
   ],
-  templateUrl: './usuario-form.component.html',
-  styleUrl: './usuario-form.component.css',
 })
+
 export class UsuarioFormComponent implements OnInit {
-  @Input() isPublic = false;
   formGroup: FormGroup;
   perfis = [
     { id: Perfil.USER, label: 'Usuário' },
@@ -62,47 +63,19 @@ export class UsuarioFormComponent implements OnInit {
     const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'];
     this.formGroup = this.formBuilder.group({
       id: [usuario?.id || null],
-      nome: [
-        usuario?.nome || '',
-        [Validators.required, Validators.minLength(3)]
-      ],
-      login: [
-        usuario?.login || '',
-        [Validators.required, Validators.minLength(3)]
-      ],
-      email: [
-        usuario?.email || '',
-        [Validators.required, Validators.email]
-      ],
-      senha: [
-        '',
-        this.isPublic ? [Validators.required, Validators.minLength(4)] : [Validators.minLength(4)]
-      ],
-      perfil: [
-        usuario?.perfil || Perfil.USER,
-        Validators.required
-      ],
-      telefones: this.isPublic ? [] : this.telefones,
-      enderecos: this.isPublic ? [] : this.enderecos
+      nome: [usuario?.nome || '', [Validators.required, Validators.minLength(3)]],
+      login: [usuario?.login || '', [Validators.required, Validators.minLength(3)]],
+      email: [usuario?.email || '', [Validators.required, Validators.email]],
+      senha: ['', [Validators.minLength(4)]],
+      perfil: [usuario?.perfil || Perfil.USER, Validators.required],
     });
   }
 
   ngOnInit(): void {
-    const routeData = this.activatedRoute.snapshot.data;
-    if (routeData['isPublic']) {
-      this.isPublic = true;
-    }
-
-    if (this.isPublic){
-      this.formGroup.get('perfil')?.setValue(Perfil.USER);
-      this.formGroup.get('perfil')?.disable();
-    }
-
     const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'];
     if (usuario) {
       this.carregarDadosUsuario(usuario);
     }
-
     this.setupLoginValidation();
   }
 
@@ -119,7 +92,7 @@ export class UsuarioFormComponent implements OnInit {
     }
   }
 
-  validateLogin(login: string): Observable<boolean> {
+  validateLogin(login: string) {
     if (!login || login.length < 3) {
       return of(false);
     }
@@ -143,15 +116,7 @@ export class UsuarioFormComponent implements OnInit {
     );
   }
 
-  loginValidator(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-      return this.validateLogin(control.value).pipe(
-        map(exists => exists ? { loginExists: true } : null)
-      );
-    };
-  }
-
-  carregarDadosUsuario(usuario: Usuario): void {
+  carregarDadosUsuario(usuario: Usuario) {
     this.formGroup.patchValue({
       id: usuario.id,
       nome: usuario.nome,
@@ -172,60 +137,38 @@ export class UsuarioFormComponent implements OnInit {
     if (this.formGroup.invalid || this.isLoading) {
       return;
     }
-  
+
     this.isLoading = true;
     const formData = this.formGroup.value;
-    
+
     const usuario = {
       ...formData,
-      perfil: formData.perfil, // Já é o ID numérico
       telefones: this.telefones,
       enderecos: this.enderecos
     };
-  
-    // Remove senha se estiver vazia (para atualização)
+
     if (usuario.id && !usuario.senha) {
       delete usuario.senha;
     }
-  
-    // Define senha padrão para novos usuários
+
     if (!usuario.id && !usuario.senha) {
       usuario.senha = '123456';
     }
-  
-    const operation = usuario.id 
+
+    const operation = usuario.id
       ? this.usuarioService.update(usuario, usuario.id)
       : this.usuarioService.insert(usuario);
-  
+
     operation.subscribe({
       next: () => {
         this.snackBar.open('Usuário salvo com sucesso!', 'Fechar', { duration: 3000 });
-
-        if (this.isPublic){
-          const identificador = usuario.email || usuario.login;
-          const senha = usuario.senha;
-
-          this.usuarioService.login(identificador, senha).subscribe({
-            next: (res) => {
-              localStorage.setItem('token', res.token);
-              this.router.navigateByUrl('/');
-            },
-            error: () => {
-              this.snackBar.open('Cadastro realizado, mas houve erro ao fazer ao fazer login automático.', 'Fechar', {duration: 4000});
-              this.router.navigateByUrl('/login');
-            }
-          });
-        }else{
-          this.router.navigateByUrl('/admin/usuarios');
-        }
-        const redirectUrl = this.isPublic ? '/' : '/admin/usuarios';
-        this.router.navigateByUrl(redirectUrl);
+        this.router.navigateByUrl('/admin/usuarios');
       },
       error: (err) => {
         console.error('Erro detalhado:', err);
         const errorMessage = err.message || 'Erro ao salvar usuário';
         this.snackBar.open(errorMessage, 'Fechar', { duration: 5000, panelClass: ['error-snackbar'] });
-        
+
         if (err.message.includes('Login já está em uso')) {
           this.formGroup.get('login')?.setErrors({ loginExists: true });
         }
@@ -236,26 +179,22 @@ export class UsuarioFormComponent implements OnInit {
 
   excluir() {
     const id = this.formGroup.get('id')?.value;
-    if (confirm('Tem certeza que deseja excluir este usuário?')) {
-      if (id) {
-        this.usuarioService.delete(id).subscribe({
-          next: () => {
-            this.snackBar.open('Usuário excluído com sucesso!', 'Fechar', { duration: 3000 });
-            this.router.navigateByUrl('/admin/usuarios');
-          },
-          error: (err) => {
-            console.error('Erro ao excluir:', err);
-            this.snackBar.open('Erro ao excluir usuário', 'Fechar', { duration: 5000 });
-          }
-        });
-      }
+    if (confirm('Tem certeza que deseja excluir este usuário?') && id) {
+      this.usuarioService.delete(id).subscribe({
+        next: () => {
+          this.snackBar.open('Usuário excluído com sucesso!', 'Fechar', { duration: 3000 });
+          this.router.navigateByUrl('/admin/usuarios');
+        },
+        error: (err) => {
+          console.error('Erro ao excluir:', err);
+          this.snackBar.open('Erro ao excluir usuário', 'Fechar', { duration: 5000 });
+        }
+      });
     }
   }
 
-  abrirDialogNovoTelefone(): void {
-    const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, {
-      width: '400px'
-    });
+  abrirDialogNovoTelefone() {
+    const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, { width: '400px' });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -264,10 +203,8 @@ export class UsuarioFormComponent implements OnInit {
     });
   }
 
-  abrirDialogNovoEndereco(): void {
-    const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, {
-      width: '500px'
-    });
+  abrirDialogNovoEndereco() {
+    const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, { width: '500px' });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
