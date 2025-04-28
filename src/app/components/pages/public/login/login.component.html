@@ -1,5 +1,5 @@
 <mat-card>
-  <h2>Entrar</h2>
+  <h2>Login</h2>
   <form (ngSubmit)="login()">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Email ou Nome de Usuário</mat-label>
@@ -15,7 +15,7 @@
       <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">Entrar</button>
+    <button mat-raised-button color="primary" type="submit">LOGIN</button>
   </form>
 
   <div class="extra-options">

@@ -3,13 +3,22 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%); /* Se quiser, pode tirar, depende do seu fundo já */
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background-size: 400% 400%;
+  animation: neonBackground 15s ease infinite;
+}
+
+/* Animação no fundo */
+@keyframes neonBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 mat-card {
-  background: #ffffff;
+  background: rgba(0, 0, 0, 0.8);
   border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3);
   width: 100%;
   max-width: 400px;
   padding: 2rem;
@@ -19,8 +28,9 @@ mat-card {
 
 h2 {
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #00e5ff;
   font-weight: 700;
+  text-shadow: 0 0 2px #00e5ff, 0 0 4 #00e5ff;
 }
 
 .full-width {
@@ -32,12 +42,17 @@ button[type='submit'] {
   width: 100%;
   margin-top: 1rem;
   font-weight: bold;
-  background-color: #6200ea; /* Roxo vibrante */
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
   color: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 10px #00c6ff;
+  transition: 0.3s;
 }
 
 button[type='submit']:hover {
-  background-color: #3700b3;
+  background: linear-gradient(90deg, #0072ff, #00c6ff);
+  box-shadow: 0 0 20px #00c6ff, 0 0 40px #0072ff;
 }
 
 .extra-options {
@@ -45,19 +60,21 @@ button[type='submit']:hover {
   justify-content: space-between;
   margin-top: 1rem;
   font-size: 0.9rem;
+  color: #bbb;
 }
 
 .extra-options a {
-  color: #6200ea;
+  color: #00e5ff;
   text-decoration: none;
   transition: 0.3s;
 }
 
 .extra-options a:hover {
   text-decoration: underline;
+  color: #ff00ff;
 }
 
-/* Animação */
+/* Animação de entrada */
 @keyframes fadeInUp {
   from {
     opacity: 0;
