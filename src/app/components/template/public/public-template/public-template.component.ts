@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { PublicHeaderComponent } from '../public-header/public-header.component';
-import { FooterComponent } from '../../footer/footer.component';
+import { FooterComponent } from '../../shared/footer/footer.component';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,8 +9,6 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [CommonModule, PublicHeaderComponent, FooterComponent, RouterOutlet],
   templateUrl: './public-template.component.html',
-  styleUrl: './public-template.component.css'
+  styleUrl: './public-template.component.css',
 })
-export class PublicTemplateComponent {
-
-}
+export class PublicTemplateComponent {}

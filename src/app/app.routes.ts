@@ -1,18 +1,8 @@
 import { Routes } from '@angular/router';
-import { UsuarioListComponent } from './components/usuario/usuario-list/usuario-list.component';
-import { UsuarioFormComponent } from './components/usuario/usuario-form/usuario-form.component';
-import { AvaliacaoFormComponent } from './components/avaliacao/avaliacao-form/avaliacao-form.component';
-import { AvaliacaoListComponent } from './components/avaliacao/avaliacao-list/avaliacao-list.component';
-import { PlacaDeVideoListComponent } from './components/placa-de-video/placa-de-video-list/placa-de-video-list.component';
-import { PlacaDeVideoFormComponent } from './components/placa-de-video/placa-de-video-form/placa-de-video-form.component';
-import { placaDeVideoResolver } from './components/placa-de-video/placa-de-video.resolver';
-import { usuarioResolver } from './components/usuario/usuario.resolver';
-import { FabricanteFormComponent } from './components/fabricante/fabricante-form/fabricante-form.component';
-import { FabricanteListComponent } from './components/fabricante/fabricante-list/fabricante-list.component';
-import { fabricanteResolver } from './components/fabricante/fabricante.resolver';
-import { EspecificacaoTecnicaListComponent } from './components/especificacao-tecnica/especificacao-tecnica-list/especificacao-tecnica-list.component';
-import { EspecificacaoTecnicaFormComponent } from './components/especificacao-tecnica/especificacao-tecnica-form/especificacao-tecnica-form.component';
-import { especificacaoTecnicaResolver } from './components/especificacao-tecnica/especificacao-tecnica.resolver';
+import { UsuarioListComponent } from './components/admin/usuario/usuario-list/usuario-list.component';
+import { UsuarioFormComponent } from './components/admin/usuario/usuario-form/usuario-form.component';
+import { usuarioResolver } from './components/admin/usuario/usuario.resolver';
+
 import { AdminTemplateComponent } from './components/template/admin-template/admin-template.component';
 import { HomeComponent } from './components/pages/home/home.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
@@ -21,6 +11,17 @@ import { PublicHomeComponent } from './components/pages/public/public-home/publi
 import { LoginComponent } from './components/pages/public/login/login.component';
 import { SobreComponent } from './components/pages/public/sobre/sobre.component';
 import { CadastroComponent } from './components/pages/public/cadastro/cadastro.component';
+import { AvaliacaoFormComponent } from './components/admin/avaliacao/avaliacao-form/avaliacao-form.component';
+import { AvaliacaoListComponent } from './components/admin/avaliacao/avaliacao-list/avaliacao-list.component';
+import { EspecificacaoTecnicaFormComponent } from './components/admin/especificacao-tecnica/especificacao-tecnica-form/especificacao-tecnica-form.component';
+import { EspecificacaoTecnicaListComponent } from './components/admin/especificacao-tecnica/especificacao-tecnica-list/especificacao-tecnica-list.component';
+import { especificacaoTecnicaResolver } from './components/admin/especificacao-tecnica/especificacao-tecnica.resolver';
+import { FabricanteFormComponent } from './components/admin/fabricante/fabricante-form/fabricante-form.component';
+import { FabricanteListComponent } from './components/admin/fabricante/fabricante-list/fabricante-list.component';
+import { fabricanteResolver } from './components/admin/fabricante/fabricante.resolver';
+import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/placa-de-video-form/placa-de-video-form.component';
+import { PlacaDeVideoListComponent } from './components/admin/placas-de-video/placa-de-video-list/placa-de-video-list.component';
+import { placaDeVideoResolver } from './components/admin/placas-de-video/placa-de-video.resolver';
 
 export const routes: Routes = [
   {
@@ -41,13 +42,13 @@ export const routes: Routes = [
         path: 'cadastro',
         component: CadastroComponent,
         title: 'Cadastro',
-        data: { isPublic: true }
+        data: { isPublic: true },
       },
       {
         path: 'sobre',
         component: SobreComponent,
-        title: 'Sobre Nós'
-      }
+        title: 'Sobre Nós',
+      },
     ],
   },
 
