@@ -1,8 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PlacaDeVideo } from '../models/placa-de-video/placa-de-video.model';
-import { Categoria } from '../models/placa-de-video/categoria';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +26,7 @@ export class PlacaDeVideoService {
       params = params.set('nome', searchTerm);
     }
 
-    return this.httpClient
-      .get<PlacaDeVideo[]>(url, { params })
-      .pipe(map((placas) => placas.map((placa) => this.convertToModel(placa))));
+    return this.httpClient.get<PlacaDeVideo[]>(url, { params });
   }
 
   count(searchTerm?: string): Observable<number> {
@@ -41,19 +38,57 @@ export class PlacaDeVideoService {
   }
 
   findById(id: string): Observable<PlacaDeVideo> {
-    return this.httpClient
-      .get<PlacaDeVideo>(`${this.url}/${id}`)
-      .pipe(map((placa) => this.convertToModel(placa)));
+    return this.httpClient.get<PlacaDeVideo>(`${this.url}/${id}`);
   }
 
   insert(placa: PlacaDeVideo): Observable<PlacaDeVideo> {
-    const placaDTO = this.convertToDTO(placa);
-    return this.httpClient.post<PlacaDeVideo>(this.url, placaDTO);
+    if (
+      !placa.fabricante?.id ||
+      !placa.categoria?.id ||
+      !placa.especificacaoTecnica?.id
+    ) {
+      throw new Error(
+        'Fabricante, categoria ou especificação técnica inválidos'
+      );
+    }
+
+    const obj = {
+      nome: placa.nome,
+      preco: placa.preco,
+      nomeImagem: placa.nomeImagem,
+      idFabricante: placa.fabricante.id,
+      idCategoria: placa.categoria.id,
+      estoque: placa.estoque,
+      idEspecificacaoTecnica: placa.especificacaoTecnica.id,
+    };
+
+    return this.httpClient.post<PlacaDeVideo>(this.url, obj);
   }
 
-  update(placa: PlacaDeVideo): Observable<any> {
-    const placaDTO = this.convertToDTO(placa);
-    return this.httpClient.put(`${this.url}/${placa.id}`, placaDTO);
+  update(placa: PlacaDeVideo): Observable<PlacaDeVideo> {
+    if (
+      !placa.id ||
+      !placa.fabricante?.id ||
+      !placa.categoria?.id ||
+      !placa.especificacaoTecnica?.id
+    ) {
+      throw new Error(
+        'ID, fabricante, categoria ou especificação técnica inválidos'
+      );
+    }
+
+    const obj = {
+      id: placa.id,
+      nome: placa.nome,
+      preco: placa.preco,
+      nomeImagem: placa.nomeImagem,
+      idFabricante: placa.fabricante.id,
+      idCategoria: placa.categoria.id,
+      estoque: placa.estoque,
+      idEspecificacaoTecnica: placa.especificacaoTecnica.id,
+    };
+
+    return this.httpClient.put<PlacaDeVideo>(`${this.url}/${placa.id}`, obj);
   }
 
   delete(id: number): Observable<any> {
@@ -69,32 +104,5 @@ export class PlacaDeVideoService {
       `${this.url}/${placaId}/upload/imagem`,
       formData
     );
-  }
-
-  private convertToModel(placa: any): PlacaDeVideo {
-    const result = new PlacaDeVideo();
-    Object.assign(result, placa);
-
-    // Conversão segura da categoria
-    if (placa.categoria) {
-      result.categoria = Categoria.fromValue(placa.categoria);
-    } else {
-      console.warn('Categoria não encontrada, usando padrão ENTRADA');
-      result.categoria = Categoria.ENTRADA;
-    }
-
-    return result;
-  }
-
-  private convertToDTO(placa: PlacaDeVideo): any {
-    return {
-      nome: placa.nome,
-      preco: placa.preco,
-      nomeImagem: placa.nomeImagem,
-      idFabricante: placa.fabricante.id,
-      idCategoria: Categoria.toId(placa.categoria),
-      estoque: placa.estoque,
-      idEspecificacaoTecnica: placa.especificacaoTecnica.id,
-    };
   }
 }

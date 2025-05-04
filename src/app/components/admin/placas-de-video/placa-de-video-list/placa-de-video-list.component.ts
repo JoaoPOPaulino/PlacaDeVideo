@@ -8,12 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { CategoriaPipe } from '../../../shared/pipes/categoria.pipe';
-import { Categoria } from '../../../../models/placa-de-video/categoria';
 import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
+import { Categoria } from '../../../../models/placa-de-video/categoria.model';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 
 @Component({
@@ -43,7 +44,10 @@ export class PlacaDeVideoListComponent implements OnInit {
   searchTerm = '';
   showDebugInfo = false;
 
-  constructor(private placaService: PlacaDeVideoService) {}
+  constructor(
+    private placaService: PlacaDeVideoService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.calculatePageSize();
@@ -73,19 +77,6 @@ export class PlacaDeVideoListComponent implements OnInit {
     }
   }
 
-  getCategoriaId(categoria: Categoria): number {
-    switch (categoria) {
-      case Categoria.ENTRADA:
-        return 1;
-      case Categoria.INTERMEDIARIA:
-        return 2;
-      case Categoria.ALTO_DESEMPENHO:
-        return 3;
-      default:
-        return 0;
-    }
-  }
-
   loadData(): void {
     forkJoin({
       placas: this.placaService.findAll(
@@ -103,6 +94,13 @@ export class PlacaDeVideoListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao buscar dados:', error);
+        this.snackBar.open(
+          'Erro ao carregar placas. Tente novamente.',
+          'Fechar',
+          {
+            duration: 3000,
+          }
+        );
       },
     });
   }
@@ -127,25 +125,18 @@ export class PlacaDeVideoListComponent implements OnInit {
     if (confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
       this.placaService.delete(id).subscribe({
         next: () => {
+          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
           this.loadData();
         },
         error: (error) => {
           console.error('Erro ao excluir:', error);
+          this.snackBar.open('Erro ao excluir placa.', 'Fechar', {
+            duration: 3000,
+          });
         },
       });
-    }
-  }
-
-  getBadgeClass(categoria: Categoria): string {
-    switch (categoria) {
-      case Categoria.ENTRADA:
-        return 'entrada';
-      case Categoria.INTERMEDIARIA:
-        return 'intermediaria';
-      case Categoria.ALTO_DESEMPENHO:
-        return 'alto-desempenho';
-      default:
-        return '';
     }
   }
 
@@ -157,7 +148,27 @@ export class PlacaDeVideoListComponent implements OnInit {
 
   getImageUrl(imageName: string): string {
     if (!imageName) return 'assets/images/default-card.png';
-    return `${this.placaService.url}/download/imagem/${imageName}`;
+    return `${this.placaService.url}/download/imagem/${encodeURIComponent(
+      imageName
+    )}`;
+  }
+
+  getBadgeClass(categoria: Categoria): string {
+    if (!categoria || !categoria.label) return '';
+    switch (categoria.label.toLowerCase()) {
+      case 'entrada':
+        return 'entrada';
+      case 'intermediária':
+        return 'intermediaria';
+      case 'alto desempenho':
+        return 'alto-desempenho';
+      default:
+        return '';
+    }
+  }
+
+  getCategoriaId(categoria: Categoria): number {
+    return categoria?.id || 0;
   }
 
   toggleDebugInfo(): void {

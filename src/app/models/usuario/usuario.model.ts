@@ -1,5 +1,5 @@
 import { Endereco } from './endereco.model';
-import { Perfil } from './perfil';
+import { Perfil } from './perfil.model';
 import { Telefone } from './telefone.model';
 
 export class Usuario {

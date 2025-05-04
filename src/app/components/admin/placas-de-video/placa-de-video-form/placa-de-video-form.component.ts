@@ -19,7 +19,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDivider } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Categoria } from '../../../../models/placa-de-video/categoria';
 import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
 import { Fabricante } from '../../../../models/placa-de-video/fabricante.model';
 import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
@@ -27,6 +26,7 @@ import { EspecificacaoTecnicaService } from '../../../../services/especificacao-
 import { FabricanteService } from '../../../../services/fabricante.service';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { NovaEspecificacaoDialogComponent } from '../../../shared/dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
+import { Categoria } from '../../../../models/placa-de-video/categoria.model';
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -53,12 +53,14 @@ export class PlacaDeVideoFormComponent implements OnInit {
   formGroup!: FormGroup;
   fabricantes: Fabricante[] = [];
   especificacoes: EspecificacaoTecnica[] = [];
-  categorias = [
-    { id: Categoria.ENTRADA, label: 'Entrada' },
-    { id: Categoria.INTERMEDIARIA, label: 'Intermediária' },
-    { id: Categoria.ALTO_DESEMPENHO, label: 'Alto Desempenho' },
+  categorias: Categoria[] = [
+    { id: 1, label: 'Entrada' },
+    { id: 2, label: 'Intermediária' },
+    { id: 3, label: 'Alto Desempenho' },
   ];
+  fileName: string = '';
   selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
   uploading = false;
 
   constructor(
@@ -90,7 +92,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
         Validators.required,
       ],
       fabricante: [placa?.fabricante ?? null, Validators.required],
-      categoria: [placa?.categoria ?? Categoria.ENTRADA, Validators.required],
+      categoria: [placa?.categoria?.id ?? null, Validators.required],
       estoque: [placa?.estoque ?? 0, [Validators.required, Validators.min(0)]],
     });
   }
@@ -106,6 +108,9 @@ export class PlacaDeVideoFormComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar dependências:', error);
+        this.snackBar.open('Erro ao carregar dependências.', 'Fechar', {
+          duration: 3000,
+        });
       },
     });
   }
@@ -120,7 +125,17 @@ export class PlacaDeVideoFormComponent implements OnInit {
       return;
     }
 
-    const placa: PlacaDeVideo = this.formGroup.value;
+    const formValue = this.formGroup.value;
+    const placa: PlacaDeVideo = {
+      id: formValue.id,
+      nome: formValue.nome,
+      preco: formValue.preco,
+      nomeImagem: formValue.nomeImagem,
+      fabricante: formValue.fabricante,
+      especificacaoTecnica: formValue.especificacaoTecnica,
+      categoria: { id: formValue.categoria, label: '' }, // Apenas o ID é necessário
+      estoque: formValue.estoque,
+    };
 
     const request = placa.id
       ? this.placaService.update(placa)
@@ -178,7 +193,16 @@ export class PlacaDeVideoFormComponent implements OnInit {
   }
 
   uploadImage(): void {
-    if (!this.selectedFile || !this.formGroup.get('id')?.value) return;
+    if (!this.selectedFile || !this.formGroup.get('id')?.value) {
+      this.snackBar.open(
+        'Selecione uma imagem e salve a placa antes de fazer o upload.',
+        'Fechar',
+        {
+          duration: 3000,
+        }
+      );
+      return;
+    }
 
     this.uploading = true;
     this.placaService
@@ -188,10 +212,20 @@ export class PlacaDeVideoFormComponent implements OnInit {
           this.formGroup.patchValue({ nomeImagem: placaAtualizada.nomeImagem });
           this.selectedFile = null;
           this.uploading = false;
+          this.snackBar.open('Imagem enviada com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
         },
         error: (err) => {
           console.error('Erro no upload:', err);
           this.uploading = false;
+          this.snackBar.open(
+            'Erro ao enviar imagem. Tente novamente.',
+            'Fechar',
+            {
+              duration: 3000,
+            }
+          );
         },
       });
   }
@@ -200,7 +234,9 @@ export class PlacaDeVideoFormComponent implements OnInit {
     const nomeImagem = this.formGroup.get('nomeImagem')?.value;
     if (nomeImagem) {
       window.open(
-        `${this.placaService.url}/download/imagem/${nomeImagem}`,
+        `${this.placaService.url}/download/imagem/${encodeURIComponent(
+          nomeImagem
+        )}`,
         '_blank'
       );
     }
