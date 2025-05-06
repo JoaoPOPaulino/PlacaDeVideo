@@ -8,11 +8,13 @@ import { UsuarioService } from '../../../../services/usuario.service';
 import { forkJoin } from 'rxjs';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
-import { Perfil } from '../../../../models/usuario/perfil';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { Perfil } from '../../../../models/usuario/perfil.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PerfilPipe } from "../../../shared/pipes/Perfil.pipe";
 
 @Component({
   selector: 'app-usuario-list',
@@ -30,7 +32,8 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     MatButtonModule,
     MatIconModule,
-  ],
+    PerfilPipe
+],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.css',
 })
@@ -42,7 +45,10 @@ export class UsuarioListComponent implements OnInit {
   page = 0;
   searchTerm = '';
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadUsuarios();
@@ -64,7 +70,14 @@ export class UsuarioListComponent implements OnInit {
         this.totalRecords = total;
       },
       error: (error) => {
-        console.error('Error loading usuarios:', error);
+        console.error('Erro ao carregar usuários:', error);
+        this.snackBar.open(
+          'Erro ao carregar usuários. Tente novamente.',
+          'Fechar',
+          {
+            duration: 3000,
+          }
+        );
       },
     });
   }
@@ -89,35 +102,33 @@ export class UsuarioListComponent implements OnInit {
     if (confirm('Tem certeza que deseja excluir?')) {
       this.usuarioService.delete(id).subscribe({
         next: () => {
-          alert('Usuário excluído com sucesso!');
+          this.snackBar.open('Usuário excluído com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
           this.loadUsuarios();
         },
         error: (error) => {
           console.error('Erro ao excluir usuário:', error);
+          this.snackBar.open('Erro ao excluir usuário.', 'Fechar', {
+            duration: 3000,
+          });
         },
       });
     }
   }
 
   getBadgeClass(perfil: Perfil): string {
-    switch (perfil) {
-      case Perfil.ADMIN:
-        return 'admin';
-      case Perfil.USER:
+    switch (perfil?.id) {
+      case 1:
         return 'usuario';
+      case 2:
+        return 'admin';
       default:
         return '';
     }
   }
 
   getPerfilId(perfil: Perfil): number {
-    switch (perfil) {
-      case Perfil.USER:
-        return 1;
-      case Perfil.ADMIN:
-        return 2;
-      default:
-        return 0;
-    }
+    return perfil?.id || 0;
   }
 }

@@ -1,11 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  of,
+  map,
+} from 'rxjs';
 import { UsuarioService } from '../../../../services/usuario.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Perfil } from '../../../../models/usuario/perfil';
+import { Perfil } from '../../../../models/usuario/perfil.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -16,7 +29,8 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     RouterModule,
@@ -25,11 +39,12 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonModule,
     MatCardModule,
     MatSnackBarModule,
-    MatIconModule],
+    MatIconModule,
+  ],
   templateUrl: './cadastro.component.html',
-  styleUrl: './cadastro.component.css'
+  styleUrl: './cadastro.component.css',
 })
-export class CadastroComponent implements OnInit{
+export class CadastroComponent implements OnInit {
   formGroup: FormGroup;
   isLoading = false;
 
@@ -59,7 +74,7 @@ export class CadastroComponent implements OnInit{
         .pipe(
           debounceTime(500),
           distinctUntilChanged(),
-          switchMap(value => this.validateLogin(value))
+          switchMap((value) => this.validateLogin(value))
         )
         .subscribe();
     }
@@ -71,7 +86,7 @@ export class CadastroComponent implements OnInit{
     }
 
     return this.usuarioService.checkLoginExists(login).pipe(
-      map(exists => {
+      map((exists) => {
         if (exists) {
           this.formGroup.get('login')?.setErrors({ loginExists: true });
         }
@@ -91,20 +106,24 @@ export class CadastroComponent implements OnInit{
     const formData = this.formGroup.value;
     const novoUsuario = {
       ...formData,
-      perfil: Perfil.USER, // Perfil fixo
+      perfil: { id: 1, label: 'Usuário' }, // Perfil fixo
     };
 
     this.usuarioService.insert(novoUsuario).subscribe({
       next: () => {
         this.authService.login(formData.login, formData.senha).subscribe({
           next: () => {
-            this.snackBar.open('Conta criada com sucesso!', 'Fechar', { duration: 3000 });
+            this.snackBar.open('Conta criada com sucesso!', 'Fechar', {
+              duration: 3000,
+            });
             this.router.navigateByUrl('/home');
           },
           error: (err) => {
             console.error(`Erro ao logar após cadastro`, err);
-            this.snackBar.open('Erro ao logar. Tente novamente.', 'Fechar', { duration: 5000 });
-          }
+            this.snackBar.open('Erro ao logar. Tente novamente.', 'Fechar', {
+              duration: 5000,
+            });
+          },
         });
       },
       error: (err) => {
@@ -114,7 +133,7 @@ export class CadastroComponent implements OnInit{
       },
       complete: () => {
         this.isLoading = false;
-      }
+      },
     });
   }
 }

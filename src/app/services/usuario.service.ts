@@ -1,9 +1,14 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { Usuario } from '../models/usuario/usuario.model';
-import { Perfil } from '../models/usuario/perfil';
-
+import { Endereco } from '../models/usuario/endereco.model';
+import { Perfil } from '../models/usuario/perfil.model';
+import { Telefone } from '../models/usuario/telefone.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -29,76 +34,103 @@ export class UsuarioService {
 
     return this.httpClient
       .get<Usuario[]>(url, { params })
-      .pipe(map((usuarios) => usuarios.map((usuario) => this.convertToModel(usuario))));
+      .pipe(
+        map((usuarios) =>
+          usuarios.map((usuario) => this.convertToModel(usuario))
+        )
+      );
+  }
+
+  checkEmailExists(email: string): Observable<boolean> {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return of(false);
+    }
+
+    return this.httpClient
+      .get<boolean>(`${this.url}/exists`, {
+        params: { email },
+      })
+      .pipe(catchError(() => of(false)));
   }
 
   findById(id: string): Observable<Usuario> {
-    return this.httpClient.get<Usuario>(`${this.url}/${id}`)
-      .pipe(map(usuario => this.convertToModel(usuario)));
+    return this.httpClient
+      .get<Usuario>(`${this.url}/${id}`)
+      .pipe(map((usuario) => this.convertToModel(usuario)));
   }
 
   checkLoginExists(login: string): Observable<boolean> {
     if (!login || login.length < 3) {
       return of(false);
     }
-    
-    return this.httpClient.get<boolean>(`${this.url}/exists`, {
-      params: { login }
-    }).pipe(
-      catchError(() => of(false)) // Retorna false se der erro
-    );
+
+    return this.httpClient
+      .get<boolean>(`${this.url}/exists`, {
+        params: { login },
+      })
+      .pipe(catchError(() => of(false)));
   }
 
-  insert(usuario: any): Observable<any> {
+  insert(usuario: Usuario): Observable<Usuario> {
+    if (!usuario.perfil?.id || ![1, 2].includes(usuario.perfil.id)) {
+      throw new Error('Perfil inválido');
+    }
+
     const payload = {
       nome: usuario.nome,
       email: usuario.email,
       login: usuario.login,
       senha: usuario.senha,
-      idPerfil: usuario.perfil, // Corrigido para enviar o ID numérico
-      telefones: usuario.telefones?.map((t: any) => ({
-        codigoArea: t.codigoArea,
-        numero: t.numero
-      })) || [],
-      enderecos: usuario.enderecos?.map((e: any) => ({
-        rua: e.rua,
-        numero: e.numero,
-        complemento: e.complemento,
-        cidade: e.cidade,
-        estado: e.estado,
-        cep: e.cep
-      })) || []
+      idPerfil: usuario.perfil.id,
+      telefones:
+        usuario.telefones?.map((t: Telefone) => ({
+          codigoArea: t.codigoArea,
+          numero: t.numero,
+        })) || [],
+      enderecos:
+        usuario.enderecos?.map((e: Endereco) => ({
+          rua: e.rua,
+          numero: e.numero,
+          cidade: e.cidade,
+          estado: e.estado,
+          cep: e.cep,
+        })) || [],
     };
-    
-    return this.httpClient.post(this.url, payload).pipe(
-      catchError(this.handleError)
-    );
+
+    return this.httpClient
+      .post<Usuario>(this.url, payload)
+      .pipe(catchError(this.handleError));
   }
 
-  update(usuario: any, id: number): Observable<any> {
+  update(usuario: Usuario, id: number): Observable<Usuario> {
+    if (!usuario.perfil?.id || ![1, 2].includes(usuario.perfil.id)) {
+      throw new Error('Perfil inválido');
+    }
+
     const payload = {
       nome: usuario.nome,
       email: usuario.email,
       login: usuario.login,
       senha: usuario.senha,
-      idPerfil: usuario.perfil, // Corrigido para enviar o ID numérico
-      telefones: usuario.telefones?.map((t: any) => ({
-        codigoArea: t.codigoArea,
-        numero: t.numero
-      })) || [],
-      enderecos: usuario.enderecos?.map((e: any) => ({
-        rua: e.rua,
-        numero: e.numero,
-        complemento: e.complemento,
-        cidade: e.cidade,
-        estado: e.estado,
-        cep: e.cep
-      })) || []
+      idPerfil: usuario.perfil.id,
+      telefones:
+        usuario.telefones?.map((t: Telefone) => ({
+          codigoArea: t.codigoArea,
+          numero: t.numero,
+        })) || [],
+      enderecos:
+        usuario.enderecos?.map((e: Endereco) => ({
+          rua: e.rua,
+          numero: e.numero,
+          cidade: e.cidade,
+          estado: e.estado,
+          cep: e.cep,
+        })) || [],
     };
-    
-    return this.httpClient.put(`${this.url}/${id}`, payload).pipe(
-      catchError(this.handleError)
-    );
+
+    return this.httpClient
+      .put<Usuario>(`${this.url}/${id}`, payload)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -124,8 +156,8 @@ export class UsuarioService {
     }
   }
 
-  delete(id: number): Observable<any> {
-    return this.httpClient.delete<any>(`${this.url}/${id}`);
+  delete(id: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.url}/${id}`);
   }
 
   count(searchTerm?: string): Observable<number> {
@@ -139,20 +171,28 @@ export class UsuarioService {
     const result = new Usuario();
     Object.assign(result, usuario);
 
-    if (usuario.perfil) {
-      result.perfil = Perfil.fromValue(usuario.perfil);
+    if (typeof usuario.perfil === 'number') {
+      result.perfil = {
+        id: usuario.perfil,
+        label: usuario.perfil === 1 ? 'Usuário' : 'Administrador',
+      } as Perfil;
+    } else if (usuario.perfil) {
+      result.perfil = usuario.perfil;
     } else {
       console.warn('Perfil não encontrado, usando padrão USER');
-      result.perfil = Perfil.USER;
+      result.perfil = { id: 1, label: 'Usuário' } as Perfil;
     }
 
     return result;
   }
 
   login(identificador: string, senha: string) {
-    return this.httpClient.post<{ token: string }>('http://localhost:8080/auth/login', {
-      email: identificador,
-      password: senha
-    });
+    return this.httpClient.post<{ token: string }>(
+      'http://localhost:8080/auth/login',
+      {
+        email: identificador,
+        password: senha,
+      }
+    );
   }
 }

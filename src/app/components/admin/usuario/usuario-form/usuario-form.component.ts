@@ -19,7 +19,6 @@ import {
 } from 'rxjs';
 import { UsuarioService } from '../../../../services/usuario.service';
 import { Usuario } from '../../../../models/usuario/usuario.model';
-import { Perfil } from '../../../../models/usuario/perfil';
 import { NovoTelefoneDialogComponent } from '../../../shared/dialog/novo-telefone-dialog/novo-telefone-dialog.component';
 import { NovoEnderecoDialogComponent } from '../../../shared/dialog/novo-endereco-dialog/novo-endereco-dialog.component';
 import { CommonModule } from '@angular/common';
@@ -31,6 +30,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatListModule } from '@angular/material/list';
+import { Perfil } from '../../../../models/usuario/perfil.model';
+import { Endereco } from '../../../../models/usuario/endereco.model';
+import { Telefone } from '../../../../models/usuario/telefone.model';
 
 @Component({
   selector: 'app-usuario-form',
@@ -56,12 +58,13 @@ import { MatListModule } from '@angular/material/list';
 })
 export class UsuarioFormComponent implements OnInit {
   formGroup: FormGroup;
-  perfis = [
-    { id: Perfil.USER, label: 'Usuário' },
-    { id: Perfil.ADMIN, label: 'Administrador' },
+  // Reflete o ENUM Perfil no backend (USER=1, ADMIN=2)
+  perfis: Perfil[] = [
+    { id: 1, label: 'Usuário' },
+    { id: 2, label: 'Administrador' },
   ];
-  telefones: any[] = [];
-  enderecos: any[] = [];
+  telefones: Telefone[] = [];
+  enderecos: Endereco[] = [];
   isLoading = false;
 
   constructor(
@@ -72,26 +75,26 @@ export class UsuarioFormComponent implements OnInit {
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'];
+    const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'] || {};
     this.formGroup = this.formBuilder.group({
-      id: [usuario?.id || null],
+      id: [usuario.id || null],
       nome: [
-        usuario?.nome || '',
+        usuario.nome || '',
         [Validators.required, Validators.minLength(3)],
       ],
       login: [
-        usuario?.login || '',
+        usuario.login || '',
         [Validators.required, Validators.minLength(3)],
       ],
-      email: [usuario?.email || '', [Validators.required, Validators.email]],
+      email: [usuario.email || '', [Validators.required, Validators.email]],
       senha: ['', [Validators.minLength(4)]],
-      perfil: [usuario?.perfil || Perfil.USER, Validators.required],
+      perfil: [usuario.perfil?.id || 1, Validators.required],
     });
   }
 
   ngOnInit(): void {
-    const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'];
-    if (usuario) {
+    const usuario: Usuario = this.activatedRoute.snapshot.data['usuario'] || {};
+    if (usuario.id) {
       this.carregarDadosUsuario(usuario);
     }
     this.setupLoginValidation();
@@ -140,7 +143,7 @@ export class UsuarioFormComponent implements OnInit {
       nome: usuario.nome,
       login: usuario.login,
       email: usuario.email,
-      perfil: usuario.perfil,
+      perfil: usuario.perfil?.id || 1,
     });
 
     if (usuario.telefones) {
@@ -153,28 +156,40 @@ export class UsuarioFormComponent implements OnInit {
 
   salvar() {
     if (this.formGroup.invalid || this.isLoading) {
+      this.snackBar.open(
+        'Formulário inválido. Verifique os campos obrigatórios.',
+        'Fechar',
+        {
+          duration: 3000,
+        }
+      );
       return;
     }
 
     this.isLoading = true;
     const formData = this.formGroup.value;
 
-    const usuario = {
-      ...formData,
+    const usuario: Usuario = {
+      id: formData.id,
+      nome: formData.nome,
+      login: formData.login,
+      email: formData.email,
+      senha: formData.senha || '123456', // Senha padrão para criação
+      perfil: { id: formData.perfil, label: '' } as Perfil,
       telefones: this.telefones,
       enderecos: this.enderecos,
+      telefone: [],
+      endereco: [],
     };
 
-    if (usuario.id && !usuario.senha) {
-      delete usuario.senha;
-    }
-
-    if (!usuario.id && !usuario.senha) {
-      usuario.senha = '123456';
-    }
-
     const operation = usuario.id
-      ? this.usuarioService.update(usuario, usuario.id)
+      ? this.usuarioService.update(
+          {
+            ...usuario,
+            senha: formData.senha || undefined, // Não incluir senha se vazia na atualização
+          },
+          usuario.id
+        )
       : this.usuarioService.insert(usuario);
 
     operation.subscribe({
@@ -225,7 +240,7 @@ export class UsuarioFormComponent implements OnInit {
       width: '400px',
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: Telefone) => {
       if (result) {
         this.telefones.push(result);
       }
@@ -237,7 +252,7 @@ export class UsuarioFormComponent implements OnInit {
       width: '500px',
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: Endereco) => {
       if (result) {
         this.enderecos.push(result);
       }
