@@ -1,87 +1,46 @@
-:host {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-  background-size: 400% 400%;
-  animation: neonBackground 15s ease infinite;
-}
-
-/* Animação no fundo */
-@keyframes neonBackground {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-mat-card {
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3);
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  animation: fadeInUp 0.7s ease forwards;
-  text-align: center;
-}
-
-h2 {
-  margin-bottom: 1.5rem;
-  color: #00e5ff;
-  font-weight: 700;
-  text-shadow: 0 0 2px #00e5ff, 0 0 4 #00e5ff;
-}
-
-.full-width {
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-button[type='submit'] {
-  width: 100%;
-  margin-top: 1rem;
-  font-weight: bold;
-  background: linear-gradient(90deg, #00c6ff, #0072ff);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 0 10px #00c6ff;
-  transition: 0.3s;
-}
-
-button[type='submit']:hover {
-  background: linear-gradient(90deg, #0072ff, #00c6ff);
-  box-shadow: 0 0 20px #00c6ff, 0 0 40px #0072ff;
-}
-
-.extra-options {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #bbb;
-}
-
-.extra-options a {
-  color: #00e5ff;
-  text-decoration: none;
-  transition: 0.3s;
-}
-
-.extra-options a:hover {
-  text-decoration: underline;
-  color: #ff00ff;
-}
-
-/* Animação de entrada */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #6E45E2, #FF6636);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .login-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
   }
-}
+  
+  .login-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    display: block;
+  }
+
+  .login-title {
+    font-size: 24px;
+    margin: 10px 0;
+    color: #333;
+  }
+  
+  .login-input {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .login-button {
+    width: 100%;
+    margin-top: 20px;
+    background: #FF6636;
+    color: #fff;
+    transition: background 0.3s;
+  }
+  
+  .login-button:hover {
+    background: #FF5722;
+  }
+  

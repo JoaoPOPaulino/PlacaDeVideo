@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
+  FormBuilder,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -26,32 +30,54 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatFormFieldModule,
     RouterModule,
-    MatIconModule
+    MatIconModule,
   ],
 })
-export class LoginComponent {
-  identificador = '';
-  senha = '';
-  errorMessage = '';
-  hide = true;
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private snackBar: MatSnackBar
+  ) {}
 
-  login() {
-    console.log('Login com:', this.identificador, this.senha);
-
-    this.authService.login(this.identificador, this.senha).subscribe({
-      next: () => {
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Erro ao fazer login', err);
-        this.errorMessage = 'Usuário ou senha inválidos.';
-      },
+  ngOnInit(): void {
+    this.loginForm = this.formBuilder.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
-  toggleVisibility() {
-    this.hide = !this.hide;
+  onSubmit() {
+    if (this.loginForm.valid) {
+      const username = this.loginForm.get('username')!.value;
+      const password = this.loginForm.get('password')!.value;
+
+      this.authService.loginADM(username, password).subscribe({
+        next: (resp) => {
+          this.router.navigateByUrl('/admin');
+        },
+        error: (err) => {
+          console.log(err);
+          this.showSnackbarTopPosition('Dados Inválidos', 'Fechar', 2000);
+        },
+      });
+    } else {
+      this.showSnackbarTopPosition('Dados inválidos', 'Fechar', 2000);
+    }
+  }
+
+  onRegister() {
+    // criar usuário
+  }
+
+  showSnackbarTopPosition(content: any, action: any, duration: any) {
+    this.snackBar.open(content, action, {
+      duration: 2000,
+      verticalPosition: 'top', // Allowed values are  'top' | 'bottom'
+      horizontalPosition: 'center', // Allowed values are 'start' | 'center' | 'end' | 'left' | 'right'
+    });
   }
 }
