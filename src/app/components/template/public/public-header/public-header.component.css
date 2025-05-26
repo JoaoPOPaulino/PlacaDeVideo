@@ -87,3 +87,7 @@
     margin-left: auto;
   }
 }
+
+mat-menu button[mat-menu-item]:last-child {
+  color: #ff4444; /* Cor vermelha para o botão de logout */
+}

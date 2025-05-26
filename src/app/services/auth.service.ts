@@ -92,4 +92,14 @@ export class AuthService {
       return true;
     }
   }
+
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired();
+  }
+
+  logout(): void {
+    this.removeToken();
+    this.removeUsuarioLogado();
+  }
 }

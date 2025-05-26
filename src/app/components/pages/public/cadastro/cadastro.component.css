@@ -1,63 +1,99 @@
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #f5f5f5;
+/* Container principal para centralizar o cartão */
+.cadastro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #6E45E2, #FF6636); /* Mesmo gradiente da tela de login */
+  padding: 20px;
+}
+
+/* Estilo do cartão */
+.cadastro-card {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+  text-align: center;
+}
+
+/* Título do cartão */
+mat-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Estilo do formulário */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Espaçamento entre campos */
+}
+
+/* Campos de formulário */
+.full-width {
+  width: 100%;
+}
+
+/* Botão de submit (Criar Conta) */
+.btn-submit {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  background: #FF6636; /* Cor consistente com o login */
+  color: #fff;
+  transition: background 0.3s;
+}
+
+.btn-submit:hover {
+  background: #FF5722; /* Cor de hover */
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botão de cancelar */
+.btn-cancel {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  color: #FF6636;
+  border-color: #FF6636;
+  transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+  background: #FF6636;
+  color: #fff;
+}
+
+/* Ícones dentro dos botões */
+.btn-submit mat-icon,
+.btn-cancel mat-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Animação de loading */
+.loading {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .cadastro-card {
     padding: 20px;
   }
-  
-  .card {
-    width: 100%;
-    max-width: 400px;
-    padding: 30px 20px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-  }
-  
-  .title {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .full-width {
-    width: 100%;
-  }
-  
-  .btn-submit {
-    margin-top: 10px;
-    width: 100%;
-    height: 48px;
-    font-size: 16px;
-  }
-  
-  .loading {
-    animation: spin 1s linear infinite;
-    margin-right: 8px;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  .login-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-  }
-  
-  .login-link a {
-    color: #3f51b5;
-    text-decoration: none;
-    font-weight: bold;
-  }
-  
+}

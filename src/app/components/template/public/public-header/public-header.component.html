@@ -19,9 +19,9 @@
         <mat-icon>search</mat-icon>
       </button>
 
-      <button mat-icon-button routerLink="/carrinho">
+      <button mat-icon-button (click)="openCart()">
         <mat-icon>shopping_cart</mat-icon>
-        <span class="badge">0</span>
+        <span class="badge">{{ cartItemsCount }}</span>
       </button>
 
       <button mat-icon-button [matMenuTriggerFor]="userMenu">
@@ -60,3 +60,5 @@
     </button>
   </ng-template>
 </mat-menu>
+
+<app-cart></app-cart>

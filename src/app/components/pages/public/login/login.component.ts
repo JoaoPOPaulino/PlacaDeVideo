@@ -70,14 +70,14 @@ export class LoginComponent implements OnInit {
   }
 
   onRegister() {
-    // criar usuário
+    this.router.navigateByUrl('/cadastro');
   }
 
   showSnackbarTopPosition(content: any, action: any, duration: any) {
     this.snackBar.open(content, action, {
       duration: 2000,
-      verticalPosition: 'top', // Allowed values are  'top' | 'bottom'
-      horizontalPosition: 'center', // Allowed values are 'start' | 'center' | 'end' | 'left' | 'right'
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
     });
   }
 }

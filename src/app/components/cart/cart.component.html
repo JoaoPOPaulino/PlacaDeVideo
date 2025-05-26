@@ -1,0 +1,74 @@
+<mat-sidenav-container>
+  <mat-sidenav
+    [(opened)]="isSidenavOpen"
+    mode="side"
+    position="start"
+    class="cart-sidenav"
+  >
+    <div class="sidenav-header">
+      <h2>Seu Carrinho</h2>
+      <button mat-icon-button (click)="closeSidenav()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+
+    <div class="cart-content">
+      <mat-list *ngIf="items.length > 0; else emptyCart">
+        <mat-list-item *ngFor="let item of items" class="cart-item">
+          <div class="item-details">
+            <span class="item-name">{{ item.nome }}</span>
+            <span class="item-price">R$ {{ item.preco.toFixed(2) }}</span>
+            <div class="quantity-control">
+              <button mat-icon-button (click)="updateItemQuantity(item, item.quantidade - 1)">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <input
+                type="number"
+                [(ngModel)]="item.quantidade"
+                (change)="updateItemQuantity(item, item.quantidade)"
+                min="1"
+                class="quantity-input"
+              />
+              <button mat-icon-button (click)="updateItemQuantity(item, item.quantidade + 1)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+            <span class="item-total">
+              Total: R$ {{ (item.preco * item.quantidade).toFixed(2) }}
+            </span>
+          </div>
+          <button mat-icon-button (click)="removeItem(item.id)" class="remove-button">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+
+      <ng-template #emptyCart>
+        <div class="empty-cart">
+          <p>Seu carrinho está vazio</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <mat-divider *ngIf="items.length > 0"></mat-divider>
+
+    <div class="sidenav-footer" *ngIf="items.length > 0">
+      <div class="subtotal">
+        <span>Subtotal:</span>
+        <span>R$ {{ subtotal.toFixed(2) }}</span>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="finalizePurchase()"
+        class="finalize-button"
+      >
+        Finalizar Compra
+      </button>
+      <button mat-stroked-button (click)="clearCart()" class="clear-button">
+        Limpar Carrinho
+      </button>
+    </div>
+  </mat-sidenav>
+</mat-sidenav-container>

@@ -1,97 +1,93 @@
-// cart.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { PlacaDeVideo } from '../models/placa-de-video/placa-de-video.model';
+import { ItemCarrinho } from '../models/item-carrinho';
+import { LocalStorageService } from './local-storage.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-export interface CartItem {
-  product: PlacaDeVideo;
-  quantity: number;
-}
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CartService {
-  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
-  cartItems$ = this.cartItemsSubject.asObservable();
+  private cartItemsSubject = new BehaviorSubject<ItemCarrinho[]>([]);
+  cartItems$: Observable<ItemCarrinho[]> = this.cartItemsSubject.asObservable();
 
-  constructor(private snackBar: MatSnackBar) {
+  constructor(
+    private localStorageService: LocalStorageService,
+    private snackBar: MatSnackBar
+  ) {
     this.loadCartFromStorage();
   }
 
   private loadCartFromStorage(): void {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      this.cartItemsSubject.next(JSON.parse(savedCart));
-    }
+    const savedCart = this.localStorageService.getItem('cart') || [];
+    this.cartItemsSubject.next(savedCart);
   }
 
-  private saveCartToStorage(items: CartItem[]): void {
-    localStorage.setItem('cart', JSON.stringify(items));
-    this.cartItemsSubject.next(items);
+  private saveCartToStorage(): void {
+    this.localStorageService.setItem('cart', this.cartItemsSubject.value);
   }
 
-  get items(): CartItem[] {
+  get items(): ItemCarrinho[] {
     return this.cartItemsSubject.value;
   }
 
   get itemsCount(): number {
-    return this.items.reduce((sum, item) => sum + item.quantity, 0);
+    return this.items.reduce((sum, item) => sum + item.quantidade, 0);
   }
 
   get subtotal(): number {
     return this.items.reduce(
-      (sum, item) => sum + (item.product.preco * item.quantity),
+      (sum, item) => sum + item.preco * item.quantidade,
       0
     );
   }
 
-  addToCart(product: PlacaDeVideo, quantity: number = 1): void {
+  addToCart(item: ItemCarrinho): void {
     const currentItems = this.items;
-    const existingItem = currentItems.find(item => item.product.id === product.id);
+    const existingItem = currentItems.find((cartItem) => cartItem.id === item.id);
 
     if (existingItem) {
-      existingItem.quantity += quantity;
+      existingItem.quantidade += item.quantidade || 1;
     } else {
-      currentItems.push({ product, quantity });
+      currentItems.push({ ...item, quantidade: item.quantidade || 1 });
     }
 
-    this.saveCartToStorage(currentItems);
+    this.cartItemsSubject.next(currentItems);
+    this.saveCartToStorage();
     this.snackBar.open('Produto adicionado ao carrinho!', 'OK', {
       duration: 2000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
-  removeFromCart(productId: number): void {
-    const updatedItems = this.items.filter(item => item.product.id !== productId);
-    this.saveCartToStorage(updatedItems);
+  removeFromCart(itemId: number): void {
+    const updatedItems = this.items.filter((item) => item.id !== itemId);
+    this.cartItemsSubject.next(updatedItems);
+    this.saveCartToStorage();
     this.snackBar.open('Produto removido do carrinho', 'OK', {
-      duration: 2000
+      duration: 2000,
     });
   }
 
-  updateQuantity(productId: number, newQuantity: number): void {
+  updateQuantity(itemId: number, newQuantity: number): void {
     if (newQuantity < 1) {
-      this.removeFromCart(productId);
+      this.removeFromCart(itemId);
       return;
     }
 
-    const updatedItems = this.items.map(item => {
-      if (item.product.id === productId) {
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    });
+    const updatedItems = this.items.map((item) =>
+      item.id === itemId ? { ...item, quantidade: newQuantity } : item
+    );
 
-    this.saveCartToStorage(updatedItems);
+    this.cartItemsSubject.next(updatedItems);
+    this.saveCartToStorage();
   }
 
   clearCart(): void {
-    this.saveCartToStorage([]);
+    this.cartItemsSubject.next([]);
+    this.saveCartToStorage();
     this.snackBar.open('Carrinho limpo', 'OK', {
-      duration: 2000
+      duration: 2000,
     });
   }
 }

@@ -1,11 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../../../services/auth.service';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { CartService } from '../../../../services/cart.service';
+import { CartComponent } from '../../../cart/cart.component';
+import { CartUIService } from '../../../../services/cart-ui.service';
 
 @Component({
   selector: 'app-public-header',
@@ -16,22 +20,49 @@ import { AuthService } from '../../../../services/auth.service';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    RouterModule
+    RouterModule,
+    CartComponent
   ],
   templateUrl: './public-header.component.html',
-  styleUrl: './public-header.component.css'
+  styleUrls: ['./public-header.component.css'],
 })
-export class PublicHeaderComponent implements OnInit {
+export class PublicHeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
+  cartItemsCount = 0; 
+  private usuarioSub?: Subscription;
+  private cartSub?: Subscription;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+              private router: Router,
+              private cartService: CartService,
+              private cartUIService: CartUIService) {}
 
   ngOnInit(): void {
+    this.updateLoginStatus();
+    this.usuarioSub = this.authService.getUsuarioLogado().subscribe((usuario) => {
+      this.isLoggedIn = !!usuario && this.authService.isLoggedIn();
+    });
+    this.cartSub = this.cartService.cartItems$.subscribe((items) => {
+      this.cartItemsCount = items.reduce((sum, item) => sum + item.quantidade, 0);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.usuarioSub?.unsubscribe();
+    this.cartSub?.unsubscribe();
+  }
+
+  private updateLoginStatus(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
-    window.location.reload();
+    this.updateLoginStatus();
+    this.router.navigateByUrl('/home');
+  }
+
+  openCart(): void {
+    this.cartUIService.openCart();
   }
 }
