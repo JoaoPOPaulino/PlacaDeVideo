@@ -1,0 +1,39 @@
+<div class="checkout-container">
+  <h2>Finalizar Compra</h2>
+
+  <!-- Etapa 1: Endereço -->
+  <div *ngIf="step === 1">
+    <h3>1. Verifique seu endereço</h3>
+    <!-- Simulação de endereço -->
+    <p *ngIf="!enderecoSelecionado">Nenhum endereço selecionado.</p>
+    <button mat-raised-button color="primary" (click)="nextStep()">Continuar</button>
+  </div>
+
+  <!-- Etapa 2: Pagamento -->
+  <div *ngIf="step === 2">
+    <h3>2. Forma de Pagamento</h3>
+    <mat-radio-group [(ngModel)]="formaPagamentoSelecionada">
+      <mat-radio-button value="pix">Pix</mat-radio-button>
+      <mat-radio-button value="boleto">Boleto</mat-radio-button>
+      <mat-radio-button value="cartao">Cartão de Crédito/Débito</mat-radio-button>
+    </mat-radio-group>
+
+    <div *ngIf="formaPagamentoSelecionada === 'pix'" class="pix-box">
+      <p>Chave Pix: <strong>pix@lojaexemplo.com</strong></p>
+      <p>Ou escaneie o QR Code:</p>
+      <img src="https://api.qrserver.com/v1/create-qr-code/?data=pix@lojaexemplo.com&size=150x150" alt="QR Code Pix">
+    </div>
+
+    <button mat-stroked-button (click)="prevStep()">Voltar</button>
+    <button mat-raised-button color="primary" (click)="nextStep()">Continuar</button>
+  </div>
+
+  <!-- Etapa 3: Confirmar Compra -->
+  <div *ngIf="step === 3">
+    <h3>3. Confirmar Compra</h3>
+    <p>Endereço: {{ enderecoSelecionado || 'Padrão' }}</p>
+    <p>Pagamento: {{ formaPagamentoSelecionada }}</p>
+    <button mat-stroked-button (click)="prevStep()">Voltar</button>
+    <button mat-raised-button color="accent">Finalizar Pedido</button>
+  </div>
+</div>

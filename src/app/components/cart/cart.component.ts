@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CartUIService } from '../../services/cart-ui.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-cart',
@@ -37,7 +38,8 @@ export class CartComponent implements OnInit, OnDestroy {
 
   constructor(private cartService: CartService,
               private router: Router,
-              private cartUIService: CartUIService){}
+              private cartUIService: CartUIService,
+              private authService: AuthService){}
 
 
   ngOnInit(): void {
@@ -74,6 +76,10 @@ export class CartComponent implements OnInit, OnDestroy {
 
   finalizePurchase(): void {
     this.closeSidenav();
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      return;
+    }
     this.router.navigate(['/checkout']);
   }
 

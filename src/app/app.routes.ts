@@ -22,6 +22,7 @@ import { fabricanteResolver } from './components/admin/fabricante/fabricante.res
 import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/placa-de-video-form/placa-de-video-form.component';
 import { PlacaDeVideoListComponent } from './components/admin/placas-de-video/placa-de-video-list/placa-de-video-list.component';
 import { placaDeVideoResolver } from './components/admin/placas-de-video/placa-de-video.resolver';
+import { ProdutosComponent } from './components/pages/public/produtos/produtos.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,11 @@ export const routes: Routes = [
         path: '',
         component: PublicHomeComponent,
         title: 'NexusGPU - Melhores Placas de Vídeo',
+      },
+      {
+        path: 'produtos',
+        component: ProdutosComponent,
+        title: 'Placas de Vídeo',
       },
       {
         path: 'login',

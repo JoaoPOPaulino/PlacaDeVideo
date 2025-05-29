@@ -1,0 +1,61 @@
+<div class="produtos-container">
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <mat-form-field appearance="outline" class="search-bar">
+      <mat-label>Buscar produtos</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Nome da placa...">
+      <button mat-icon-button matSuffix (click)="onSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Fabricante</mat-label>
+        <mat-select [(ngModel)]="filterFabricante" (selectionChange)="applyFilters()">
+          <mat-option [value]="null">Todos</mat-option>
+          <!-- Populate with fabricante options dynamically -->
+          <mat-option [value]="1">NVIDIA</mat-option>
+          <mat-option [value]="2">AMD</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Categoria</mat-label>
+        <mat-select [(ngModel)]="filterCategoria" (selectionChange)="applyFilters()">
+          <mat-option [value]="null">Todas</mat-option>
+          <!-- Populate with categoria options dynamically -->
+          <mat-option [value]="1">Gaming</mat-option>
+          <mat-option [value]="2">Profissional</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <mat-grid-list cols="4" rowHeight="400px" gutterSize="20px" class="product-grid">
+    <mat-grid-tile *ngFor="let placa of placas">
+      <mat-card class="product-card">
+        <img mat-card-image [src]="placa.nomeImagem ? '/assets/imagens/' + placa.nomeImagem : '/assets/imagens/placeholder.png'" alt="{{placa.nome}}">
+        <mat-card-content>
+          <h3>{{placa.nome}}</h3>
+          <p>R$ {{placa.preco | number:'1.2-2'}}</p>
+          <p>{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
+          <p>{{placa.categoria.label || 'Categoria desconhecida'}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="addToCart(placa)">Adicionar ao Carrinho</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <!-- Pagination -->
+  <mat-paginator
+    [length]="totalItems"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[8, 16, 24]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

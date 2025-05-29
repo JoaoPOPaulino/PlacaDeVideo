@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../../../services/cart.service';
+import { ItemCarrinho } from '../../../../models/item-carrinho';
 
 @Component({
   selector: 'app-public-home',
@@ -26,7 +28,9 @@ export class PublicHomeComponent {
   featuredProducts: any[] = [];
   loading = true;
 
-  constructor(private placaService: PlacaDeVideoService) {
+  constructor(private placaService: PlacaDeVideoService,
+              private cartService: CartService
+  ) {
     this.loadFeaturedProducts();
   }
 
@@ -47,4 +51,14 @@ export class PublicHomeComponent {
     if (!imageName) return 'assets/images/default-card.png';
     return `${this.placaService.url}/download/imagem/${imageName}`;
   }
+
+  addToCart(product: any): void {
+  const item: ItemCarrinho = {
+    id: product.id,
+    nome: product.nome,
+    preco: product.preco,
+    quantidade: 1
+  };
+  this.cartService.addToCart(item);
+}
 }
