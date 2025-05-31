@@ -1,28 +1,25 @@
+/* produtos.component.css */
 .produtos-container {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 .filters-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
 .search-bar {
   flex: 1;
-  min-width: 300px;
+  min-width: 200px;
 }
 
 .filters {
   display: flex;
-  gap: 20px;
-}
-
-.filters mat-form-field {
-  width: 200px;
+  gap: 16px;
 }
 
 .product-grid {
@@ -30,37 +27,56 @@
 }
 
 .product-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  transition: transform 0.2s;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .product-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
 
 .product-card img {
-  object-fit: cover;
-  height: 200px;
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
 }
 
-mat-card-content {
-  flex-grow: 1;
+.product-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.product-card p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.product-card p:first-of-type {
+  font-weight: bold;
+  color: #4caf50;
+  font-size: 1.2rem;
 }
 
 mat-card-actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  padding: 0 16px 16px;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 768px) {
   .product-grid {
     cols: 2;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .product-grid {
     cols: 1;
   }

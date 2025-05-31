@@ -1,74 +1,92 @@
-<mat-sidenav-container>
-  <mat-sidenav
-    [(opened)]="isSidenavOpen"
-    mode="side"
-    position="start"
-    class="cart-sidenav"
-  >
-    <div class="sidenav-header">
-      <h2>Seu Carrinho</h2>
-      <button mat-icon-button (click)="closeSidenav()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <mat-divider></mat-divider>
+<div class="cart-content">
+  <ng-container *ngIf="items.length > 0; else emptyCart">
+    <mat-card *ngFor="let item of items" class="cart-item">
+      <img
+        mat-card-image
+        [src]="getImageUrl(item.nomeImagem)"
+        [alt]="item.nome"
+        class="product-image"
+        (error)="onImageError($event)"
+      />
 
-    <div class="cart-content">
-      <mat-list *ngIf="items.length > 0; else emptyCart">
-        <mat-list-item *ngFor="let item of items" class="cart-item">
-          <div class="item-details">
-            <span class="item-name">{{ item.nome }}</span>
-            <span class="item-price">R$ {{ item.preco.toFixed(2) }}</span>
-            <div class="quantity-control">
-              <button mat-icon-button (click)="updateItemQuantity(item, item.quantidade - 1)">
-                <mat-icon>remove</mat-icon>
-              </button>
-              <input
-                type="number"
-                [(ngModel)]="item.quantidade"
-                (change)="updateItemQuantity(item, item.quantidade)"
-                min="1"
-                class="quantity-input"
-              />
-              <button mat-icon-button (click)="updateItemQuantity(item, item.quantidade + 1)">
-                <mat-icon>add</mat-icon>
-              </button>
-            </div>
-            <span class="item-total">
-              Total: R$ {{ (item.preco * item.quantidade).toFixed(2) }}
-            </span>
-          </div>
-          <button mat-icon-button (click)="removeItem(item.id)" class="remove-button">
-            <mat-icon>delete</mat-icon>
+      <mat-card-content>
+        <h3 class="item-name">{{ item.nome }}</h3>
+        <p class="item-price">
+          {{ item.preco | currency: 'BRL':'symbol':'1.2-2' }}
+        </p>
+
+        <div class="quantity-control">
+          <button
+            mat-mini-button
+            color="primary"
+            (click)="updateItemQuantity(item, item.quantidade - 1)"
+          >
+            <mat-icon>remove</mat-icon>
           </button>
-        </mat-list-item>
-      </mat-list>
 
-      <ng-template #emptyCart>
-        <div class="empty-cart">
-          <p>Seu carrinho está vazio</p>
+          <input
+            matInput
+            type="number"
+            [(ngModel)]="item.quantidade"
+            (change)="updateItemQuantity(item, item.quantidade)"
+            min="1"
+            class="quantity-input"
+          />
+
+          <button
+            mat-mini-button
+            color="primary"
+            (click)="updateItemQuantity(item, item.quantidade + 1)"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
-      </ng-template>
-    </div>
 
-    <mat-divider *ngIf="items.length > 0"></mat-divider>
+        <p class="item-total">
+          Total:
+          {{
+            (item.preco * item.quantidade) | currency: 'BRL':'symbol':'1.2-2'
+          }}
+        </p>
+      </mat-card-content>
 
-    <div class="sidenav-footer" *ngIf="items.length > 0">
-      <div class="subtotal">
-        <span>Subtotal:</span>
-        <span>R$ {{ subtotal.toFixed(2) }}</span>
-      </div>
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="finalizePurchase()"
-        class="finalize-button"
-      >
-        Finalizar Compra
-      </button>
-      <button mat-stroked-button (click)="clearCart()" class="clear-button">
-        Limpar Carrinho
-      </button>
+      <mat-card-actions>
+        <button
+          mat-icon-button
+          color="warn"
+          aria-label="Remover item"
+          (click)="removeItem(item.id)"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </ng-container>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart">
+      <mat-icon class="empty-cart-icon">shopping_cart</mat-icon>
+      <p>Seu carrinho está vazio</p>
+      <a mat-raised-button color="primary" routerLink="/produtos">
+        Explorar Produtos
+      </a>
     </div>
-  </mat-sidenav>
-</mat-sidenav-container>
+  </ng-template>
+</div>
+
+<mat-divider *ngIf="items.length > 0"></mat-divider>
+
+<div class="sidenav-footer" *ngIf="items.length > 0">
+  <div class="subtotal">
+    <span>Subtotal:</span>
+    <span>{{ subtotal | currency: 'BRL':'symbol':'1.2-2' }}</span>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="finalizePurchase()">
+    Finalizar Compra
+  </button>
+
+  <button mat-stroked-button color="warn" (click)="clearCart()">
+    Limpar Carrinho
+  </button>
+</div>

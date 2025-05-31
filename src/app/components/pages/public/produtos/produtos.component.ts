@@ -1,3 +1,4 @@
+// produtos.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -28,10 +29,10 @@ import { Subscription } from 'rxjs';
     MatPaginatorModule,
     MatIconModule,
     FormsModule,
-    MatGridListModule
+    MatGridListModule,
   ],
   templateUrl: './produtos.component.html',
-  styleUrl: './produtos.component.css'
+  styleUrl: './produtos.component.css',
 })
 export class ProdutosComponent implements OnInit, OnDestroy {
   placas: PlacaDeVideo[] = [];
@@ -87,7 +88,8 @@ export class ProdutosComponent implements OnInit, OnDestroy {
       id: placa.id,
       nome: placa.nome,
       preco: placa.preco,
-      quantidade: 1
+      quantidade: 1,
+      nomeImagem: placa.nomeImagem, // Adiciona o campo nomeImagem
     };
     this.cartService.addToCart(item);
   }
@@ -95,5 +97,12 @@ export class ProdutosComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     this.currentPage = 0;
     this.loadPlacas();
+  }
+
+  getImageUrl(imageName: string): string {
+    if (!imageName) return 'assets/images/default-card.png';
+    return `${
+      this.placaDeVideoService.url
+    }/download/imagem/${encodeURIComponent(imageName)}`;
   }
 }

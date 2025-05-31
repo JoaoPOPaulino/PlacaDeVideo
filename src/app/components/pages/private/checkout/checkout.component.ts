@@ -1,32 +1,39 @@
 import { Component } from '@angular/core';
+import { BbApiService } from '../../../../services/bb-api.service';
 
 @Component({
   selector: 'app-checkout',
-  standalone: true,
-  imports: [],
   templateUrl: './checkout.component.html',
-  styleUrl: './checkout.component.css'
 })
 export class CheckoutComponent {
   step = 1;
-
-  goToStep(stepNumber: number): void {
-    this.step = stepNumber;
-  }
-
-  nextStep(): void {
-    if (this.step < 3) {
-      this.step++;
-    }
-  }
-
-  previousStep(): void {
-    if (this.step > 1) {
-      this.step--;
-    }
-  }
-
-  enderecoSelecionado = null;
   formaPagamentoSelecionada = '';
+  pixCode = ''; // QR Code Pix
+  boletoLink = ''; // PDF do boleto
 
+  constructor(private bbApi: BbApiService) {}
+
+  async finalizarPedido() {
+    const valor = 100.0; // R$100,00
+
+    try {
+      if (this.formaPagamentoSelecionada === 'pix') {
+        const response: any = await this.bbApi.criarCobrancaPix(
+          valor,
+          'sua_chave_pix@bb.com.br'
+        );
+        this.pixCode = response.qrcode;
+      } else if (this.formaPagamentoSelecionada === 'boleto') {
+        const response: any = await this.bbApi.criarBoleto(
+          valor,
+          '123.456.789-09'
+        );
+        this.boletoLink = response.pdf;
+      }
+      this.step = 4; // Mostrar resultado
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Falha ao gerar pagamento!');
+    }
+  }
 }

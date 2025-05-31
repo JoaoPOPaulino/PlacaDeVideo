@@ -13,7 +13,7 @@
 
   <div class="products-grid" *ngIf="!loading">
     <mat-card *ngFor="let product of featuredProducts" class="product-card">
-      <img [src]="getImageUrl(product.imagem)" alt="{{product.nome}}" class="product-image" />
+      <img [src]="getImageUrl(product.nomeImagem)" alt="{{product.nome}}" class="product-image" />
       <mat-card-content>
         <h3>{{ product.nome }}</h3>
         <p class="price">{{ product.preco | currency: 'BRL':'symbol':'1.2-2' }}</p>

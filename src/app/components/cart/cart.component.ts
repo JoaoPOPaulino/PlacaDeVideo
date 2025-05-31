@@ -10,9 +10,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { CartUIService } from '../../services/cart-ui.service';
 import { AuthService } from '../../services/auth.service';
+import { PlacaDeVideoService } from '../../services/placa-de-video.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-cart',
@@ -21,38 +22,35 @@ import { AuthService } from '../../services/auth.service';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatSidenavModule,
     MatListModule,
     MatDividerModule,
     RouterModule,
     MatInputModule,
-    FormsModule,],
+    FormsModule,
+    MatCardModule,
+  ],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.css'
+  styleUrl: './cart.component.css',
 })
 export class CartComponent implements OnInit, OnDestroy {
   items: ItemCarrinho[] = [];
-  isSidenavOpen = false;
-  private uiSub?: Subscription;
   private cartSubscription?: Subscription;
 
-  constructor(private cartService: CartService,
-              private router: Router,
-              private cartUIService: CartUIService,
-              private authService: AuthService){}
-
+  constructor(
+    private cartService: CartService,
+    private router: Router,
+    private cartUIService: CartUIService,
+    private authService: AuthService,
+    private placaService: PlacaDeVideoService
+  ) {}
 
   ngOnInit(): void {
-    this.uiSub = this.cartUIService.sidenavOpen$.subscribe( open => {
-      this.isSidenavOpen = open;
-    });
     this.cartSubscription = this.cartService.cartItems$.subscribe((items) => {
       this.items = items;
     });
   }
 
   ngOnDestroy(): void {
-    this.uiSub?.unsubscribe();
     this.cartSubscription?.unsubscribe();
   }
 
@@ -77,7 +75,9 @@ export class CartComponent implements OnInit, OnDestroy {
   finalizePurchase(): void {
     this.closeSidenav();
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: '/checkout' },
+      });
       return;
     }
     this.router.navigate(['/checkout']);
@@ -87,4 +87,16 @@ export class CartComponent implements OnInit, OnDestroy {
     return this.cartService.subtotal;
   }
 
+  getImageUrl(imageName: string | undefined): string {
+    if (!imageName) {
+      return 'assets/images/default-card.png';
+    }
+    return `${this.placaService.url}/download/imagem/${encodeURIComponent(
+      imageName
+    )}`;
+  }
+
+  onImageError(event: Event): void {
+    (event.target as HTMLImageElement).src = 'assets/images/default-card.png';
+  }
 }

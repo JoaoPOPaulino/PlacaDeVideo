@@ -36,10 +36,10 @@
   <mat-grid-list cols="4" rowHeight="400px" gutterSize="20px" class="product-grid">
     <mat-grid-tile *ngFor="let placa of placas">
       <mat-card class="product-card">
-        <img mat-card-image [src]="placa.nomeImagem ? '/assets/imagens/' + placa.nomeImagem : '/assets/imagens/placeholder.png'" alt="{{placa.nome}}">
+        <img mat-card-image [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}">
         <mat-card-content>
           <h3>{{placa.nome}}</h3>
-          <p>R$ {{placa.preco | number:'1.2-2'}}</p>
+          <p>{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
           <p>{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
           <p>{{placa.categoria.label || 'Categoria desconhecida'}}</p>
         </mat-card-content>

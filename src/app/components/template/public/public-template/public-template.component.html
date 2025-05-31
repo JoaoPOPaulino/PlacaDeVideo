@@ -1,8 +1,19 @@
 <!-- components/template/public-template/public-template.component.html -->
 <app-public-header></app-public-header>
 
-<main class="content">
-  <router-outlet></router-outlet>
-</main>
-
-<app-footer></app-footer>
+<mat-sidenav-container>
+  <mat-sidenav
+    [(opened)]="isCartOpen"
+    mode="over"
+    position="start"
+    class="cart-sidenav"
+  >
+    <app-cart></app-cart>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+    <app-footer></app-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -28,8 +28,9 @@ export class PublicHomeComponent {
   featuredProducts: any[] = [];
   loading = true;
 
-  constructor(private placaService: PlacaDeVideoService,
-              private cartService: CartService
+  constructor(
+    private placaService: PlacaDeVideoService,
+    private cartService: CartService
   ) {
     this.loadFeaturedProducts();
   }
@@ -49,16 +50,19 @@ export class PublicHomeComponent {
 
   getImageUrl(imageName: string): string {
     if (!imageName) return 'assets/images/default-card.png';
-    return `${this.placaService.url}/download/imagem/${imageName}`;
+    return `${this.placaService.url}/download/imagem/${encodeURIComponent(
+      imageName
+    )}`;
   }
 
   addToCart(product: any): void {
-  const item: ItemCarrinho = {
-    id: product.id,
-    nome: product.nome,
-    preco: product.preco,
-    quantidade: 1
-  };
-  this.cartService.addToCart(item);
-}
+    const item: ItemCarrinho = {
+      id: product.id,
+      nome: product.nome,
+      preco: product.preco,
+      quantidade: 1,
+      nomeImagem: product.nomeImagem, // Alterado de imagem para nomeImagem
+    };
+    this.cartService.addToCart(item);
+  }
 }
