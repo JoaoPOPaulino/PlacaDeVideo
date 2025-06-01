@@ -14,7 +14,6 @@ export class BbApiService {
 
   constructor(private http: HttpClient) {}
 
-  // Autenticação OAuth2
   async getAccessToken() {
     const authUrl = `${this.API_URL}/oauth/token?grant_type=client_credentials`;
     const headers = {
@@ -34,35 +33,25 @@ export class BbApiService {
     }
   }
 
-  // Criar Cobrança Pix
   async criarCobrancaPix(valor: number, chavePix: string) {
     await this.getAccessToken();
     const url = `${this.API_URL}/pix/v1/cob`;
-    const payload = {
-      valor: valor.toFixed(2),
-      chave: chavePix,
-    };
+    const payload = { valor: valor.toFixed(2), chave: chavePix };
     const headers = {
       Authorization: `Bearer ${this.accessToken}`,
       'Content-Type': 'application/json',
     };
-
     return this.http.post(url, payload, { headers }).toPromise();
   }
 
-  // Criar Boleto
   async criarBoleto(valor: number, cpfCnpj: string) {
     await this.getAccessToken();
     const url = `${this.API_URL}/boletos/v1/boletos`;
-    const payload = {
-      valor: valor.toFixed(2),
-      pagador: { cpfCnpj },
-    };
+    const payload = { valor: valor.toFixed(2), pagador: { cpfCnpj } };
     const headers = {
       Authorization: `Bearer ${this.accessToken}`,
       'Content-Type': 'application/json',
     };
-
     return this.http.post(url, payload, { headers }).toPromise();
   }
 }

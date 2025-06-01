@@ -24,6 +24,7 @@ import { placaDeVideoResolver } from './components/admin/placas-de-video/placa-d
 import { ProdutosComponent } from './components/pages/public/produtos/produtos.component';
 import { authUser } from './components/guard/authUser.guard';
 import { authGuard } from './components/guard/authAdmin.guard';
+import { CheckoutComponent } from './components/pages/private/checkout/checkout.component';
 
 export const routes: Routes = [
   {
@@ -56,6 +57,12 @@ export const routes: Routes = [
         path: 'sobre',
         component: SobreComponent,
         title: 'Sobre Nós',
+      },
+      {
+        path: 'checkout',
+        component: CheckoutComponent,
+        title: 'Finalizar Compra',
+        canActivate: [authUser],
       },
     ],
   },

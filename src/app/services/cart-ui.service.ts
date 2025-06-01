@@ -13,4 +13,8 @@ export class CartUIService {
   closeCart() {
     this.sidenavOpenSubject.next(false);
   }
+
+  toggleCart() {
+    this.sidenavOpenSubject.next(!this.sidenavOpenSubject.value);
+  }
 }

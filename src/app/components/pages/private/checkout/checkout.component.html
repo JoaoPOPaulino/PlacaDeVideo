@@ -1,17 +1,93 @@
-<!-- Etapa 4: Resultado do Pagamento -->
-<div *ngIf="step === 4">
-  <h3>Pagamento Gerado!</h3>
+<div class="checkout-container">
+  <div class="checkout-box">
+    <h2 class="checkout-title">Finalizar Compra</h2>
 
-  <!-- Pix -->
-  <div *ngIf="formaPagamentoSelecionada === 'pix'">
-    <p>Escaneie o QR Code:</p>
-    <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + pixCode" alt="QR Code Pix">
-    <p>Código: <code>{{ pixCode }}</code></p>
-  </div>
+    <!-- Passo 1 -->
+    <div *ngIf="step === 1" class="step-content">
+      <mat-card class="order-summary">
+        <mat-card-header>
+          <mat-card-title>Resumo do Pedido</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list>
+            <mat-list-item *ngFor="let item of items">
+              <img [src]="getImageUrl(item.nomeImagem)" alt="{{ item.nome }}" class="cart-item-image" width="60" height="60" (error)="onImageError($event)" />
+              <div class="item-details">
+                <h3>{{ item.nome }}</h3>
+                <p>{{ item.quantidade }} x {{ item.preco | currency: 'BRL' }}</p>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <mat-divider></mat-divider>
+          <p class="subtotal"><strong>Subtotal:</strong> {{ subtotal | currency: 'BRL' }}</p>
+        </mat-card-content>
+      </mat-card>
 
-  <!-- Boleto -->
-  <div *ngIf="formaPagamentoSelecionada === 'boleto'">
-    <p>Boleto gerado:</p>
-    <a [href]="boletoLink" target="_blank">Baixar Boleto (PDF)</a>
+      <form [formGroup]="checkoutForm" class="checkout-form">
+        <h3>Forma de Pagamento</h3>
+        <mat-radio-group formControlName="formaPagamento" class="payment-options">
+          <mat-radio-button value="pix">Pix</mat-radio-button>
+          <mat-radio-button value="boleto">Boleto</mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="checkoutForm.get('formaPagamento')?.touched && checkoutForm.get('formaPagamento')?.hasError('required')">
+          Selecione uma forma de pagamento
+        </mat-error>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>CPF ou CNPJ</mat-label>
+          <input matInput formControlName="cpfCnpj" placeholder="Digite CPF ou CNPJ" />
+          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('required')">
+            CPF ou CNPJ é obrigatório
+          </mat-error>
+          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('pattern')">
+            CPF (11 dígitos) ou CNPJ (14 dígitos) inválido
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" (click)="nextStep()">Continuar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Passo 2 -->
+    <div *ngIf="step === 2" class="step-content">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Confirmar Pedido</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p><strong>Forma de Pagamento:</strong> {{ formaPagamento === 'pix' ? 'Pix' : 'Boleto' }}</p>
+          <p><strong>CPF/CNPJ:</strong> {{ checkoutForm.get('cpfCnpj')?.value }}</p>
+          <p><strong>Total:</strong> {{ subtotal | currency: 'BRL' }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="accent" (click)="voltar()">Voltar</button>
+          <button mat-raised-button color="primary" (click)="finalizarPedido()">Finalizar</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Passo 3 -->
+    <div *ngIf="step === 3" class="step-content">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Pagamento Gerado</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="formaPagamento === 'pix'">
+            <p>Escaneie o QR Code abaixo para pagar com Pix:</p>
+            <img [src]="pixCode" alt="QR Code Pix" class="pix-qr" />
+          </div>
+          <div *ngIf="formaPagamento === 'boleto'">
+            <p>Clique no link abaixo para baixar o boleto:</p>
+            <a [href]="boletoLink" target="_blank" mat-raised-button color="primary">Baixar Boleto</a>
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="finalizar()">Concluir</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </div>
