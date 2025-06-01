@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { UsuarioListComponent } from './components/admin/usuario/usuario-list/usuario-list.component';
 import { UsuarioFormComponent } from './components/admin/usuario/usuario-form/usuario-form.component';
 import { usuarioResolver } from './components/admin/usuario/usuario.resolver';
-
 import { AdminTemplateComponent } from './components/template/admin-template/admin-template.component';
 import { HomeComponent } from './components/pages/home/home.component';
 import { NotFoundComponent } from './components/pages/not-found/not-found.component';
@@ -23,11 +22,14 @@ import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/pl
 import { PlacaDeVideoListComponent } from './components/admin/placas-de-video/placa-de-video-list/placa-de-video-list.component';
 import { placaDeVideoResolver } from './components/admin/placas-de-video/placa-de-video.resolver';
 import { ProdutosComponent } from './components/pages/public/produtos/produtos.component';
+import { authUser } from './components/guard/authUser.guard';
+import { authGuard } from './components/guard/authAdmin.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: PublicTemplateComponent,
+    canActivate: [authUser],
     children: [
       {
         path: '',
@@ -57,11 +59,10 @@ export const routes: Routes = [
       },
     ],
   },
-
-  //-------------------------------------------------------
   {
     path: 'admin',
     component: AdminTemplateComponent,
+    canActivate: [authGuard],
     title: 'Administrativo',
     children: [
       {
@@ -69,18 +70,17 @@ export const routes: Routes = [
         redirectTo: 'home',
         pathMatch: 'full',
       },
+      { path: 'login', component: LoginComponent, title: 'Login' },
       {
         path: 'home',
         component: HomeComponent,
         title: 'Dashboard',
       },
-      //------------------------------------------------------
       {
         path: 'placasdevideo',
         component: PlacaDeVideoListComponent,
         title: 'Lista de Placas de Vídeo',
       },
-
       {
         path: 'placasdevideo/new',
         component: PlacaDeVideoFormComponent,
@@ -92,7 +92,6 @@ export const routes: Routes = [
         title: 'Edição de Placa de Vídeo',
         resolve: { placa: placaDeVideoResolver },
       },
-      //-------------------------------------------------------
       {
         path: 'usuarios',
         component: UsuarioListComponent,
@@ -109,7 +108,6 @@ export const routes: Routes = [
         title: 'Edição de Usuário',
         resolve: { usuario: usuarioResolver },
       },
-      //-------------------------------------------------------
       {
         path: 'avaliacoes',
         component: AvaliacaoListComponent,
@@ -120,7 +118,6 @@ export const routes: Routes = [
         component: AvaliacaoFormComponent,
         title: 'Nova Avaliação',
       },
-      //-------------------------------------------------------
       {
         path: 'fabricantes',
         component: FabricanteListComponent,
@@ -137,7 +134,6 @@ export const routes: Routes = [
         title: 'Edição de Fabricante',
         resolve: { fabricante: fabricanteResolver },
       },
-      //-------------------------------------------------------
       {
         path: 'especificacoes-tecnicas',
         component: EspecificacaoTecnicaListComponent,
@@ -154,26 +150,8 @@ export const routes: Routes = [
         title: 'Edição de Especificação Técnica',
         resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
       },
-      //---------------------------------------------------------
-      {
-        path: 'placasdevideo',
-        component: PlacaDeVideoListComponent,
-        title: 'Lista de Placas de Vídeo',
-      },
-      {
-        path: 'placasdevideo/new',
-        component: PlacaDeVideoFormComponent,
-        title: 'Nova Placa de Vídeo',
-      },
-      {
-        path: 'placasdevideo/edit/:id',
-        component: PlacaDeVideoFormComponent,
-        title: 'Edição de Placa de Vídeo',
-        resolve: { placa: placaDeVideoResolver },
-      },
     ],
   },
-  //-------------------------------------------------------------------------
   {
     path: '404',
     component: NotFoundComponent,

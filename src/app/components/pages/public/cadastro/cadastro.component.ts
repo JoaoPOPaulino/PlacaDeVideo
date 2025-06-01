@@ -1,11 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  catchError,
+  of,
+  map,
+} from 'rxjs';
 import { UsuarioService } from '../../../../services/usuario.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Perfil } from '../../../../models/usuario/perfil.model';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -58,7 +70,6 @@ export class CadastroComponent implements OnInit {
     const loginControl = this.formGroup.get('login');
     const emailControl = this.formGroup.get('email');
 
-    // Validação de login
     if (loginControl) {
       loginControl.valueChanges
         .pipe(
@@ -69,7 +80,6 @@ export class CadastroComponent implements OnInit {
         .subscribe();
     }
 
-    // Validação de email
     if (emailControl) {
       emailControl.valueChanges
         .pipe(
@@ -120,25 +130,33 @@ export class CadastroComponent implements OnInit {
 
     const formData = this.formGroup.value;
     const novoUsuario = {
-      ...formData,
-      perfil: { id: 1, label: 'Usuário' } as Perfil,
+      nome: formData.nome,
+      email: formData.email,
+      login: formData.login,
+      senha: formData.senha,
+      perfil: 'USER', // Enviar como string 'USER'
+      telefones: [],
+      enderecos: [],
     };
 
     this.usuarioService.insert(novoUsuario).subscribe({
       next: () => {
-        // Usar o loginADM do AuthService em vez do login do UsuarioService
-        this.authService.loginADM(formData.login, formData.senha).subscribe({
+        this.authService.login(formData.login, formData.senha).subscribe({
           next: () => {
             this.snackBar.open('Conta criada com sucesso!', 'Fechar', {
               duration: 3000,
             });
-            this.router.navigateByUrl('/home');
+            this.router.navigateByUrl('/');
           },
           error: (err) => {
             console.error('Erro ao logar após cadastro', err);
-            this.snackBar.open('Erro ao logar. Tente novamente.', 'Fechar', {
-              duration: 5000,
-            });
+            this.snackBar.open(
+              'Conta criada, mas erro ao logar. Tente novamente.',
+              'Fechar',
+              {
+                duration: 5000,
+              }
+            );
             this.isLoading = false;
           },
         });

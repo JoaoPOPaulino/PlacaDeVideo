@@ -40,8 +40,8 @@ export class ProdutosComponent implements OnInit, OnDestroy {
   pageSize = 8;
   currentPage = 0;
   searchTerm: string = '';
-  filterFabricante: number | null = null;
-  filterCategoria: number | null = null;
+  filterFabricante: string | null = null;
+  filterCategoria: string | null = null;
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -89,7 +89,7 @@ export class ProdutosComponent implements OnInit, OnDestroy {
       nome: placa.nome,
       preco: placa.preco,
       quantidade: 1,
-      nomeImagem: placa.nomeImagem, // Adiciona o campo nomeImagem
+      nomeImagem: placa.nomeImagem,
     };
     this.cartService.addToCart(item);
   }

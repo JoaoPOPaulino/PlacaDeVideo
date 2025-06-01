@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
@@ -31,10 +32,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatFormFieldModule,
     RouterModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
+  isLoading = false;
+  hidePassword = true;
 
   constructor(
     private authService: AuthService,
@@ -45,39 +49,59 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(3)]],
+      login: ['', [Validators.required, Validators.minLength(3)]],
+      senha: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const username = this.loginForm.get('username')!.value;
-      const password = this.loginForm.get('password')!.value;
+      this.isLoading = true;
+      const login = this.loginForm.get('login')!.value;
+      const senha = this.loginForm.get('senha')!.value;
 
-      this.authService.loginADM(username, password).subscribe({
-        next: (resp) => {
-          this.router.navigateByUrl('/admin');
+      this.authService.login(login, senha).subscribe({
+        next: () => {
+          this.isLoading = false;
+          const perfil = this.authService.getPerfil();
+          if (perfil === 'ADMIN') {
+            this.router.navigateByUrl('/admin');
+          } else {
+            this.router.navigateByUrl('/');
+          }
+          this.snackBar.open('Login realizado com sucesso!', 'Fechar', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+          });
         },
         error: (err) => {
-          console.log(err);
-          this.showSnackbarTopPosition('Dados Inválidos', 'Fechar', 2000);
+          this.isLoading = false;
+          const errorMessage =
+            err.status === 404
+              ? 'Usuário ou senha inválidos'
+              : 'Erro ao conectar com o servidor';
+          this.snackBar.open(errorMessage, 'Fechar', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+          });
         },
       });
     } else {
-      this.showSnackbarTopPosition('Dados inválidos', 'Fechar', 2000);
+      this.snackBar.open(
+        'Por favor, preencha todos os campos corretamente',
+        'Fechar',
+        {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        }
+      );
     }
   }
 
   onRegister() {
     this.router.navigateByUrl('/cadastro');
-  }
-
-  showSnackbarTopPosition(content: any, action: any, duration: any) {
-    this.snackBar.open(content, action, {
-      duration: 2000,
-      verticalPosition: 'top',
-      horizontalPosition: 'center',
-    });
   }
 }

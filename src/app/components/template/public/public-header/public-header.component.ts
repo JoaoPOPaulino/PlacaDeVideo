@@ -21,29 +21,36 @@ import { CartUIService } from '../../../../services/cart-ui.service';
     MatIconModule,
     MatMenuModule,
     RouterModule,
-    CartComponent
+    CartComponent,
   ],
   templateUrl: './public-header.component.html',
   styleUrls: ['./public-header.component.css'],
 })
 export class PublicHeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
-  cartItemsCount = 0; 
+  cartItemsCount = 0;
   private usuarioSub?: Subscription;
   private cartSub?: Subscription;
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              private cartService: CartService,
-              private cartUIService: CartUIService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cartService: CartService,
+    private cartUIService: CartUIService
+  ) {}
 
   ngOnInit(): void {
     this.updateLoginStatus();
-    this.usuarioSub = this.authService.getUsuarioLogado().subscribe((usuario) => {
-      this.isLoggedIn = !!usuario && this.authService.isLoggedIn();
-    });
+    this.usuarioSub = this.authService
+      .getUsuarioLogado()
+      .subscribe((usuario) => {
+        this.isLoggedIn = !!usuario && this.authService.isLoggedIn();
+      });
     this.cartSub = this.cartService.cartItems$.subscribe((items) => {
-      this.cartItemsCount = items.reduce((sum, item) => sum + item.quantidade, 0);
+      this.cartItemsCount = items.reduce(
+        (sum, item) => sum + item.quantidade,
+        0
+      );
     });
   }
 

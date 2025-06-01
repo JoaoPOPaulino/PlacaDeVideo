@@ -3,56 +3,92 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(to right, #6E45E2, #FF6636);
+  background: linear-gradient(135deg, #1a237e, #4fc3f7);
+  padding: 20px;
 }
 
 .login-box {
-  background: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
   text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-.login-icon {
-  width: 100px;
-  height: 100px;
+.login-logo {
+  width: 120px;
   margin: 0 auto 20px;
-  display: block;
 }
 
 .login-title {
-  font-size: 24px;
-  margin: 10px 0;
-  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1a237e;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .login-input {
   width: 100%;
-  margin: 10px 0;
+}
+
+.login-input mat-form-field {
+  transition: all 0.3s ease;
 }
 
 .login-button {
-  width: 100%;
+  background: #1a237e;
+  color: #ffffff;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-button:hover:enabled {
+  background: #283593;
+  transform: translateY(-2px);
+}
+
+.login-button:disabled {
+  background: #b0bec5;
+  cursor: not-allowed;
+}
+
+.register-link {
   margin-top: 20px;
-  background: #FF6636;
-  color: #fff;
-  transition: background 0.3s;
+  font-size: 14px;
+  color: #546e7a;
 }
 
-.login-button:hover {
-  background: #FF5722;
+.register-link button {
+  color: #1a237e;
+  font-weight: 500;
+  margin-left: 5px;
+  transition: color 0.3s ease;
 }
 
-.register-button {
-  width: 100%;
-  margin-top: 10px;
-  color: #FF6636;
-  border-color: #FF6636;
-  transition: all 0.3s;
+.register-link button:hover {
+  color: #283593;
+  text-decoration: underline;
 }
 
-.register-button:hover {
-  background: #FF6636;
-  color: #fff;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Usuario } from '../models/usuario/usuario.model';
 import { LocalStorageService } from './local-storage.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { Usuario } from '../models/usuario/usuario.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private url = 'http://localhost:8080/auth';
+  private baseURL: string = 'http://localhost:8080/auth';
   private tokenKey = 'jwt_token';
   private usuarioLogadoKey = 'usuario_logado';
   private usuarioLogadoSubject = new BehaviorSubject<Usuario | null>(null);
@@ -25,44 +25,63 @@ export class AuthService {
   private initUsuarioLogado() {
     const usuario = this.localStorageService.getItem(this.usuarioLogadoKey);
     if (usuario) {
-      const usuarioLogado = JSON.parse(usuario);
-
-      this.setUsuarioLogado(usuarioLogado);
-      this.usuarioLogadoSubject.next(usuarioLogado);
+      try {
+        const usuarioLogado = JSON.parse(usuario);
+        this.setUsuarioLogado(usuarioLogado);
+        this.usuarioLogadoSubject.next(usuarioLogado);
+      } catch (error) {
+        console.error('Erro ao parsear usuário logado:', error);
+        this.removeUsuarioLogado();
+      }
     }
   }
 
-  loginADM(login: string, senha: string): Observable<any> {
-    const params = {
-      login: login,
-      senha: senha,
-    };
-
-    return this.http.post(`${this.url}`, params, { observe: 'response' }).pipe(
+  login(login: string, senha: string): Observable<any> {
+    const params = { login, senha };
+    return this.http.post(this.baseURL, params, { observe: 'response' }).pipe(
       tap((res: any) => {
-        const authToken = res.headers.get('Authorization') ?? '';
-        if (authToken) {
+        let authToken = res.headers.get('Authorization') ?? '';
+        if (authToken.startsWith('Bearer ')) {
+          authToken = authToken.replace('Bearer ', '');
+        }
+        const usuarioLogado = res.body as Usuario;
+        if (authToken && usuarioLogado) {
           this.setToken(authToken);
-          const usuarioLogado = res.body;
-
-          if (usuarioLogado) {
-            this.setUsuarioLogado(usuarioLogado);
-            this.usuarioLogadoSubject.next(usuarioLogado);
-          }
+          this.setUsuarioLogado(usuarioLogado);
+          this.usuarioLogadoSubject.next(usuarioLogado);
+        } else {
+          console.error('Token ou usuário não retornado pelo backend');
         }
       })
     );
   }
 
+  getPerfil(): string | null {
+    const usuario = this.localStorageService.getItem(this.usuarioLogadoKey);
+    if (usuario) {
+      try {
+        const usuarioLogado = JSON.parse(usuario);
+        return usuarioLogado.perfil?.label || null;
+      } catch (error) {
+        console.error('Erro ao obter perfil:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
   setUsuarioLogado(usuario: Usuario): void {
-    this.localStorageService.setItem(this.usuarioLogadoKey, usuario);
+    this.localStorageService.setItem(
+      this.usuarioLogadoKey,
+      JSON.stringify(usuario)
+    );
   }
 
   setToken(token: string): void {
     this.localStorageService.setItem(this.tokenKey, token);
   }
 
-  getUsuarioLogado() {
+  getUsuarioLogado(): Observable<Usuario | null> {
     return this.usuarioLogadoSubject.asObservable();
   }
 
@@ -81,14 +100,11 @@ export class AuthService {
 
   isTokenExpired(): boolean {
     const token = this.getToken();
-    if (!token) {
-      return true;
-    }
-
+    if (!token) return true;
     try {
       return this.jwtHelper.isTokenExpired(token);
     } catch (error) {
-      console.error('Token inválido', error);
+      console.error('Token inválido:', error);
       return true;
     }
   }

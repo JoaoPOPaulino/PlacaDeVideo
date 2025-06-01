@@ -8,8 +8,8 @@ export class Usuario {
   email!: string;
   login!: string;
   senha!: string;
-  telefone!: Telefone[];
-  endereco!: Endereco[];
+  telefone: Telefone[] = [];
+  endereco: Endereco[] = [];
   perfil!: Perfil;
   telefones: any;
   enderecos: any;
