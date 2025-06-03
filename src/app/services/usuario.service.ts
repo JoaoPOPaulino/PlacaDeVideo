@@ -6,8 +6,6 @@ import {
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { Usuario } from '../models/usuario/usuario.model';
-import { Endereco } from '../models/usuario/endereco.model';
-import { Telefone } from '../models/usuario/telefone.model';
 
 @Injectable({
   providedIn: 'root',
@@ -149,4 +147,15 @@ export class UsuarioService {
 
     return result;
   }
+
+  uploadImagem(id: number, file: File): Observable<Usuario> {
+  const formData = new FormData();
+  formData.append('imagem', file);
+  formData.append('nomeImagem', file.name);
+
+  return this.httpClient.patch<Usuario>(
+    `${this.url}/${id}/upload/imagem`,
+    formData
+  );
+}
 }

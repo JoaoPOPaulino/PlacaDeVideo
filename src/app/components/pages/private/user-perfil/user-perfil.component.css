@@ -1,0 +1,58 @@
+.perfil-card {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.image-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.image-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.full-width {
+  width: 100%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+}
+
+mat-card-subtitle {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+mat-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+mat-list-item span {
+  flex: 1;
+  word-break: break-word;
+}

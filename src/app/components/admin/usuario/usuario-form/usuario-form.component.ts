@@ -174,23 +174,19 @@ export class UsuarioFormComponent implements OnInit {
       nome: formData.nome,
       login: formData.login,
       email: formData.email,
-      senha: formData.senha || '123456', // Senha padrão para criação
-      perfil: { id: formData.perfil, label: '' } as Perfil,
+      senha: formData.senha || undefined,
+      perfil: {
+        id: formData.perfil,
+        label: formData.perfil === 1 ? 'Usuário' : 'Administrador',
+      },
       telefones: this.telefones,
       enderecos: this.enderecos,
-      telefone: [],
-      endereco: [],
+      nomeImagem: '',
     };
 
-    const operation = usuario.id
-      ? this.usuarioService.update(
-          {
-            ...usuario,
-            senha: formData.senha || undefined, // Não incluir senha se vazia na atualização
-          },
-          usuario.id
-        )
-      : this.usuarioService.insert(usuario);
+     const operation = usuario.id
+    ? this.usuarioService.update(usuario, usuario.id)
+    : this.usuarioService.insert(usuario);
 
     operation.subscribe({
       next: () => {

@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-box">
+    <img class="login-icon" src="/icons/passkey.svg" alt="Passkey">
+    <h2 class="login-title">Login Administrativo - NexusGPU</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="login-input">
+        <mat-label>Login</mat-label>
+        <input matInput formControlName="login" required autocomplete="username" />
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="loginForm.get('login')?.hasError('required')">
+          O login é obrigatório
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('login')?.hasError('minlength')">
+          O login deve ter pelo menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="login-input">
+        <mat-label>Senha</mat-label>
+        <input
+          matInput
+          formControlName="senha"
+          [type]="hidePassword ? 'password' : 'text'"
+          required
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hidePassword = !hidePassword"
+          type="button"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('senha')?.hasError('required')">
+          A senha é obrigatória
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('senha')?.hasError('minlength')">
+          A senha deve ter pelo menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading || loginForm.invalid"
+      >
+        <span *ngIf="!isLoading">Entrar</span>
+        <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+      </button>
+    </form>
+  </div>
+</div>

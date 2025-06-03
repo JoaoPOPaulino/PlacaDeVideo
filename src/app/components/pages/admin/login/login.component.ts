@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-admin-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
@@ -28,7 +28,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatProgressSpinnerModule,
   ],
 })
-export class LoginComponent implements OnInit {
+export class AdminLoginComponent implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
   hidePassword = true;
@@ -57,13 +57,25 @@ export class LoginComponent implements OnInit {
       this.authService.login(login, senha).subscribe({
         next: () => {
           this.isLoading = false;
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-          this.router.navigateByUrl(returnUrl);
-          this.snackBar.open('Login realizado com sucesso!', 'Fechar', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-          });
+          const perfil = this.authService.getPerfil();
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin';
+
+          if (perfil === 'ADMIN') {
+            this.router.navigateByUrl(returnUrl);
+            this.snackBar.open('Login realizado com sucesso!', 'Fechar', {
+              duration: 3000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+            });
+          } else {
+            this.authService.logout();
+            this.snackBar.open('Acesso restrito a administradores.', 'Fechar', {
+              duration: 3000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+            });
+            this.router.navigateByUrl('/login');
+          }
         },
         error: (err) => {
           this.isLoading = false;
@@ -83,9 +95,5 @@ export class LoginComponent implements OnInit {
         horizontalPosition: 'center',
       });
     }
-  }
-
-  onRegister() {
-    this.router.navigateByUrl('/cadastro');
   }
 }

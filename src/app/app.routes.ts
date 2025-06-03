@@ -25,45 +25,21 @@ import { ProdutosComponent } from './components/pages/public/produtos/produtos.c
 import { authUser } from './components/guard/authUser.guard';
 import { authGuard } from './components/guard/authAdmin.guard';
 import { CheckoutComponent } from './components/pages/private/checkout/checkout.component';
+import { UserPerfilComponent } from './components/pages/private/user-perfil/user-perfil.component';
+import { AdminLoginComponent } from './components/pages/admin/login/login.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: PublicTemplateComponent,
-    canActivate: [authUser],
     children: [
-      {
-        path: '',
-        component: PublicHomeComponent,
-        title: 'NexusGPU - Melhores Placas de Vídeo',
-      },
-      {
-        path: 'produtos',
-        component: ProdutosComponent,
-        title: 'Placas de Vídeo',
-      },
-      {
-        path: 'login',
-        component: LoginComponent,
-        title: 'Login',
-      },
-      {
-        path: 'cadastro',
-        component: CadastroComponent,
-        title: 'Cadastro',
-        data: { isPublic: true },
-      },
-      {
-        path: 'sobre',
-        component: SobreComponent,
-        title: 'Sobre Nós',
-      },
-      {
-        path: 'checkout',
-        component: CheckoutComponent,
-        title: 'Finalizar Compra',
-        canActivate: [authUser],
-      },
+      { path: '', component: PublicHomeComponent, title: 'NexusGPU - Melhores Placas de Vídeo' },
+      { path: 'produtos', component: ProdutosComponent, title: 'Placas de Vídeo' },
+      { path: 'login', component: LoginComponent, title: 'Login' },
+      { path: 'cadastro', component: CadastroComponent, title: 'Cadastro', data: { isPublic: true } },
+      { path: 'sobre', component: SobreComponent, title: 'Sobre Nós' },
+      { path: 'checkout', component: CheckoutComponent, title: 'Finalizar Compra', canActivate: [authUser] },
+      { path: 'minha-conta', component: UserPerfilComponent, title: 'Meu Perfil', canActivate: [authUser] },
     ],
   },
   {
@@ -72,92 +48,29 @@ export const routes: Routes = [
     canActivate: [authGuard],
     title: 'Administrativo',
     children: [
-      {
-        path: '',
-        redirectTo: 'home',
-        pathMatch: 'full',
-      },
-      { path: 'login', component: LoginComponent, title: 'Login' },
-      {
-        path: 'home',
-        component: HomeComponent,
-        title: 'Dashboard',
-      },
-      {
-        path: 'placasdevideo',
-        component: PlacaDeVideoListComponent,
-        title: 'Lista de Placas de Vídeo',
-      },
-      {
-        path: 'placasdevideo/new',
-        component: PlacaDeVideoFormComponent,
-        title: 'Nova Placa de Vídeo',
-      },
-      {
-        path: 'placasdevideo/edit/:id',
-        component: PlacaDeVideoFormComponent,
-        title: 'Edição de Placa de Vídeo',
-        resolve: { placa: placaDeVideoResolver },
-      },
-      {
-        path: 'usuarios',
-        component: UsuarioListComponent,
-        title: 'Lista de Usuários',
-      },
-      {
-        path: 'usuarios/new',
-        component: UsuarioFormComponent,
-        title: 'Novo Usuário',
-      },
-      {
-        path: 'usuarios/edit/:id',
-        component: UsuarioFormComponent,
-        title: 'Edição de Usuário',
-        resolve: { usuario: usuarioResolver },
-      },
-      {
-        path: 'avaliacoes',
-        component: AvaliacaoListComponent,
-        title: 'Lista de Avaliações',
-      },
-      {
-        path: 'avaliacoes/new',
-        component: AvaliacaoFormComponent,
-        title: 'Nova Avaliação',
-      },
-      {
-        path: 'fabricantes',
-        component: FabricanteListComponent,
-        title: 'Lista de Fabricantes',
-      },
-      {
-        path: 'fabricantes/new',
-        component: FabricanteFormComponent,
-        title: 'Novo Fabricante',
-      },
-      {
-        path: 'fabricantes/edit/:id',
-        component: FabricanteFormComponent,
-        title: 'Edição de Fabricante',
-        resolve: { fabricante: fabricanteResolver },
-      },
-      {
-        path: 'especificacoes-tecnicas',
-        component: EspecificacaoTecnicaListComponent,
-        title: 'Lista de Especificações Técnicas',
-      },
-      {
-        path: 'especificacoes-tecnicas/new',
-        component: EspecificacaoTecnicaFormComponent,
-        title: 'Nova Especificação Técnica',
-      },
-      {
-        path: 'especificacoes-tecnicas/edit/:id',
-        component: EspecificacaoTecnicaFormComponent,
-        title: 'Edição de Especificação Técnica',
-        resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
-      },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: HomeComponent, title: 'Dashboard' },
+      { path: 'placasdevideo', component: PlacaDeVideoListComponent, title: 'Lista de Placas de Vídeo' },
+      { path: 'placasdevideo/new', component: PlacaDeVideoFormComponent, title: 'Nova Placa de Vídeo' },
+      { path: 'placasdevideo/edit/:id', component: PlacaDeVideoFormComponent, title: 'Edição de Placa de Vídeo', resolve: { placa: placaDeVideoResolver } },
+      { path: 'usuarios', component: UsuarioListComponent, title: 'Lista de Usuários' },
+      { path: 'usuarios/new', component: UsuarioFormComponent, title: 'Novo Usuário' },
+      { path: 'usuarios/edit/:id', component: UsuarioFormComponent, title: 'Edição de Usuário', resolve: { usuario: usuarioResolver } },
+      { path: 'avaliacoes', component: AvaliacaoListComponent, title: 'Lista de Avaliações' },
+      { path: 'avaliacoes/new', component: AvaliacaoFormComponent, title: 'Nova Avaliação' },
+      { path: 'fabricantes', component: FabricanteListComponent, title: 'Lista de Fabricantes' },
+      { path: 'fabricantes/new', component: FabricanteFormComponent, title: 'Novo Fabricante' },
+      { path: 'fabricantes/edit/:id', component: FabricanteFormComponent, title: 'Edição de Fabricante', resolve: { fabricante: fabricanteResolver } },
+      { path: 'especificacoes-tecnicas', component: EspecificacaoTecnicaListComponent, title: 'Lista de Especificações Técnicas' },
+      { path: 'especificacoes-tecnicas/new', component: EspecificacaoTecnicaFormComponent, title: 'Nova Especificação Técnica' },
+      { path: 'especificacoes-tecnicas/edit/:id', component: EspecificacaoTecnicaFormComponent, title: 'Edição de Especificação Técnica', resolve: { especificacaoTecnica: especificacaoTecnicaResolver } },
+      { path: 'minha-conta', component: UserPerfilComponent, title: 'Meu Perfil' },
     ],
+  },
+  {
+    path: 'admin/login',
+    component: AdminLoginComponent,
+    title: 'Login Administrativo',
   },
   {
     path: '404',

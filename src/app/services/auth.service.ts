@@ -118,4 +118,19 @@ export class AuthService {
     this.removeToken();
     this.removeUsuarioLogado();
   }
+
+  getUsuarioLogadoSnapshot(): Usuario | null {
+    return this.usuarioLogadoSubject.getValue();
+  }
+
+  getUsuarioId(): number | null {
+    const usuario = this.getUsuarioLogadoSnapshot();
+    return usuario ? usuario.id : null;
+  }
+
+  updateUsuarioLogado(updatedUsuario: Usuario): void {
+    this.setUsuarioLogado(updatedUsuario);
+  }
+
+  
 }
