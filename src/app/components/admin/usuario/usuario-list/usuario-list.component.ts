@@ -39,7 +39,7 @@ export class UsuarioListComponent implements OnInit {
   displayedColumns: string[] = ['id', 'nome', 'login', 'perfil', 'acao'];
   usuarios: Usuario[] = [];
   totalRecords = 0;
-  pageSize = 5;
+  pageSize = 8;
   page = 0;
   searchTerm = '';
 

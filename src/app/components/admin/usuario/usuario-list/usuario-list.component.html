@@ -71,10 +71,10 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
-                 showFirstLastButtons
-                 [length]="totalRecords"
-                 [pageSize]="pageSize"
-                 (page)="paginar($event)">
-  </mat-paginator>
+  <mat-paginator [length]="totalRecords"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="[8, 16, 24, 32]"
+               (page)="paginar($event)"
+               showFirstLastButtons>
+</mat-paginator>
 </div>

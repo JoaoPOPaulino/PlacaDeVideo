@@ -143,7 +143,7 @@ export class UsuarioFormComponent implements OnInit {
       nome: usuario.nome,
       login: usuario.login,
       email: usuario.email,
-      perfil: usuario.perfil?.id || 1,
+      perfil: usuario.perfil.id,
     });
 
     if (usuario.telefones) {
@@ -184,9 +184,9 @@ export class UsuarioFormComponent implements OnInit {
       nomeImagem: '',
     };
 
-     const operation = usuario.id
-    ? this.usuarioService.update(usuario, usuario.id)
-    : this.usuarioService.insert(usuario);
+    const operation = usuario.id
+      ? this.usuarioService.update(usuario, usuario.id)
+      : this.usuarioService.insert(usuario);
 
     operation.subscribe({
       next: () => {

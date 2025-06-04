@@ -11,5 +11,5 @@ export const avaliacaoResolver: ResolveFn<Avaliacao> = (
   route: ActivatedRouteSnapshot,
   state: RouterStateSnapshot
 ) => {
-  return inject(AvaliacaoService).findById(Number(route.paramMap.get('id')!));
+  return inject(AvaliacaoService).findById(route.paramMap.get('id')!);
 };

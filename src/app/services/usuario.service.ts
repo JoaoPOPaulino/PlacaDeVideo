@@ -149,13 +149,13 @@ export class UsuarioService {
   }
 
   uploadImagem(id: number, file: File): Observable<Usuario> {
-  const formData = new FormData();
-  formData.append('imagem', file);
-  formData.append('nomeImagem', file.name);
+    const formData = new FormData();
+    formData.append('imagem', file);
+    formData.append('nomeImagem', file.name);
 
-  return this.httpClient.patch<Usuario>(
-    `${this.url}/${id}/upload/imagem`,
-    formData
-  );
-}
+    return this.httpClient.patch<Usuario>(
+      `${this.url}/${id}/upload/imagem`,
+      formData
+    );
+  }
 }

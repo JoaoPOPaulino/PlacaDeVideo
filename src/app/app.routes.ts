@@ -29,6 +29,7 @@ import { AdminLoginComponent } from './components/pages/admin/login/login.compon
 import { ProdutoDetalhesComponent } from './components/pages/public/produto-detalhes/produto-detalhes.component';
 import { AdminPerfilComponent } from './components/pages/admin/admin-perfil/admin-perfil.component';
 import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/placa-de-video-form/placa-de-video-form.component';
+import { avaliacaoResolver } from './components/admin/avaliacao/avaliacao.resolver';
 
 export const routes: Routes = [
   {
@@ -129,6 +130,12 @@ export const routes: Routes = [
         path: 'avaliacoes/new',
         component: AvaliacaoFormComponent,
         title: 'Nova Avaliação',
+      },
+      {
+        path: 'avaliacoes/edit/:id',
+        component: AvaliacaoFormComponent,
+        title: 'Edição de Avaliação',
+        resolve: { avaliacao: avaliacaoResolver },
       },
       {
         path: 'fabricantes',

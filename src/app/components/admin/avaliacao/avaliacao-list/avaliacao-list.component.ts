@@ -6,12 +6,13 @@ import { RouterLink } from '@angular/router';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { forkJoin } from 'rxjs';
 import { Avaliacao } from '../../../../models/avaliacao/avaliacao.model';
 import { AvaliacaoService } from '../../../../services/avaliacao.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-avaliacao-list',
@@ -27,9 +28,10 @@ import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
     MatMenuModule,
     MatSnackBarModule,
     TruncatePipe,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './avaliacao-list.component.html',
-  styleUrl: './avaliacao-list.component.css',
+  styleUrls: ['./avaliacao-list.component.css'],
 })
 export class AvaliacaoListComponent implements OnInit {
   displayedColumns: string[] = [
@@ -43,8 +45,9 @@ export class AvaliacaoListComponent implements OnInit {
   ];
   avaliacoes: Avaliacao[] = [];
   totalRecords = 0;
-  pageSize = 5;
+  pageSize = 8;
   page = 0;
+  isLoading = true;
 
   constructor(
     private avaliacaoService: AvaliacaoService,
@@ -56,6 +59,8 @@ export class AvaliacaoListComponent implements OnInit {
   }
 
   loadAvaliacoes(): void {
+    this.isLoading = true;
+
     forkJoin({
       avaliacoes: this.avaliacaoService.findAll(this.page, this.pageSize),
       total: this.avaliacaoService.count(),
@@ -63,12 +68,16 @@ export class AvaliacaoListComponent implements OnInit {
       next: ({ avaliacoes, total }) => {
         this.avaliacoes = avaliacoes.sort((a, b) => a.id - b.id);
         this.totalRecords = total;
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Erro ao buscar avaliações:', error);
-        this.snackBar.open('Erro ao carregar avaliações', 'Fechar', {
-          duration: 3000,
-        });
+        this.snackBar.open(
+          error.message || 'Erro ao carregar avaliações',
+          'Fechar',
+          { duration: 3000 }
+        );
+        this.isLoading = false;
       },
     });
   }
@@ -93,9 +102,11 @@ export class AvaliacaoListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao excluir avaliação:', error);
-          this.snackBar.open('Erro ao excluir avaliação', 'Fechar', {
-            duration: 3000,
-          });
+          this.snackBar.open(
+            error.message || 'Erro ao excluir avaliação',
+            'Fechar',
+            { duration: 3000 }
+          );
         },
       });
     }

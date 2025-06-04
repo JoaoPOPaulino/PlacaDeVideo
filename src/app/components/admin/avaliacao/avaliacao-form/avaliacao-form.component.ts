@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -14,12 +14,15 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { AvaliacaoService } from '../../../../services/avaliacao.service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Avaliacao } from '../../../../models/avaliacao/avaliacao.model';
-import { UsuarioService } from '../../../../services/usuario.service';
-import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { Usuario } from '../../../../models/usuario/usuario.model';
 import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
+import { AvaliacaoService } from '../../../../services/avaliacao.service';
+import { UsuarioService } from '../../../../services/usuario.service';
+import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-avaliacao-form',
@@ -36,72 +39,127 @@ import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.m
     MatIconModule,
     MatCardModule,
     MatSelectModule,
+    MatProgressBarModule,
   ],
   templateUrl: './avaliacao-form.component.html',
   styleUrl: './avaliacao-form.component.css',
 })
-export class AvaliacaoFormComponent {
-  formGroup: FormGroup;
+export class AvaliacaoFormComponent implements OnInit {
+  formGroup!: FormGroup;
   usuarios: Usuario[] = [];
   placas: PlacaDeVideo[] = [];
-  notas = [
-    { id: 1, label: '1 - Péssimo' },
-    { id: 2, label: '2 - Ruim' },
-    { id: 3, label: '3 - Regular' },
-    { id: 4, label: '4 - Bom' },
-    { id: 5, label: '5 - Excelente' },
-  ];
+  uploading = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private avaliacaoService: AvaliacaoService,
     private usuarioService: UsuarioService,
     private placaService: PlacaDeVideoService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
-    const avaliacao: Avaliacao = this.activatedRoute.snapshot.data['avaliacao'];
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
+  ) {}
 
-    this.formGroup = this.formBuilder.group({
-      id: [avaliacao?.id || null],
-      usuario: [avaliacao?.usuario?.id || '', Validators.required],
-      placadevideo: [avaliacao?.placadevideo?.id || '', Validators.required],
-      nota: [avaliacao?.nota?.id || null],
-      comentario: [avaliacao?.comentario || '', Validators.required],
-      dataCriacao: [avaliacao?.dataCriacao || new Date().toISOString()],
-    });
-
-    this.carregarDependencias();
+  ngOnInit(): void {
+    this.initForm();
+    this.loadDependencies();
   }
 
-  carregarDependencias(): void {
-    this.usuarioService
-      .findAll()
-      .subscribe((usuarios) => (this.usuarios = usuarios));
-    this.placaService.findAll().subscribe((placas) => (this.placas = placas));
-    // Notas são fixas, não precisam ser carregadas de um serviço
+  private initForm(): void {
+    const avaliacao =
+      (this.route.snapshot.data['avaliacao'] as Avaliacao) || {};
+
+    this.formGroup = this.fb.group({
+      id: [avaliacao?.id ?? null],
+      comentario: [
+        avaliacao?.comentario ?? '',
+        [Validators.required, Validators.maxLength(500)],
+      ],
+      nota: [
+        avaliacao?.nota ?? 0,
+        [Validators.required, Validators.min(0), Validators.max(10)],
+      ],
+      usuario: [avaliacao?.usuario?.id ?? null, Validators.required],
+      placaDeVideo: [avaliacao?.placaDeVideo?.id ?? null, Validators.required],
+    });
+  }
+
+  private loadDependencies(): void {
+    forkJoin({
+      usuarios: this.usuarioService.findAll(),
+      placas: this.placaService.findAll(),
+    }).subscribe({
+      next: ({ usuarios, placas }) => {
+        this.usuarios = usuarios;
+        this.placas = placas;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar dependências:', error);
+        this.snackBar.open('Erro ao carregar dependências.', 'Fechar', {
+          duration: 3000,
+        });
+      },
+    });
   }
 
   salvar(): void {
-    if (this.formGroup.valid) {
-      const avaliacao = this.formGroup.value;
-      const operation = avaliacao.id
-        ? this.avaliacaoService.update(avaliacao)
-        : this.avaliacaoService.insert(avaliacao);
-
-      operation.subscribe({
-        next: () => this.router.navigateByUrl('/admin/avaliacoes'),
-        error: (err) => console.error('Erro ao salvar avaliação:', err),
-      });
+    if (this.formGroup.invalid) {
+      this.snackBar.open(
+        'Formulário inválido. Verifique os campos obrigatórios.',
+        'Fechar',
+        { duration: 3000 }
+      );
+      return;
     }
+
+    const formValue = this.formGroup.value;
+    const avaliacao: Avaliacao = {
+      id: formValue.id,
+      comentario: formValue.comentario,
+      nota: formValue.nota,
+      usuario: formValue.usuario,
+      placaDeVideo: formValue.placaDeVideo,
+      dataCriacao: new Date().toISOString(),
+    };
+
+    const request = avaliacao.id
+      ? this.avaliacaoService.update(avaliacao)
+      : this.avaliacaoService.insert(avaliacao);
+
+    request.subscribe({
+      next: () => {
+        this.snackBar.open('Avaliação salva com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
+        this.router.navigateByUrl('/admin/avaliacoes');
+      },
+      error: (error) => {
+        console.error('Erro ao salvar avaliação:', error);
+        this.snackBar.open(
+          'Erro ao salvar avaliação. Tente novamente.',
+          'Fechar',
+          { duration: 3000 }
+        );
+      },
+    });
   }
 
   excluir(): void {
     const id = this.formGroup.get('id')?.value;
     if (id && confirm('Tem certeza que deseja excluir esta avaliação?')) {
       this.avaliacaoService.delete(id).subscribe({
-        next: () => this.router.navigateByUrl('/admin/avaliacoes'),
-        error: (err) => console.error('Erro ao excluir avaliação:', err),
+        next: () => {
+          this.snackBar.open('Avaliação excluída com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
+          this.router.navigateByUrl('/admin/avaliacoes');
+        },
+        error: (error) => {
+          console.error('Erro ao excluir avaliação:', error);
+          this.snackBar.open('Erro ao excluir avaliação.', 'Fechar', {
+            duration: 3000,
+          });
+        },
       });
     }
   }

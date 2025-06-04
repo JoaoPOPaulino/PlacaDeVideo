@@ -161,7 +161,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
     const avaliacao: Avaliacao = {
       id: 0,
       usuario: usuario,
-      placadevideo: this.placa,
+      placaDeVideo: this.placa,
       nota: this.avaliacaoForm.value.nota
         ? {
             id: +this.avaliacaoForm.value.nota,
@@ -213,5 +213,12 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
     return `${
       this.placaDeVideoService.url
     }/download/imagem/${encodeURIComponent(imageName)}`;
+  }
+
+  getStars(rating: number | undefined): number[] {
+    const stars = rating ? Math.round(rating) : 0;
+    return Array(5)
+      .fill(0)
+      .map((_, i) => (i < stars ? 1 : 0));
   }
 }

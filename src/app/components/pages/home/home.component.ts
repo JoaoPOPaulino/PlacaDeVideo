@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FabricanteService } from '../../../services/fabricante.service';
 import { UsuarioService } from '../../../services/usuario.service';
+import { AvaliacaoService } from '../../../services/avaliacao.service';
 
 @Component({
   selector: 'app-home',
@@ -21,10 +22,11 @@ import { UsuarioService } from '../../../services/usuario.service';
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    MatIcon
+    MatIcon,
   ],
 })
 export class HomeComponent {
+  totalAvaliacoes = 0;
   totalPlacas = 0;
   totalEspecificacoes = 0;
   totalFabricante = 0;
@@ -35,12 +37,17 @@ export class HomeComponent {
     private placaService: PlacaDeVideoService,
     private especificacaoService: EspecificacaoTecnicaService,
     private fabricanteService: FabricanteService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private avaliacaoService: AvaliacaoService
   ) {
     this.carregarDados();
   }
 
   carregarDados() {
+    this.avaliacaoService.count().subscribe({
+      next: (res) => (this.totalAvaliacoes = res),
+      error: (err) => console.error('Erro ao carregar avaliações:', err),
+    });
     this.placaService.count().subscribe({
       next: (res) => (this.totalPlacas = res),
       error: (err) => console.error('Erro ao carregar placas:', err),
