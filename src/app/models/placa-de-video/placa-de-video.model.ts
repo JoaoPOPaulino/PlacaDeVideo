@@ -1,4 +1,4 @@
-import { Categoria } from './categoria.model';
+
 import { EspecificacaoTecnica } from './especificacao-tecnica.model';
 import { Fabricante } from './fabricante.model';
 

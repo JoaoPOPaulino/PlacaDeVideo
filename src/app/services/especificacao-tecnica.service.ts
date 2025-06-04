@@ -11,15 +11,10 @@ export class EspecificacaoTecnicaService {
 
   constructor(private httpClient: HttpClient) {}
 
-  findAll(
-    page?: number,
-    pageSize?: number
-  ): Observable<EspecificacaoTecnica[]> {
+  findAll(page?: number, pageSize?: number): Observable<EspecificacaoTecnica[]> {
     let params = new HttpParams();
     if (page !== undefined && pageSize !== undefined) {
-      params = params
-        .set('page', page.toString())
-        .set('pageSize', pageSize.toString());
+      params = params.set('page', page.toString()).set('pageSize', pageSize.toString());
     }
     return this.httpClient.get<EspecificacaoTecnica[]>(this.url, { params });
   }
@@ -32,17 +27,12 @@ export class EspecificacaoTecnicaService {
     return this.httpClient.get<EspecificacaoTecnica>(`${this.url}/${id}`);
   }
 
-  insert(
-    especificacao: EspecificacaoTecnica
-  ): Observable<EspecificacaoTecnica> {
+  insert(especificacao: EspecificacaoTecnica): Observable<EspecificacaoTecnica> {
     return this.httpClient.post<EspecificacaoTecnica>(this.url, especificacao);
   }
 
   update(especificacao: EspecificacaoTecnica): Observable<any> {
-    return this.httpClient.put<any>(
-      `${this.url}/${especificacao.id}`,
-      especificacao
-    );
+    return this.httpClient.put<any>(`${this.url}/${especificacao.id}`, especificacao);
   }
 
   delete(id: number): Observable<any> {

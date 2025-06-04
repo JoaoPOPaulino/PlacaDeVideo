@@ -1,11 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
@@ -37,19 +31,25 @@ export class NovaEspecificacaoDialogComponent {
     private dialogRef: MatDialogRef<NovaEspecificacaoDialogComponent>
   ) {
     this.formGroup = this.formBuilder.group({
-      memoria: ['', Validators.required],
-      clock: ['', Validators.required],
-      barramento: ['', Validators.required],
-      consumoEnergia: ['', Validators.required],
+      memoria: ['', [Validators.required, Validators.maxLength(50)]],
+      clock: ['', [Validators.required, Validators.maxLength(50)]],
+      barramento: ['', [Validators.required, Validators.maxLength(50)]],
+      consumoEnergia: ['', [Validators.required, Validators.maxLength(50)]],
     });
   }
 
   salvar() {
     if (this.formGroup.valid) {
-      const novaEspecificacao: EspecificacaoTecnica = this.formGroup.value;
+      const novaEspecificacao: EspecificacaoTecnica = {
+        ...this.formGroup.value,
+        id: 0, // O backend atribuirá o ID
+      };
       this.especificacaoService.insert(novaEspecificacao).subscribe({
         next: (nova) => this.dialogRef.close(nova),
-        error: (err) => console.error('Erro ao criar especificação:', err),
+        error: (err) => {
+          console.error('Erro ao criar especificação:', err);
+          this.dialogRef.close(null);
+        },
       });
     }
   }

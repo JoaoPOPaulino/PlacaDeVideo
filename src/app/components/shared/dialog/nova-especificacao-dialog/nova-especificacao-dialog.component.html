@@ -5,26 +5,38 @@
     <mat-form-field appearance="outline">
       <mat-label>Memória</mat-label>
       <input matInput formControlName="memoria" />
+      <mat-error *ngIf="formGroup.get('memoria')?.hasError('required')">
+        Memória é obrigatória
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Clock</mat-label>
       <input matInput formControlName="clock" />
+      <mat-error *ngIf="formGroup.get('clock')?.hasError('required')">
+        Clock é obrigatório
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Barramento</mat-label>
       <input matInput formControlName="barramento" />
+      <mat-error *ngIf="formGroup.get('barramento')?.hasError('required')">
+        Barramento é obrigatório
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Consumo de Energia</mat-label>
       <input matInput formControlName="consumoEnergia" />
+      <mat-error *ngIf="formGroup.get('consumoEnergia')?.hasError('required')">
+        Consumo de energia é obrigatório
+      </mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="cancelar()">Cancelar</button>
-  <button mat-flat-button color="primary" (click)="salvar()">Salvar</button>
+  <button mat-flat-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid">Salvar</button>
 </mat-dialog-actions>

@@ -44,8 +44,10 @@ export class PlacaDeVideoService {
   }
 
   findById(id: string): Observable<PlacaDeVideo> {
-    return this.httpClient.get<PlacaDeVideo>(`${this.url}/${id}`);
-  }
+  return this.httpClient.get<PlacaDeVideo>(`${this.url}/${id}`, {
+    params: new HttpParams().set('projection', 'placaCompleta')
+  });
+}
 
   insert(placa: PlacaDeVideo): Observable<PlacaDeVideo> {
     if (!placa.fabricante?.id || !placa.categoria || !placa.especificacaoTecnica?.id) {

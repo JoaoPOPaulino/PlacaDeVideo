@@ -17,6 +17,9 @@ import { FabricanteService } from '../../../../services/fabricante.service';
 import { EspecificacaoTecnicaService } from '../../../../services/especificacao-tecnica.service';
 import { Fabricante } from '../../../../models/placa-de-video/fabricante.model';
 import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Importar MatDialog
+import { NovaEspecificacaoDialogComponent } from '../../../shared/dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
+
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -33,6 +36,8 @@ import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especifi
     MatCardModule,
     MatIconModule,
     RouterLink,
+    MatDialogModule,
+    NovaEspecificacaoDialogComponent,
   ],
   templateUrl: './placa-de-video-form.component.html',
   styleUrls: ['./placa-de-video-form.component.css'],
@@ -44,7 +49,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
   categorias = ['Entrada', 'Intermediária', 'Alto Desempenho'];
   selectedFile: File | null = null;
   uploading = false;
-  placaId: string | null = null; // Adicionado para acessar ID no template
+  placaId: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -53,7 +58,8 @@ export class PlacaDeVideoFormComponent implements OnInit {
     private especificacaoService: EspecificacaoTecnicaService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog // Injetar MatDialog
   ) {
     this.placaForm = this.fb.group({
       nome: ['', Validators.required],
@@ -68,6 +74,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Carregar fabricantes
     this.fabricanteService.findAll().subscribe({
       next: (fabricantes) => {
         this.fabricantes = fabricantes;
@@ -78,9 +85,14 @@ export class PlacaDeVideoFormComponent implements OnInit {
       },
     });
 
+    // Carregar especificações técnicas
     this.especificacaoService.findAll().subscribe({
       next: (especificacoes) => {
+        console.log('Especificações retornadas:', especificacoes);
         this.especificacoes = especificacoes;
+        if (especificacoes.length === 0) {
+          this.snackBar.open('Nenhuma especificação técnica encontrada.', 'Fechar', { duration: 3000 });
+        }
       },
       error: (error) => {
         console.error('Erro ao carregar especificações:', error);
@@ -88,6 +100,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       },
     });
 
+    // Carregar placa existente, se houver
     this.placaId = this.route.snapshot.paramMap.get('id');
     if (this.placaId) {
       this.placaService.findById(this.placaId).subscribe({
@@ -171,23 +184,24 @@ export class PlacaDeVideoFormComponent implements OnInit {
     const idEspecificacao = this.placaForm.get('idEspecificacaoTecnica')!.value;
     const especificacao = this.especificacoes.find(e => e.id === idEspecificacao);
 
+    if (!fabricante) {
+      this.snackBar.open('Fabricante inválido.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    if (!especificacao) {
+      this.snackBar.open('Especificação técnica inválida.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
     const placa: PlacaDeVideo = {
       id: this.placaId ? Number(this.placaId) : 0,
       nome: this.placaForm.get('nome')!.value,
       preco: this.placaForm.get('preco')!.value,
-      fabricante: fabricante || { id: idFabricante, nome: '' },
+      fabricante: fabricante,
       categoria: this.placaForm.get('categoria')!.value,
       estoque: this.placaForm.get('estoque')!.value,
-      especificacaoTecnica: especificacao || {
-        id: idEspecificacao,
-        memoria: '',
-        clock: '',
-        barramento: '',
-        consumoEnergia: '',
-        get descricao() {
-          return `${this.memoria} | ${this.clock} | ${this.barramento}`;
-        }
-      },
+      especificacaoTecnica: especificacao,
       nomeImagem: this.placaForm.get('nomeImagem')!.value || null,
       descricao: this.placaForm.get('descricao')!.value,
     };
@@ -223,5 +237,20 @@ export class PlacaDeVideoFormComponent implements OnInit {
         },
       });
     }
+  }
+
+  // Método para abrir o diálogo de nova especificação
+  openNovaEspecificacaoDialog(): void {
+    const dialogRef = this.dialog.open(NovaEspecificacaoDialogComponent, {
+      width: '500px',
+    });
+
+    dialogRef.afterClosed().subscribe((result: EspecificacaoTecnica | null) => {
+      if (result) {
+        this.especificacoes = [...this.especificacoes, result];
+        this.placaForm.patchValue({ idEspecificacaoTecnica: result.id });
+        this.snackBar.open('Especificação técnica criada com sucesso!', 'Fechar', { duration: 3000 });
+      }
+    });
   }
 }
