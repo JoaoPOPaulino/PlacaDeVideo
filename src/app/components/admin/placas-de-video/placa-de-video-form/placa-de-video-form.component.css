@@ -42,8 +42,10 @@
 }
 
 .form-toolbar {
-  margin-bottom: 20px;
+  justify-content: center; /* Centraliza conteúdo dentro da toolbar */
+  text-align: center;
 }
+
 
 .toolbar-title {
   font-size: 20px;

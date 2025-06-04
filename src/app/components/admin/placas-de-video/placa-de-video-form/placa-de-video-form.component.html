@@ -4,6 +4,7 @@
   </span>
 </mat-toolbar>
 
+
 <div class="form-container">
   <mat-card class="form-card">
     <mat-card-content>
@@ -100,8 +101,8 @@
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Categoria</mat-label>
           <mat-select formControlName="categoria">
-            <mat-option *ngFor="let categoria of categorias" [value]="categoria">
-              {{ categoria }}
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.id">
+              {{ categoria.label }}
             </mat-option>
           </mat-select>
           <mat-icon matSuffix>category</mat-icon>

@@ -87,7 +87,7 @@ export class UsuarioFormComponent implements OnInit {
         [Validators.required, Validators.minLength(3)],
       ],
       email: [usuario.email || '', [Validators.required, Validators.email]],
-      senha: ['', [Validators.minLength(4)]],
+      senha: ['', [Validators.minLength(6)]],
       perfil: [usuario.perfil?.id || 1, Validators.required],
     });
   }
@@ -175,10 +175,7 @@ export class UsuarioFormComponent implements OnInit {
       login: formData.login,
       email: formData.email,
       senha: formData.senha || undefined,
-      perfil: {
-        id: formData.perfil,
-        label: formData.perfil === 1 ? 'Usuário' : 'Administrador',
-      },
+      perfil: formData.perfil,
       telefones: this.telefones,
       enderecos: this.enderecos,
       nomeImagem: '',
@@ -197,17 +194,24 @@ export class UsuarioFormComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erro detalhado:', err);
-        const errorMessage = err.message || 'Erro ao salvar usuário';
+        let errorMessage = 'Erro ao salvar usuário';
+
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
         this.snackBar.open(errorMessage, 'Fechar', {
           duration: 5000,
           panelClass: ['error-snackbar'],
         });
 
-        if (err.message.includes('Login já está em uso')) {
+        if (errorMessage.includes('Login já está em uso')) {
           this.formGroup.get('login')?.setErrors({ loginExists: true });
         }
+        this.isLoading = false;
       },
-      complete: () => (this.isLoading = false),
     });
   }
 

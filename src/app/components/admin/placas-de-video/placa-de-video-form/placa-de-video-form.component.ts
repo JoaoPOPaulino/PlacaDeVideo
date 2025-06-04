@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +24,6 @@ import { Fabricante } from '../../../../models/placa-de-video/fabricante.model';
 import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog'; // Importar MatDialog
 import { NovaEspecificacaoDialogComponent } from '../../../shared/dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
-
 
 @Component({
   selector: 'app-placa-de-video-form',
@@ -46,7 +50,11 @@ export class PlacaDeVideoFormComponent implements OnInit {
   placaForm: FormGroup;
   fabricantes: Fabricante[] = [];
   especificacoes: EspecificacaoTecnica[] = [];
-  categorias = ['Entrada', 'Intermediária', 'Alto Desempenho'];
+  categorias = [
+    { label: 'Entrada', id: 1 },
+    { label: 'Intermediária', id: 2 },
+    { label: 'Alto Desempenho', id: 3 },
+  ];
   selectedFile: File | null = null;
   uploading = false;
   placaId: string | null = null;
@@ -81,7 +89,9 @@ export class PlacaDeVideoFormComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erro ao carregar fabricantes:', error);
-        this.snackBar.open('Erro ao carregar fabricantes.', 'Fechar', { duration: 3000 });
+        this.snackBar.open('Erro ao carregar fabricantes.', 'Fechar', {
+          duration: 3000,
+        });
       },
     });
 
@@ -91,12 +101,18 @@ export class PlacaDeVideoFormComponent implements OnInit {
         console.log('Especificações retornadas:', especificacoes);
         this.especificacoes = especificacoes;
         if (especificacoes.length === 0) {
-          this.snackBar.open('Nenhuma especificação técnica encontrada.', 'Fechar', { duration: 3000 });
+          this.snackBar.open(
+            'Nenhuma especificação técnica encontrada.',
+            'Fechar',
+            { duration: 3000 }
+          );
         }
       },
       error: (error) => {
         console.error('Erro ao carregar especificações:', error);
-        this.snackBar.open('Erro ao carregar especificações.', 'Fechar', { duration: 3000 });
+        this.snackBar.open('Erro ao carregar especificações.', 'Fechar', {
+          duration: 3000,
+        });
       },
     });
 
@@ -105,11 +121,16 @@ export class PlacaDeVideoFormComponent implements OnInit {
     if (this.placaId) {
       this.placaService.findById(this.placaId).subscribe({
         next: (placa) => {
+          console.log(
+            'Dados completos da placa:',
+            JSON.stringify(placa, null, 2)
+          );
+          const categoriaId = this.mapCategoriaToId(placa.categoria);
           this.placaForm.patchValue({
             nome: placa.nome,
             preco: placa.preco,
             idFabricante: placa.fabricante?.id,
-            categoria: placa.categoria,
+            categoria: categoriaId,
             estoque: placa.estoque,
             idEspecificacaoTecnica: placa.especificacaoTecnica?.id,
             nomeImagem: placa.nomeImagem,
@@ -118,7 +139,9 @@ export class PlacaDeVideoFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao carregar placa:', error);
-          this.snackBar.open('Erro ao carregar placa.', 'Fechar', { duration: 3000 });
+          this.snackBar.open('Erro ao carregar placa.', 'Fechar', {
+            duration: 3000,
+          });
         },
       });
     }
@@ -133,29 +156,60 @@ export class PlacaDeVideoFormComponent implements OnInit {
 
   uploadImage(): void {
     if (!this.selectedFile) {
-      this.snackBar.open('Nenhuma imagem selecionada.', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Nenhuma imagem selecionada.', 'Fechar', {
+        duration: 3000,
+      });
       return;
     }
 
     if (!this.placaId) {
-      this.snackBar.open('Salve a placa antes de fazer upload da imagem.', 'Fechar', { duration: 3000 });
+      this.snackBar.open(
+        'Salve a placa antes de fazer upload da imagem.',
+        'Fechar',
+        { duration: 3000 }
+      );
       return;
     }
 
     this.uploading = true;
-    this.placaService.uploadImage(Number(this.placaId), this.selectedFile).subscribe({
-      next: (placa) => {
-        this.uploading = false;
-        this.placaForm.patchValue({ nomeImagem: placa.nomeImagem });
-        this.selectedFile = null;
-        this.snackBar.open('Imagem enviada com sucesso!', 'Fechar', { duration: 3000 });
-      },
-      error: (error) => {
-        this.uploading = false;
-        console.error('Erro ao enviar imagem:', error);
-        this.snackBar.open('Erro ao enviar imagem.', 'Fechar', { duration: 3000 });
-      },
+    console.log('Iniciando upload para placaId:', this.placaId);
+    console.log('Arquivo selecionado:', {
+      name: this.selectedFile.name,
+      type: this.selectedFile.type,
+      size: this.selectedFile.size,
     });
+
+    this.placaService
+      .uploadImage(Number(this.placaId), this.selectedFile)
+      .subscribe({
+        next: (placa) => {
+          this.uploading = false;
+          this.placaForm.patchValue({ nomeImagem: placa.nomeImagem });
+          this.selectedFile = null;
+          console.log('Upload concluído. Nome da imagem:', placa.nomeImagem);
+          this.snackBar.open('Imagem enviada com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
+          // Opcional: redirecionar após o upload
+          this.router.navigate(['/admin/placasdevideo']);
+        },
+        error: (error) => {
+          this.uploading = false;
+          console.error(
+            'Erro ao enviar imagem:',
+            error.status,
+            error.statusText,
+            error.error
+          );
+          this.snackBar.open(
+            `Erro ao enviar imagem: ${
+              error.error?.message || 'Tente novamente.'
+            }`,
+            'Fechar',
+            { duration: 5000 }
+          );
+        },
+      });
   }
 
   previewImage(): void {
@@ -163,7 +217,9 @@ export class PlacaDeVideoFormComponent implements OnInit {
     if (imageName) {
       window.open(this.placaService.getImageUrl(imageName), '_blank');
     } else {
-      this.snackBar.open('Nenhuma imagem para visualizar.', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Nenhuma imagem para visualizar.', 'Fechar', {
+        duration: 3000,
+      });
     }
   }
 
@@ -174,66 +230,90 @@ export class PlacaDeVideoFormComponent implements OnInit {
 
   salvar(): void {
     if (!this.placaForm.valid) {
-      this.snackBar.open('Preencha corretamente o formulário.', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Preencha corretamente o formulário.', 'Fechar', {
+        duration: 3000,
+      });
       return;
     }
 
-    const idFabricante = this.placaForm.get('idFabricante')!.value;
-    const fabricante = this.fabricantes.find(f => f.id === idFabricante);
+    const idFabricante = Number(this.placaForm.get('idFabricante')!.value);
+    const idEspecificacao = Number(
+      this.placaForm.get('idEspecificacaoTecnica')!.value
+    );
 
-    const idEspecificacao = this.placaForm.get('idEspecificacaoTecnica')!.value;
-    const especificacao = this.especificacoes.find(e => e.id === idEspecificacao);
-
+    const fabricante = this.fabricantes.find((f) => f.id === idFabricante);
     if (!fabricante) {
       this.snackBar.open('Fabricante inválido.', 'Fechar', { duration: 3000 });
       return;
     }
 
+    const especificacao = this.especificacoes.find(
+      (e) => e.id === idEspecificacao
+    );
     if (!especificacao) {
-      this.snackBar.open('Especificação técnica inválida.', 'Fechar', { duration: 3000 });
+      this.snackBar.open('Especificação técnica inválida.', 'Fechar', {
+        duration: 3000,
+      });
       return;
     }
 
     const placa: PlacaDeVideo = {
       id: this.placaId ? Number(this.placaId) : 0,
       nome: this.placaForm.get('nome')!.value,
-      preco: this.placaForm.get('preco')!.value,
+      preco: Number(this.placaForm.get('preco')!.value),
       fabricante: fabricante,
       categoria: this.placaForm.get('categoria')!.value,
-      estoque: this.placaForm.get('estoque')!.value,
+      estoque: Number(this.placaForm.get('estoque')!.value),
       especificacaoTecnica: especificacao,
       nomeImagem: this.placaForm.get('nomeImagem')!.value || null,
       descricao: this.placaForm.get('descricao')!.value,
     };
 
-    const action = placa.id ? this.placaService.update(placa) : this.placaService.insert(placa);
+    const action = placa.id
+      ? this.placaService.update(placa)
+      : this.placaService.insert(placa);
 
     action.subscribe({
-      next: () => {
+      next: (placaRetornada: PlacaDeVideo) => {
+        this.placaId = placaRetornada.id.toString(); // Atualiza placaId após salvar
+        console.log('Placa salva com sucesso. placaId:', this.placaId);
         this.snackBar.open(
           `Placa ${placa.id ? 'atualizada' : 'criada'} com sucesso!`,
           'Fechar',
           { duration: 3000 }
         );
-        this.router.navigate(['/admin/placasdevideo']);
+        // Não redireciona para permitir o upload da imagem
       },
       error: (error) => {
-        console.error('Erro ao salvar placa:', error);
-        this.snackBar.open('Erro ao salvar placa.', 'Fechar', { duration: 3000 });
+        console.error(
+          'Erro ao salvar placa:',
+          error.status,
+          error.statusText,
+          error.error
+        );
+        const mensagem = error.error?.message || 'Erro ao salvar placa.';
+        this.snackBar.open(mensagem, 'Fechar', { duration: 5000 });
       },
     });
   }
 
   excluir(): void {
-    if (this.placaId && confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
+    if (
+      this.placaId &&
+      confirm('Tem certeza que deseja excluir esta placa de vídeo?')
+    ) {
       this.placaService.delete(Number(this.placaId)).subscribe({
         next: () => {
-          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', { duration: 3000 });
+          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', {
+            duration: 3000,
+          });
           this.router.navigate(['/admin/placasdevideo']);
         },
         error: (error) => {
           console.error('Erro ao excluir:', error);
-          this.snackBar.open('Erro ao excluir placa.', 'Fechar', { duration: 3000 });
+          this.snackBar.open('Erro ao excluir placa.', 'Fechar', {
+            duration: 3000,
+          });
         },
       });
     }
@@ -249,8 +329,38 @@ export class PlacaDeVideoFormComponent implements OnInit {
       if (result) {
         this.especificacoes = [...this.especificacoes, result];
         this.placaForm.patchValue({ idEspecificacaoTecnica: result.id });
-        this.snackBar.open('Especificação técnica criada com sucesso!', 'Fechar', { duration: 3000 });
+        this.snackBar.open(
+          'Especificação técnica criada com sucesso!',
+          'Fechar',
+          { duration: 3000 }
+        );
       }
     });
+  }
+
+  private mapCategoriaToId(categoria: string): number {
+    if (!categoria) return 1; // Valor padrão caso categoria seja null/undefined
+
+    // Converter para minúsculas e remover caracteres especiais para comparação
+    const normalized = categoria
+      .toLowerCase()
+      .replace(/_/g, ' ') // Remove underscores
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // Remove acentos
+
+    if (normalized.includes('entrada')) return 1;
+    if (
+      normalized.includes('intermediária') ||
+      normalized.includes('intermediaria')
+    )
+      return 2;
+    if (
+      normalized.includes('alto desempenho') ||
+      normalized.includes('altodesempenho')
+    )
+      return 3;
+
+    console.warn('Categoria não reconhecida:', categoria);
+    return 1; // Valor padrão para categoria desconhecida
   }
 }

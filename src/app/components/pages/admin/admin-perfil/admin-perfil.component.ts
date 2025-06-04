@@ -121,18 +121,14 @@ export class AdminPerfilComponent implements OnInit {
   }
 
   validateLogin(login: string): Observable<boolean> {
-    if (!login || login.length < 3) {
-      return of(false);
-    }
+    if (!login || login.length < 3) return of(false);
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-    if (currentUsuario && currentUsuario.login === login) {
-      return of(false);
-    }
+    if (currentUsuario && currentUsuario.login === login) return of(false);
+
     return this.usuarioService.checkLoginExists(login).pipe(
       map((exists) => {
-        if (exists) {
+        if (exists)
           this.perfilForm.get('login')?.setErrors({ loginExists: true });
-        }
         return exists;
       }),
       catchError(() => of(false))
@@ -140,18 +136,14 @@ export class AdminPerfilComponent implements OnInit {
   }
 
   validateEmail(email: string): Observable<boolean> {
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return of(false);
-    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return of(false);
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-    if (currentUsuario && currentUsuario.email === email) {
-      return of(false);
-    }
+    if (currentUsuario && currentUsuario.email === email) return of(false);
+
     return this.usuarioService.checkEmailExists(email).pipe(
       map((exists) => {
-        if (exists) {
+        if (exists)
           this.perfilForm.get('email')?.setErrors({ emailExists: true });
-        }
         return exists;
       }),
       catchError(() => of(false))
@@ -234,20 +226,15 @@ export class AdminPerfilComponent implements OnInit {
     const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, {
       width: '400px',
     });
-
     dialogRef.afterClosed().subscribe((telefone: Telefone) => {
-      if (telefone) {
-        this.addTelefone(telefone);
-      }
+      if (telefone) this.addTelefone(telefone);
     });
   }
 
   private addTelefone(telefone: Telefone): void {
     const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      if (!currentUsuario) return;
-
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
       const updatedTelefones = [...(currentUsuario.telefones || []), telefone];
       const payload = {
         ...currentUsuario,
@@ -255,7 +242,6 @@ export class AdminPerfilComponent implements OnInit {
         enderecos: currentUsuario.enderecos || [],
         perfil: currentUsuario.perfil.label.toUpperCase(),
       };
-
       this.updateUsuario(
         payload,
         Number(usuarioId),
@@ -269,20 +255,15 @@ export class AdminPerfilComponent implements OnInit {
     const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, {
       width: '400px',
     });
-
     dialogRef.afterClosed().subscribe((endereco: Endereco) => {
-      if (endereco) {
-        this.addEndereco(endereco);
-      }
+      if (endereco) this.addEndereco(endereco);
     });
   }
 
   private addEndereco(endereco: Endereco): void {
     const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      if (!currentUsuario) return;
-
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
       const updatedEnderecos = [...(currentUsuario.enderecos || []), endereco];
       const payload = {
         ...currentUsuario,
@@ -290,7 +271,6 @@ export class AdminPerfilComponent implements OnInit {
         enderecos: updatedEnderecos,
         perfil: currentUsuario.perfil.label.toUpperCase(),
       };
-
       this.updateUsuario(
         payload,
         Number(usuarioId),
@@ -302,10 +282,8 @@ export class AdminPerfilComponent implements OnInit {
 
   removeTelefone(index: number): void {
     const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      if (!currentUsuario) return;
-
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
       const updatedTelefones = [...(currentUsuario.telefones || [])];
       updatedTelefones.splice(index, 1);
       const payload = {
@@ -314,7 +292,6 @@ export class AdminPerfilComponent implements OnInit {
         enderecos: currentUsuario.enderecos || [],
         perfil: currentUsuario.perfil.label.toUpperCase(),
       };
-
       this.updateUsuario(
         payload,
         Number(usuarioId),
@@ -326,10 +303,8 @@ export class AdminPerfilComponent implements OnInit {
 
   removeEndereco(index: number): void {
     const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      if (!currentUsuario) return;
-
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
       const updatedEnderecos = [...(currentUsuario.enderecos || [])];
       updatedEnderecos.splice(index, 1);
       const payload = {
@@ -338,7 +313,6 @@ export class AdminPerfilComponent implements OnInit {
         enderecos: updatedEnderecos,
         perfil: currentUsuario.perfil.label.toUpperCase(),
       };
-
       this.updateUsuario(
         payload,
         Number(usuarioId),
