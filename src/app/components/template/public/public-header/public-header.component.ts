@@ -28,6 +28,7 @@ import { CartUIService } from '../../../../services/cart-ui.service';
 })
 export class PublicHeaderComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
+  isAdmin = false;
   cartItemsCount = 0;
   private usuarioSub?: Subscription;
   private cartSub?: Subscription;
@@ -45,6 +46,7 @@ export class PublicHeaderComponent implements OnInit, OnDestroy {
       .getUsuarioLogado()
       .subscribe((usuario) => {
         this.isLoggedIn = !!usuario && this.authService.isLoggedIn();
+        this.isAdmin = this.authService.getPerfil() === 'ADMIN';
       });
     this.cartSub = this.cartService.cartItems$.subscribe((items) => {
       this.cartItemsCount = items.reduce(
@@ -61,12 +63,13 @@ export class PublicHeaderComponent implements OnInit, OnDestroy {
 
   private updateLoginStatus(): void {
     this.isLoggedIn = this.authService.isLoggedIn();
+    this.isAdmin = this.authService.getPerfil() === 'ADMIN';
   }
 
   logout(): void {
     this.authService.logout();
     this.updateLoginStatus();
-    this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/');
   }
 
   openCart(): void {

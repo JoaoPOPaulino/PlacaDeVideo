@@ -61,7 +61,7 @@ export class AuthService {
     if (usuario) {
       try {
         const usuarioLogado = JSON.parse(usuario);
-        return usuarioLogado.perfil?.label || null;
+        return usuarioLogado.perfil?.label?.toUpperCase() || null;
       } catch (error) {
         console.error('Erro ao obter perfil:', error);
         return null;
@@ -131,6 +131,4 @@ export class AuthService {
   updateUsuarioLogado(updatedUsuario: Usuario): void {
     this.setUsuarioLogado(updatedUsuario);
   }
-
-  
 }

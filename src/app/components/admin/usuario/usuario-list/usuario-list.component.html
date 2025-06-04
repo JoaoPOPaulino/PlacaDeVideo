@@ -44,7 +44,7 @@
     <ng-container matColumnDef="perfil">
       <th mat-header-cell *matHeaderCellDef>Perfil</th>
       <td mat-cell *matCellDef="let element">
-        <span [class]="getBadgeClass(element.perfil)">
+        <span class="badge {{element.perfil?.id === 1 ? 'usuario' : 'admin'}}">
           {{ element.perfil | perfilLabel }}
         </span>
       </td>

@@ -60,6 +60,7 @@ export class PlacaDeVideoService {
       idCategoria: placa.categoria.id,
       estoque: placa.estoque,
       idEspecificacaoTecnica: placa.especificacaoTecnica.id,
+      descricao: placa.descricao || '', // Include descricao
     };
 
     return this.httpClient.post<PlacaDeVideo>(this.url, obj);
@@ -86,6 +87,7 @@ export class PlacaDeVideoService {
       idCategoria: placa.categoria.id,
       estoque: placa.estoque,
       idEspecificacaoTecnica: placa.especificacaoTecnica.id,
+      descricao: placa.descricao || '', // Include descricao
     };
 
     return this.httpClient.put<PlacaDeVideo>(`${this.url}/${placa.id}`, obj);

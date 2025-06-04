@@ -1,14 +1,12 @@
-// public-home.component.ts
 import { Component } from '@angular/core';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { CartService } from '../../../../services/cart.service';
-import { ItemCarrinho } from '../../../../models/item-carrinho';
+import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
 
 @Component({
   selector: 'app-public-home',
@@ -25,12 +23,12 @@ import { ItemCarrinho } from '../../../../models/item-carrinho';
   ],
 })
 export class PublicHomeComponent {
-  featuredProducts: any[] = [];
+  featuredProducts: PlacaDeVideo[] = [];
   loading = true;
 
   constructor(
     private placaService: PlacaDeVideoService,
-    private cartService: CartService
+    private router: Router
   ) {
     this.loadFeaturedProducts();
   }
@@ -55,14 +53,7 @@ export class PublicHomeComponent {
     )}`;
   }
 
-  addToCart(product: any): void {
-    const item: ItemCarrinho = {
-      id: product.id,
-      nome: product.nome,
-      preco: product.preco,
-      quantidade: 1,
-      nomeImagem: product.nomeImagem, // Alterado de imagem para nomeImagem
-    };
-    this.cartService.addToCart(item);
+  viewDetails(productId: number): void {
+    this.router.navigate(['/produto', productId]);
   }
 }

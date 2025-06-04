@@ -19,8 +19,8 @@
         <p class="price">{{ product.preco | currency: 'BRL':'symbol':'1.2-2' }}</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" [routerLink]="['/produto', product.id]">Detalhes</button>
-        <button mat-raised-button color="primary" (click)="addToCart(product)">
+        <button mat-raised-button color="primary" (click)="viewDetails(product.id)">Detalhes</button>
+        <button mat-raised-button color="primary" (click)="viewDetails(product.id)">
           <mat-icon>add_shopping_cart</mat-icon> Adicionar
         </button>
       </mat-card-actions>

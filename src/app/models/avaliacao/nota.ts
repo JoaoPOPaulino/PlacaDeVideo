@@ -1,7 +1,4 @@
-export enum Nota {
-  UM,
-  DOIS,
-  TRES,
-  QUATRO,
-  CINCO,
+export class Nota {
+  id!: number;
+  label!: string;
 }

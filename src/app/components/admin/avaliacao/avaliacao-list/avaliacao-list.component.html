@@ -1,1 +1,82 @@
-<p>avaliacao-list works!</p>
+<mat-toolbar color="primary" class="avaliacao-toolbar">
+  <div class="flex-container">
+    <span class="toolbar-title">Controle de Avaliações</span>
+    <button mat-fab color="accent" [routerLink]="['new']" matTooltip="Adicionar nova avaliação">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<div class="table-container">
+  <table mat-table [dataSource]="avaliacoes" class="mat-elevation-z8">
+    <!-- Coluna ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let element">{{element.id}}</td>
+    </ng-container>
+
+    <!-- Coluna Usuário -->
+    <ng-container matColumnDef="usuario">
+      <th mat-header-cell *matHeaderCellDef>Usuário</th>
+      <td mat-cell *matCellDef="let element">{{element.usuario.nome}}</td>
+    </ng-container>
+
+    <!-- Coluna Placa -->
+    <ng-container matColumnDef="placa">
+      <th mat-header-cell *matHeaderCellDef>Placa de Vídeo</th>
+      <td mat-cell *matCellDef="let element">{{element.placadevideo.nome}}</td>
+    </ng-container>
+
+    <!-- Coluna Nota -->
+    <ng-container matColumnDef="nota">
+      <th mat-header-cell *matHeaderCellDef>Nota</th>
+      <td mat-cell *matCellDef="let element">
+        <span *ngIf="element.nota">{{element.nota.label}}</span>
+        <span *ngIf="!element.nota">-</span>
+      </td>
+    </ng-container>
+
+    <!-- Coluna Comentário -->
+    <ng-container matColumnDef="comentario">
+      <th mat-header-cell *matHeaderCellDef>Comentário</th>
+      <td mat-cell *matCellDef="let element">
+        {{element.comentario | truncate:30}}
+      </td>
+    </ng-container>
+
+    <!-- Coluna Data -->
+    <ng-container matColumnDef="data">
+      <th mat-header-cell *matHeaderCellDef>Data</th>
+      <td mat-cell *matCellDef="let element">
+        {{element.dataCriacao | date:'dd/MM/yyyy'}}
+      </td>
+    </ng-container>
+
+    <!-- Coluna Ações -->
+    <ng-container matColumnDef="acao">
+      <th mat-header-cell *matHeaderCellDef>Ações</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="primary" 
+                [routerLink]="['edit', element.id]"
+                matTooltip="Editar">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" 
+                (click)="excluir(element.id)"
+                matTooltip="Excluir">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                 showFirstLastButtons
+                 [length]="totalRecords"
+                 [pageSize]="pageSize"
+                 (page)="paginar($event)">
+  </mat-paginator>
+</div>

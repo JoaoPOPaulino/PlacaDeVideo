@@ -94,6 +94,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       fabricante: [placa?.fabricante ?? null, Validators.required],
       categoria: [placa?.categoria?.id ?? null, Validators.required],
       estoque: [placa?.estoque ?? 0, [Validators.required, Validators.min(0)]],
+      descricao: [placa?.descricao ?? '', Validators.maxLength(500)],
     });
   }
 
@@ -135,6 +136,7 @@ export class PlacaDeVideoFormComponent implements OnInit {
       especificacaoTecnica: formValue.especificacaoTecnica,
       categoria: { id: formValue.categoria, label: '' }, // Apenas o ID é necessário
       estoque: formValue.estoque,
+      descricao: formValue.descricao || '',
     };
 
     const request = placa.id

@@ -1,3 +1,4 @@
+```html
 <mat-toolbar color="primary" class="form-toolbar">
   <span class="toolbar-title">
     {{ formGroup.get('id')?.value ? 'Editar Placa de Vídeo' : 'Nova Placa de Vídeo' }}
@@ -122,6 +123,17 @@
             Estoque não pode ser negativo
           </mat-error>
         </mat-form-field>
+
+        <!-- Descrição -->
+        <mat-form-field appearance="outline" class="full-width-input">
+          <mat-label>Descrição</mat-label>
+          <textarea matInput formControlName="descricao" rows="4" maxlength="500"></textarea>
+          <mat-icon matSuffix>description</mat-icon>
+          <mat-error *ngIf="formGroup.get('descricao')?.hasError('maxlength')">
+            A descrição não pode exceder 500 caracteres
+          </mat-error>
+          <mat-hint>Até 500 caracteres</mat-hint>
+        </mat-form-field>
       </form>
     </mat-card-content>
 
@@ -141,3 +153,4 @@
     </mat-card-actions>
   </mat-card>
 </div>
+```

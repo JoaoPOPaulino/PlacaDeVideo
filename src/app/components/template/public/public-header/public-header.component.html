@@ -50,7 +50,7 @@
   </ng-container>
 
   <ng-template #loggedInMenu>
-    <button mat-menu-item routerLink="/minha-conta">
+    <button mat-menu-item [routerLink]="isAdmin ? '/admin/minha-conta' : '/cliente/minha-conta'">
       <mat-icon>account_circle</mat-icon>
       <span>Minha Conta</span>
     </button>

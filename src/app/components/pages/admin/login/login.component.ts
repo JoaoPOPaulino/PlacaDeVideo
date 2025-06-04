@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../services/auth.service';
@@ -58,10 +63,8 @@ export class AdminLoginComponent implements OnInit {
         next: () => {
           this.isLoading = false;
           const perfil = this.authService.getPerfil();
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin';
-
           if (perfil === 'ADMIN') {
-            this.router.navigateByUrl(returnUrl);
+            this.router.navigate(['/admin/home']);
             this.snackBar.open('Login realizado com sucesso!', 'Fechar', {
               duration: 3000,
               verticalPosition: 'top',
@@ -74,13 +77,15 @@ export class AdminLoginComponent implements OnInit {
               verticalPosition: 'top',
               horizontalPosition: 'center',
             });
-            this.router.navigateByUrl('/login');
+            this.router.navigate(['/login']);
           }
         },
         error: (err) => {
           this.isLoading = false;
           const errorMessage =
-            err.status === 404 ? 'Usuário ou senha inválidos' : 'Erro ao conectar com o servidor';
+            err.status === 404
+              ? 'Usuário ou senha inválidos'
+              : 'Erro ao conectar com o servidor';
           this.snackBar.open(errorMessage, 'Fechar', {
             duration: 3000,
             verticalPosition: 'top',
@@ -89,11 +94,15 @@ export class AdminLoginComponent implements OnInit {
         },
       });
     } else {
-      this.snackBar.open('Por favor, preencha todos os campos corretamente', 'Fechar', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-      });
+      this.snackBar.open(
+        'Por favor, preencha todos os campos corretamente',
+        'Fechar',
+        {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        }
+      );
     }
   }
 }

@@ -11,4 +11,5 @@ export class PlacaDeVideo {
   categoria!: Categoria;
   estoque!: number;
   nomeImagem!: string;
+  descricao?: string;
 }

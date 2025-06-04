@@ -1,4 +1,4 @@
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,28 +12,26 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { Perfil } from '../../../../models/usuario/perfil.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { PerfilPipe } from "../../../shared/pipes/Perfil.pipe";
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { PerfilPipe } from '../../../shared/pipes/perfil_.pipe';
 
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
   imports: [
-    NgFor,
+    CommonModule,
     MatTableModule,
     MatToolbarModule,
     MatIconModule,
     RouterLink,
-    CommonModule,
     MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
     MatButtonModule,
-    MatIconModule,
-    PerfilPipe
-],
+    MatSnackBarModule,
+    PerfilPipe,
+  ],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.css',
 })
@@ -61,24 +59,14 @@ export class UsuarioListComponent implements OnInit {
         this.pageSize,
         this.searchTerm
       ),
-      total: this.searchTerm
-        ? this.usuarioService.count(this.searchTerm)
-        : this.usuarioService.count(),
+      total: this.usuarioService.count(this.searchTerm),
     }).subscribe({
       next: ({ usuarios, total }) => {
         this.usuarios = usuarios.sort((a, b) => a.id - b.id);
         this.totalRecords = total;
       },
-      error: (error) => {
-        console.error('Erro ao carregar usuários:', error);
-        this.snackBar.open(
-          'Erro ao carregar usuários. Tente novamente.',
-          'Fechar',
-          {
-            duration: 3000,
-          }
-        );
-      },
+      error: (error) =>
+        this.showError('Erro ao carregar usuários. Tente novamente.', error),
     });
   }
 
@@ -102,33 +90,20 @@ export class UsuarioListComponent implements OnInit {
     if (confirm('Tem certeza que deseja excluir?')) {
       this.usuarioService.delete(id).subscribe({
         next: () => {
-          this.snackBar.open('Usuário excluído com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
+          this.showSuccess('Usuário excluído com sucesso!');
           this.loadUsuarios();
         },
-        error: (error) => {
-          console.error('Erro ao excluir usuário:', error);
-          this.snackBar.open('Erro ao excluir usuário.', 'Fechar', {
-            duration: 3000,
-          });
-        },
+        error: (error) => this.showError('Erro ao excluir usuário.', error),
       });
     }
   }
 
-  getBadgeClass(perfil: Perfil): string {
-    switch (perfil?.id) {
-      case 1:
-        return 'usuario';
-      case 2:
-        return 'admin';
-      default:
-        return '';
-    }
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, 'Fechar', { duration: 3000 });
   }
 
-  getPerfilId(perfil: Perfil): number {
-    return perfil?.id || 0;
+  private showError(message: string, error: any): void {
+    console.error(message, error);
+    this.snackBar.open(message, 'Fechar', { duration: 3000 });
   }
 }

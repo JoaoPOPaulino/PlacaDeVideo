@@ -1,4 +1,3 @@
-// produtos.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -12,9 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
-import { CartService } from '../../../../services/cart.service';
-import { ItemCarrinho } from '../../../../models/item-carrinho';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-produtos',
@@ -46,7 +44,7 @@ export class ProdutosComponent implements OnInit, OnDestroy {
 
   constructor(
     private placaDeVideoService: PlacaDeVideoService,
-    private cartService: CartService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -83,15 +81,8 @@ export class ProdutosComponent implements OnInit, OnDestroy {
     this.loadPlacas();
   }
 
-  addToCart(placa: PlacaDeVideo): void {
-    const item: ItemCarrinho = {
-      id: placa.id,
-      nome: placa.nome,
-      preco: placa.preco,
-      quantidade: 1,
-      nomeImagem: placa.nomeImagem,
-    };
-    this.cartService.addToCart(item);
+  viewDetails(placaId: number): void {
+    this.router.navigate(['/produto', placaId]);
   }
 
   applyFilters(): void {

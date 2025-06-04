@@ -6,7 +6,7 @@ export class Avaliacao {
   id!: number;
   usuario!: Usuario;
   placadevideo!: PlacaDeVideo;
-  nota!: Nota;
+  nota?: Nota;
   comentario!: string;
   dataCriacao!: string;
 }
