@@ -14,8 +14,9 @@
         <mat-label>Fabricante</mat-label>
         <mat-select [(ngModel)]="filterFabricante" (selectionChange)="applyFilters()">
           <mat-option [value]="null">Todos</mat-option>
-          <mat-option [value]="1">NVIDIA</mat-option>
-          <mat-option [value]="2">AMD</mat-option>
+          <mat-option *ngFor="let fabricante of fabricantes" [value]="fabricante.id">
+            {{ fabricante.nome }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -23,30 +24,35 @@
         <mat-label>Categoria</mat-label>
         <mat-select [(ngModel)]="filterCategoria" (selectionChange)="applyFilters()">
           <mat-option [value]="null">Todas</mat-option>
-          <mat-option [value]="1">Gaming</mat-option>
-          <mat-option [value]="2">Profissional</mat-option>
+          <mat-option *ngFor="let categoria of categorias" [value]="categoria">
+            {{ categoria }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
   </div>
 
+  <!-- Loading Spinner -->
+  <mat-spinner *ngIf="loading" diameter="50" class="loading-spinner"></mat-spinner>
+
   <!-- Product Grid -->
-  <mat-grid-list cols="4" rowHeight="400px" gutterSize="20px" class="product-grid">
-    <mat-grid-tile *ngFor="let placa of placas">
-      <mat-card class="product-card">
-        <img mat-card-image [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}">
-        <mat-card-content>
-          <h3>{{placa.nome}}</h3>
-          <p>{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
-          <p>{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
-          <p>{{placa.categoria.label || 'Categoria desconhecida'}}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="viewDetails(placa.id)">Ver Detalhes</button>
-        </mat-card-actions>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+  <div class="products-grid" *ngIf="!loading">
+    <mat-card *ngFor="let placa of placas" class="product-card">
+      <img [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}" class="product-image" />
+      <mat-card-content>
+        <h3>{{placa.nome}}</h3>
+        <p class="price">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
+        <p class="manufacturer">{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
+        <p class="category">{{placa.categoria || 'Categoria desconhecida'}}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="viewDetails(placa.id)">Detalhes</button>
+        <button mat-raised-button color="accent" (click)="addToCart(placa)">
+          <mat-icon>add_shopping_cart</mat-icon> Adicionar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 
   <!-- Pagination -->
   <mat-paginator
@@ -54,6 +60,12 @@
     [pageSize]="pageSize"
     [pageSizeOptions]="[8, 16, 24]"
     (page)="onPageChange($event)"
-    showFirstLastButtons>
+    showFirstLastButtons
+    *ngIf="!loading && totalItems > 0">
   </mat-paginator>
+
+  <div class="no-results" *ngIf="!loading && placas.length === 0">
+    <mat-icon>search_off</mat-icon>
+    <p>Nenhum produto encontrado</p>
+  </div>
 </div>

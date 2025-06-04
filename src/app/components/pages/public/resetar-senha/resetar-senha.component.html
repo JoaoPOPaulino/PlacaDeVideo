@@ -1,0 +1,31 @@
+<div class="resetar-container">
+  <h2>Redefinir Senha</h2>
+  <form [formGroup]="resetarForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nova Senha</mat-label>
+      <input matInput formControlName="novaSenha" type="password" />
+      <mat-error *ngIf="resetarForm.get('novaSenha')?.hasError('required')">
+        Campo obrigatório
+      </mat-error>
+      <mat-error *ngIf="resetarForm.get('novaSenha')?.hasError('minlength')">
+        A senha deve ter pelo menos 6 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Confirmar Senha</mat-label>
+      <input matInput formControlName="confirmarSenha" type="password" />
+      <mat-error *ngIf="resetarForm.get('confirmarSenha')?.hasError('required')">
+        Campo obrigatório
+      </mat-error>
+      <mat-error *ngIf="resetarForm.errors?.['senhasDiferentes']">
+        As senhas não coincidem
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || resetarForm.invalid" class="submit-button">
+      <span *ngIf="!isLoading">Redefinir</span>
+      <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+    </button>
+  </form>
+</div>

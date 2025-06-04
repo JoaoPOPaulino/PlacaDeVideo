@@ -56,21 +56,21 @@ export class AvaliacaoService {
   }
 
   insert(avaliacao: Avaliacao): Observable<Avaliacao> {
-    if (!avaliacao.usuario?.id || !avaliacao.placaDeVideo?.id) {
-      return throwError(() => new Error('Usuário ou Placa de Vídeo inválidos'));
-    }
-
-    const payload = {
-      idUsuario: avaliacao.usuario.id,
-      idPlacaDeVideo: avaliacao.placaDeVideo.id,
-      nota: avaliacao.nota,
-      comentario: avaliacao.comentario,
-    };
-
-    return this.httpClient
-      .post<Avaliacao>(this.url, payload)
-      .pipe(catchError(this.handleError));
+  if (!avaliacao.usuario?.id || !avaliacao.placaDeVideo?.id) {
+    return throwError(() => new Error('Usuário ou Placa de Vídeo inválidos'));
   }
+
+  const payload = {
+    idUsuario: avaliacao.usuario.id,
+    idPlacaDeVideo: avaliacao.placaDeVideo.id,
+    nota: avaliacao.nota,
+    comentario: avaliacao.comentario,
+  };
+
+  return this.httpClient
+    .post<Avaliacao>(this.url, payload)
+    .pipe(catchError(this.handleError));
+}
 
   update(avaliacao: Avaliacao): Observable<Avaliacao> {
     if (!avaliacao.id) {

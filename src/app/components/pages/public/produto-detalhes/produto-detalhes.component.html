@@ -1,5 +1,3 @@
-
-<app-public-header></app-public-header>
 <div class="detalhes-container">
   <mat-spinner *ngIf="!placa" diameter="50" class="spinner"></mat-spinner>
   <div *ngIf="placa" class="produto-detalhes">
@@ -9,7 +7,7 @@
         <h1>{{placa.nome}}</h1>
         <p class="preco">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
         <p><strong>Fabricante:</strong> {{placa.fabricante.nome || 'Desconhecido'}}</p>
-        <p><strong>Categoria:</strong> {{placa.categoria.label || 'Desconhecida'}}</p>
+        <p><strong>Categoria:</strong> {{placa.categoria || 'Desconhecida'}}</p>
         <p><strong>Especificações Técnicas:</strong></p>
         <ul>
           <li>Memória: {{placa.especificacaoTecnica.memoria}}</li>
@@ -33,7 +31,11 @@
         <mat-list *ngIf="avaliacoes.length > 0; else noAvaliacoes">
           <mat-list-item *ngFor="let avaliacao of avaliacoes" class="avaliacao-item">
             <div class="avaliacao-content">
-              <p><strong>{{avaliacao.usuario.nome}}</strong> - {{avaliacao.nota?.label || 'Sem nota'}} ({{avaliacao.dataCriacao | date:'short'}})</p>
+              <p>
+                <strong>{{avaliacao.usuario.nome}}</strong> - 
+                {{ avaliacao.nota != null ? (avaliacao.nota + ' - ' + getNotaLabel(avaliacao.nota)) : 'Sem nota' }}
+                ({{avaliacao.dataCriacao | date:'short'}})
+              </p>
               <p>{{avaliacao.comentario}}</p>
             </div>
           </mat-list-item>
@@ -81,4 +83,3 @@
     </mat-card>
   </div>
 </div>
-<app-footer></app-footer>

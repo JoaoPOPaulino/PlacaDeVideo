@@ -49,10 +49,7 @@
           <span class="detail-label">Categoria:</span>
           <span class="detail-value">
             <span class="categoria-badge" [ngClass]="getBadgeClass(placa.categoria)">
-              {{ placa.categoria | categoriaLabel }}
-              <span class="debug-info" *ngIf="showDebugInfo">
-                (ID: {{ getCategoriaId(placa.categoria) }})
-              </span>
+              {{ placa.categoria || 'Sem categoria' }}
             </span>
           </span>
         </div>

@@ -1,263 +1,227 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CommonModule, NgIf } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { forkJoin } from 'rxjs';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatDivider } from '@angular/material/divider';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
-import { Fabricante } from '../../../../models/placa-de-video/fabricante.model';
-import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
-import { EspecificacaoTecnicaService } from '../../../../services/especificacao-tecnica.service';
-import { FabricanteService } from '../../../../services/fabricante.service';
+import { CommonModule } from '@angular/common';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
-import { NovaEspecificacaoDialogComponent } from '../../../shared/dialog/nova-especificacao-dialog/nova-especificacao-dialog.component';
-import { Categoria } from '../../../../models/placa-de-video/categoria.model';
+import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
+import { FabricanteService } from '../../../../services/fabricante.service';
+import { EspecificacaoTecnicaService } from '../../../../services/especificacao-tecnica.service';
+import { Fabricante } from '../../../../models/placa-de-video/fabricante.model';
+import { EspecificacaoTecnica } from '../../../../models/placa-de-video/especificacao-tecnica.model';
 
 @Component({
   selector: 'app-placa-de-video-form',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    NgIf,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
     MatSelectModule,
+    MatButtonModule,
     MatProgressBarModule,
-    MatDivider,
+    MatToolbarModule,
+    MatCardModule,
+    MatIconModule,
+    RouterLink,
   ],
   templateUrl: './placa-de-video-form.component.html',
-  styleUrl: './placa-de-video-form.component.css',
+  styleUrls: ['./placa-de-video-form.component.css'],
 })
 export class PlacaDeVideoFormComponent implements OnInit {
-  formGroup!: FormGroup;
+  placaForm: FormGroup;
   fabricantes: Fabricante[] = [];
   especificacoes: EspecificacaoTecnica[] = [];
-  categorias: Categoria[] = [
-    { id: 1, label: 'Entrada' },
-    { id: 2, label: 'Intermediária' },
-    { id: 3, label: 'Alto Desempenho' },
-  ];
-  fileName: string = '';
+  categorias = ['Entrada', 'Intermediária', 'Alto Desempenho'];
   selectedFile: File | null = null;
-  imagePreview: string | ArrayBuffer | null = null;
   uploading = false;
+  placaId: string | null = null; // Adicionado para acessar ID no template
 
   constructor(
     private fb: FormBuilder,
     private placaService: PlacaDeVideoService,
     private fabricanteService: FabricanteService,
     private especificacaoService: EspecificacaoTecnicaService,
-    private router: Router,
     private route: ActivatedRoute,
-    private dialog: MatDialog,
+    private router: Router,
     private snackBar: MatSnackBar
-  ) {}
-
-  ngOnInit(): void {
-    this.initForm();
-    this.loadDependencies();
-  }
-
-  private initForm(): void {
-    const placa = this.route.snapshot.data['placa'] as PlacaDeVideo;
-
-    this.formGroup = this.fb.group({
-      id: [placa?.id ?? null],
-      nome: [placa?.nome ?? '', [Validators.required, Validators.minLength(3)]],
-      preco: [placa?.preco ?? 0, [Validators.required, Validators.min(0)]],
-      nomeImagem: [placa?.nomeImagem ?? ''],
-      especificacaoTecnica: [
-        placa?.especificacaoTecnica ?? null,
-        Validators.required,
-      ],
-      fabricante: [placa?.fabricante ?? null, Validators.required],
-      categoria: [placa?.categoria?.id ?? null, Validators.required],
-      estoque: [placa?.estoque ?? 0, [Validators.required, Validators.min(0)]],
-      descricao: [placa?.descricao ?? '', Validators.maxLength(500)],
+  ) {
+    this.placaForm = this.fb.group({
+      nome: ['', Validators.required],
+      preco: ['', [Validators.required, Validators.min(0)]],
+      idFabricante: ['', Validators.required],
+      categoria: ['', Validators.required],
+      estoque: ['', [Validators.required, Validators.min(0)]],
+      idEspecificacaoTecnica: ['', Validators.required],
+      nomeImagem: [''],
+      descricao: ['', Validators.maxLength(500)],
     });
   }
 
-  private loadDependencies(): void {
-    forkJoin({
-      fabricantes: this.fabricanteService.findAll(),
-      especificacoes: this.especificacaoService.findAll(),
-    }).subscribe({
-      next: ({ fabricantes, especificacoes }) => {
+  ngOnInit(): void {
+    this.fabricanteService.findAll().subscribe({
+      next: (fabricantes) => {
         this.fabricantes = fabricantes;
+      },
+      error: (error) => {
+        console.error('Erro ao carregar fabricantes:', error);
+        this.snackBar.open('Erro ao carregar fabricantes.', 'Fechar', { duration: 3000 });
+      },
+    });
+
+    this.especificacaoService.findAll().subscribe({
+      next: (especificacoes) => {
         this.especificacoes = especificacoes;
       },
       error: (error) => {
-        console.error('Erro ao carregar dependências:', error);
-        this.snackBar.open('Erro ao carregar dependências.', 'Fechar', {
-          duration: 3000,
-        });
+        console.error('Erro ao carregar especificações:', error);
+        this.snackBar.open('Erro ao carregar especificações.', 'Fechar', { duration: 3000 });
       },
     });
-  }
 
-  salvar(): void {
-    if (this.formGroup.invalid) {
-      this.snackBar.open(
-        'Formulário inválido. Verifique os campos obrigatórios.',
-        'Fechar',
-        { duration: 3000 }
-      );
-      return;
-    }
-
-    const formValue = this.formGroup.value;
-    const placa: PlacaDeVideo = {
-      id: formValue.id,
-      nome: formValue.nome,
-      preco: formValue.preco,
-      nomeImagem: formValue.nomeImagem,
-      fabricante: formValue.fabricante,
-      especificacaoTecnica: formValue.especificacaoTecnica,
-      categoria: { id: formValue.categoria, label: '' }, // Apenas o ID é necessário
-      estoque: formValue.estoque,
-      descricao: formValue.descricao || '',
-    };
-
-    const request = placa.id
-      ? this.placaService.update(placa)
-      : this.placaService.insert(placa);
-
-    request.subscribe({
-      next: () => {
-        this.snackBar.open('Placa salva com sucesso!', 'Fechar', {
-          duration: 3000,
-        });
-        this.router.navigateByUrl('/admin/placasdevideo');
-      },
-      error: (error) => {
-        console.error('Erro ao salvar placa:', error);
-        this.snackBar.open('Erro ao salvar placa. Tente novamente.', 'Fechar', {
-          duration: 3000,
-        });
-      },
-    });
-  }
-
-  excluir(): void {
-    const id = this.formGroup.get('id')?.value;
-    if (id && confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
-      this.placaService.delete(id).subscribe({
-        next: () => {
-          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', {
-            duration: 3000,
+    this.placaId = this.route.snapshot.paramMap.get('id');
+    if (this.placaId) {
+      this.placaService.findById(this.placaId).subscribe({
+        next: (placa) => {
+          this.placaForm.patchValue({
+            nome: placa.nome,
+            preco: placa.preco,
+            idFabricante: placa.fabricante?.id,
+            categoria: placa.categoria,
+            estoque: placa.estoque,
+            idEspecificacaoTecnica: placa.especificacaoTecnica?.id,
+            nomeImagem: placa.nomeImagem,
+            descricao: placa.descricao,
           });
-          this.router.navigateByUrl('/admin/placasdevideo');
         },
         error: (error) => {
-          console.error('Erro ao excluir placa:', error);
-          this.snackBar.open('Erro ao excluir placa.', 'Fechar', {
-            duration: 3000,
-          });
+          console.error('Erro ao carregar placa:', error);
+          this.snackBar.open('Erro ao carregar placa.', 'Fechar', { duration: 3000 });
         },
       });
     }
   }
 
   onFileSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      this.selectedFile = file;
-      this.formGroup.patchValue({ nomeImagem: file.name });
-    }
-  }
-
-  removeImage(): void {
-    if (confirm('Remover a imagem atual?')) {
-      this.formGroup.patchValue({ nomeImagem: '' });
-      this.selectedFile = null;
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
     }
   }
 
   uploadImage(): void {
-    if (!this.selectedFile || !this.formGroup.get('id')?.value) {
-      this.snackBar.open(
-        'Selecione uma imagem e salve a placa antes de fazer o upload.',
-        'Fechar',
-        {
-          duration: 3000,
-        }
-      );
+    if (!this.selectedFile) {
+      this.snackBar.open('Nenhuma imagem selecionada.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    if (!this.placaId) {
+      this.snackBar.open('Salve a placa antes de fazer upload da imagem.', 'Fechar', { duration: 3000 });
       return;
     }
 
     this.uploading = true;
-    this.placaService
-      .uploadImage(this.formGroup.get('id')!.value, this.selectedFile)
-      .subscribe({
-        next: (placaAtualizada) => {
-          this.formGroup.patchValue({ nomeImagem: placaAtualizada.nomeImagem });
-          this.selectedFile = null;
-          this.uploading = false;
-          this.snackBar.open('Imagem enviada com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
-        },
-        error: (err) => {
-          console.error('Erro no upload:', err);
-          this.uploading = false;
-          this.snackBar.open(
-            'Erro ao enviar imagem. Tente novamente.',
-            'Fechar',
-            {
-              duration: 3000,
-            }
-          );
-        },
-      });
+    this.placaService.uploadImage(Number(this.placaId), this.selectedFile).subscribe({
+      next: (placa) => {
+        this.uploading = false;
+        this.placaForm.patchValue({ nomeImagem: placa.nomeImagem });
+        this.selectedFile = null;
+        this.snackBar.open('Imagem enviada com sucesso!', 'Fechar', { duration: 3000 });
+      },
+      error: (error) => {
+        this.uploading = false;
+        console.error('Erro ao enviar imagem:', error);
+        this.snackBar.open('Erro ao enviar imagem.', 'Fechar', { duration: 3000 });
+      },
+    });
   }
 
   previewImage(): void {
-    const nomeImagem = this.formGroup.get('nomeImagem')?.value;
-    if (nomeImagem) {
-      window.open(
-        `${this.placaService.url}/download/imagem/${encodeURIComponent(
-          nomeImagem
-        )}`,
-        '_blank'
-      );
+    const imageName = this.placaForm.get('nomeImagem')?.value;
+    if (imageName) {
+      window.open(this.placaService.getImageUrl(imageName), '_blank');
+    } else {
+      this.snackBar.open('Nenhuma imagem para visualizar.', 'Fechar', { duration: 3000 });
     }
   }
 
-  abrirDialogNovaEspecificacao(): void {
-    const dialogRef = this.dialog.open(NovaEspecificacaoDialogComponent, {
-      width: '400px',
-    });
+  removeImage(): void {
+    this.placaForm.patchValue({ nomeImagem: null });
+    this.selectedFile = null;
+  }
 
-    dialogRef
-      .afterClosed()
-      .subscribe((novaEspecificacao: EspecificacaoTecnica) => {
-        if (novaEspecificacao) {
-          this.especificacoes.push(novaEspecificacao);
-          this.formGroup.patchValue({
-            especificacaoTecnica: novaEspecificacao,
-          });
+  salvar(): void {
+    if (!this.placaForm.valid) {
+      this.snackBar.open('Preencha corretamente o formulário.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    const idFabricante = this.placaForm.get('idFabricante')!.value;
+    const fabricante = this.fabricantes.find(f => f.id === idFabricante);
+
+    const idEspecificacao = this.placaForm.get('idEspecificacaoTecnica')!.value;
+    const especificacao = this.especificacoes.find(e => e.id === idEspecificacao);
+
+    const placa: PlacaDeVideo = {
+      id: this.placaId ? Number(this.placaId) : 0,
+      nome: this.placaForm.get('nome')!.value,
+      preco: this.placaForm.get('preco')!.value,
+      fabricante: fabricante || { id: idFabricante, nome: '' },
+      categoria: this.placaForm.get('categoria')!.value,
+      estoque: this.placaForm.get('estoque')!.value,
+      especificacaoTecnica: especificacao || {
+        id: idEspecificacao,
+        memoria: '',
+        clock: '',
+        barramento: '',
+        consumoEnergia: '',
+        get descricao() {
+          return `${this.memoria} | ${this.clock} | ${this.barramento}`;
         }
+      },
+      nomeImagem: this.placaForm.get('nomeImagem')!.value || null,
+      descricao: this.placaForm.get('descricao')!.value,
+    };
+
+    const action = placa.id ? this.placaService.update(placa) : this.placaService.insert(placa);
+
+    action.subscribe({
+      next: () => {
+        this.snackBar.open(
+          `Placa ${placa.id ? 'atualizada' : 'criada'} com sucesso!`,
+          'Fechar',
+          { duration: 3000 }
+        );
+        this.router.navigate(['/admin/placasdevideo']);
+      },
+      error: (error) => {
+        console.error('Erro ao salvar placa:', error);
+        this.snackBar.open('Erro ao salvar placa.', 'Fechar', { duration: 3000 });
+      },
+    });
+  }
+
+  excluir(): void {
+    if (this.placaId && confirm('Tem certeza que deseja excluir esta placa de vídeo?')) {
+      this.placaService.delete(Number(this.placaId)).subscribe({
+        next: () => {
+          this.snackBar.open('Placa excluída com sucesso!', 'Fechar', { duration: 3000 });
+          this.router.navigate(['/admin/placasdevideo']);
+        },
+        error: (error) => {
+          console.error('Erro ao excluir:', error);
+          this.snackBar.open('Erro ao excluir placa.', 'Fechar', { duration: 3000 });
+        },
       });
+    }
   }
 }

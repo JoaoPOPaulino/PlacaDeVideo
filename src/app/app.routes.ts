@@ -30,6 +30,8 @@ import { ProdutoDetalhesComponent } from './components/pages/public/produto-deta
 import { AdminPerfilComponent } from './components/pages/admin/admin-perfil/admin-perfil.component';
 import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/placa-de-video-form/placa-de-video-form.component';
 import { avaliacaoResolver } from './components/admin/avaliacao/avaliacao.resolver';
+import { RecuperarSenhaComponent } from './components/pages/public/recuperar-senha/recuperar-senha.component';
+import { ResetarSenhaComponent } from './components/pages/public/resetar-senha/resetar-senha.component';
 
 export const routes: Routes = [
   {
@@ -51,7 +53,21 @@ export const routes: Routes = [
         component: ProdutoDetalhesComponent,
         title: 'Detalhes do Produto',
       },
-      { path: 'login', component: LoginComponent, title: 'Login' },
+      {
+        path: 'login',
+        component: LoginComponent,
+        title: 'Login'
+      },
+      {
+        path: 'recuperar-senha',
+        component: RecuperarSenhaComponent,
+        title: 'Recuperar Senha',
+      },
+      {
+        path: 'resetar-senha',
+        component: ResetarSenhaComponent,
+        title: 'Redefinir Senha',
+      },
       {
         path: 'cadastro',
         component: CadastroComponent,
@@ -167,7 +183,7 @@ export const routes: Routes = [
         path: 'especificacoes-tecnicas/edit/:id',
         component: EspecificacaoTecnicaFormComponent,
         title: 'Edição de Especificação Técnica',
-        resolve: { especificacaoTecnica: especificacaoTecnicaResolver },
+        resolve: { especificacao: especificacaoTecnicaResolver },
       },
       {
         path: 'minha-conta',

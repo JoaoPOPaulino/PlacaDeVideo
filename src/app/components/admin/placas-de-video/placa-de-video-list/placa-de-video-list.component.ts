@@ -12,9 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { CategoriaPipe } from '../../../shared/pipes/categoria.pipe';
 import { PlacaDeVideo } from '../../../../models/placa-de-video/placa-de-video.model';
-import { Categoria } from '../../../../models/placa-de-video/categoria.model';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 
 @Component({
@@ -31,7 +29,6 @@ import { PlacaDeVideoService } from '../../../../services/placa-de-video.service
     MatInputModule,
     MatFormFieldModule,
     FormsModule,
-    CategoriaPipe,
   ],
   templateUrl: './placa-de-video-list.component.html',
   styleUrls: ['./placa-de-video-list.component.css'],
@@ -89,7 +86,8 @@ export class PlacaDeVideoListComponent implements OnInit {
         : this.placaService.count(),
     }).subscribe({
       next: ({ placas, total }) => {
-        this.placas = placas.sort((a, b) => a.id - b.id);
+        console.log('Placas carregadas:', placas); // Log para depuração
+        this.placas = placas.sort((a, b) => a.id! - b.id!);
         this.totalRecords = total;
       },
       error: (error) => {
@@ -153,9 +151,9 @@ export class PlacaDeVideoListComponent implements OnInit {
     )}`;
   }
 
-  getBadgeClass(categoria: Categoria): string {
-    if (!categoria || !categoria.label) return '';
-    switch (categoria.label.toLowerCase()) {
+  getBadgeClass(categoria: string): string {
+    if (!categoria) return '';
+    switch (categoria.toLowerCase()) {
       case 'entrada':
         return 'entrada';
       case 'intermediária':
@@ -165,10 +163,6 @@ export class PlacaDeVideoListComponent implements OnInit {
       default:
         return '';
     }
-  }
-
-  getCategoriaId(categoria: Categoria): number {
-    return categoria?.id || 0;
   }
 
   toggleDebugInfo(): void {

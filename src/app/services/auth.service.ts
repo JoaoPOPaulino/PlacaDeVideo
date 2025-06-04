@@ -131,4 +131,12 @@ export class AuthService {
   updateUsuarioLogado(updatedUsuario: Usuario): void {
     this.setUsuarioLogado(updatedUsuario);
   }
+
+  solicitarRecuperacaoSenha(loginOuEmail: string): Observable<void> {
+      return this.http.post<void>(`${this.baseURL}/solicitar-recuperacao`, { loginOuEmail });
+  }
+
+  resetarSenha(token: string, novaSenha: string): Observable<void> {
+    return this.http.post<void>(`${this.baseURL}/resetar-senha`, { token, novaSenha });
+}
 }

@@ -1,0 +1,15 @@
+.resetar-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.submit-button {
+  width: 100%;
+}

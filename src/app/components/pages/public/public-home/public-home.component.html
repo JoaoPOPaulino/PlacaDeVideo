@@ -17,10 +17,11 @@
       <mat-card-content>
         <h3>{{ product.nome }}</h3>
         <p class="price">{{ product.preco | currency: 'BRL':'symbol':'1.2-2' }}</p>
+        <p class="category">{{ product.categoria || 'Categoria desconhecida' }}</p>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" (click)="viewDetails(product.id)">Detalhes</button>
-        <button mat-raised-button color="primary" (click)="viewDetails(product.id)">
+        <button mat-raised-button color="accent" (click)="addToCart(product)">
           <mat-icon>add_shopping_cart</mat-icon> Adicionar
         </button>
       </mat-card-actions>

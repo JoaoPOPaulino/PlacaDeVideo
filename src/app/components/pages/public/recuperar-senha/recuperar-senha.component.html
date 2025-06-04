@@ -1,0 +1,17 @@
+<div class="recuperar-container">
+  <h2>Recuperar Senha</h2>
+  <form [formGroup]="recuperarForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Login ou E-mail</mat-label>
+      <input matInput formControlName="loginOuEmail" />
+      <mat-error *ngIf="recuperarForm.get('loginOuEmail')?.hasError('required')">
+        Campo obrigatório
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading" class="submit-button">
+      <span *ngIf="!isLoading">Enviar</span>
+      <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+    </button>
+  </form>
+</div>

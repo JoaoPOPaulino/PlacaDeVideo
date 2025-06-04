@@ -8,7 +8,7 @@ export class PlacaDeVideo {
   preco!: number;
   especificacaoTecnica!: EspecificacaoTecnica;
   fabricante!: Fabricante;
-  categoria!: Categoria;
+  categoria!: string;
   estoque!: number;
   nomeImagem!: string;
   descricao?: string;

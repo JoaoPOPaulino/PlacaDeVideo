@@ -8,12 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PlacaDeVideoService } from '../../../../services/placa-de-video.service';
 import { AvaliacaoService } from '../../../../services/avaliacao.service';
@@ -66,7 +61,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar
   ) {
     this.avaliacaoForm = this.fb.group({
-      nota: [''], // Optional
+      nota: [''],
       comentario: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
@@ -95,9 +90,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
           this.placa = placa;
         },
         error: (err) => {
-          this.snackBar.open('Erro ao carregar produto.', 'Fechar', {
-            duration: 3000,
-          });
+          this.snackBar.open('Erro ao carregar produto.', 'Fechar', { duration: 3000 });
           console.error(err);
         },
       })
@@ -111,9 +104,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
           this.avaliacoes = avaliacoes;
         },
         error: (err) => {
-          this.snackBar.open('Erro ao carregar avaliações.', 'Fechar', {
-            duration: 3000,
-          });
+          this.snackBar.open('Erro ao carregar avaliações.', 'Fechar', { duration: 3000 });
           console.error(err);
         },
       })
@@ -130,11 +121,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
         nomeImagem: this.placa.nomeImagem,
       };
       this.cartService.addToCart(item);
-      this.snackBar.open(
-        `${this.placa.nome} adicionado ao carrinho!`,
-        'Fechar',
-        { duration: 3000 }
-      );
+      this.snackBar.open(`${this.placa.nome} adicionado ao carrinho!`, 'Fechar', { duration: 3000 });
     }
   }
 
@@ -144,17 +131,13 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
       return;
     }
     if (!this.isLoggedIn) {
-      this.snackBar.open('Faça login para avaliar.', 'Fechar', {
-        duration: 3000,
-      });
+      this.snackBar.open('Faça login para avaliar.', 'Fechar', { duration: 3000 });
       return;
     }
 
     const usuario = this.authService.getUsuarioLogadoSnapshot();
     if (!usuario) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
+      this.snackBar.open('Usuário não encontrado.', 'Fechar', { duration: 3000 });
       return;
     }
 
@@ -162,12 +145,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
       id: 0,
       usuario: usuario,
       placaDeVideo: this.placa,
-      nota: this.avaliacaoForm.value.nota
-        ? {
-            id: +this.avaliacaoForm.value.nota,
-            label: this.getNotaLabel(+this.avaliacaoForm.value.nota),
-          }
-        : undefined,
+      nota: this.avaliacaoForm.value.nota ? +this.avaliacaoForm.value.nota : undefined,
       comentario: this.avaliacaoForm.value.comentario,
       dataCriacao: new Date().toISOString(),
     };
@@ -175,23 +153,19 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.avaliacaoService.insert(avaliacao).subscribe({
         next: (novaAvaliacao) => {
-          this.avaliacoes = [...this.avaliacoes, novaAvaliacao]; // Use spread for immutability
-          this.avaliacaoForm.reset({ nota: '', comentario: '' }); // Reset form
-          this.snackBar.open('Avaliação enviada com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
+          this.avaliacoes = [...this.avaliacoes, novaAvaliacao];
+          this.avaliacaoForm.reset({ nota: '', comentario: '' });
+          this.snackBar.open('Avaliação enviada com sucesso!', 'Fechar', { duration: 3000 });
         },
         error: (err) => {
-          this.snackBar.open('Erro ao enviar avaliação.', 'Fechar', {
-            duration: 3000,
-          });
+          this.snackBar.open('Erro ao enviar avaliação.', 'Fechar', { duration: 3000 });
           console.error('Erro ao enviar avaliação:', err);
         },
       })
     );
   }
 
-  private getNotaLabel(valor: number): string {
+  public getNotaLabel(valor: number): string {
     switch (valor) {
       case 1:
         return 'Péssimo';
@@ -210,9 +184,7 @@ export class ProdutoDetalhesComponent implements OnInit, OnDestroy {
 
   getImageUrl(imageName: string): string {
     if (!imageName) return 'assets/images/default-card.png';
-    return `${
-      this.placaDeVideoService.url
-    }/download/imagem/${encodeURIComponent(imageName)}`;
+    return `${this.placaDeVideoService.url}/download/imagem/${encodeURIComponent(imageName)}`;
   }
 
   getStars(rating: number | undefined): number[] {

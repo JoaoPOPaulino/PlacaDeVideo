@@ -92,3 +92,8 @@
     transform: translateY(0);
   }
 }
+
+.forgot-password {
+  margin-top: 10px;
+  font-size: 14px;
+}
