@@ -58,7 +58,6 @@ import { Telefone } from '../../../../models/usuario/telefone.model';
 })
 export class UsuarioFormComponent implements OnInit {
   formGroup: FormGroup;
-  // Reflete o ENUM Perfil no backend (USER=1, ADMIN=2)
   perfis: Perfil[] = [
     { id: 1, label: 'Usuário' },
     { id: 2, label: 'Administrador' },
@@ -80,14 +79,40 @@ export class UsuarioFormComponent implements OnInit {
       id: [usuario.id || null],
       nome: [
         usuario.nome || '',
-        [Validators.required, Validators.minLength(3)],
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(255),
+        ],
       ],
       login: [
         usuario.login || '',
-        [Validators.required, Validators.minLength(3)],
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(50),
+        ],
       ],
-      email: [usuario.email || '', [Validators.required, Validators.email]],
-      senha: ['', [Validators.minLength(6)]],
+      email: [
+        usuario.email || '',
+        [Validators.required, Validators.email, Validators.maxLength(255)],
+      ],
+      senha: [
+        '',
+        [
+          usuario.id ? Validators.nullValidator : Validators.required,
+          Validators.minLength(6),
+          Validators.maxLength(255),
+        ],
+      ],
+      cpf: [
+        usuario.cpf || '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d{11}$/),
+          Validators.maxLength(11),
+        ],
+      ],
       perfil: [usuario.perfil?.id || 1, Validators.required],
     });
   }
@@ -97,17 +122,40 @@ export class UsuarioFormComponent implements OnInit {
     if (usuario.id) {
       this.carregarDadosUsuario(usuario);
     }
-    this.setupLoginValidation();
+    this.setupValidations();
   }
 
-  setupLoginValidation() {
+  setupValidations() {
     const loginControl = this.formGroup.get('login');
+    const cpfControl = this.formGroup.get('cpf');
+    const emailControl = this.formGroup.get('email');
+
     if (loginControl) {
       loginControl.valueChanges
         .pipe(
           debounceTime(500),
           distinctUntilChanged(),
           switchMap((value) => this.validateLogin(value))
+        )
+        .subscribe();
+    }
+
+    if (cpfControl) {
+      cpfControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap((value) => this.validateCpf(value))
+        )
+        .subscribe();
+    }
+
+    if (emailControl) {
+      emailControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap((value) => this.validateEmail(value))
         )
         .subscribe();
     }
@@ -137,12 +185,104 @@ export class UsuarioFormComponent implements OnInit {
     );
   }
 
+  validateCpf(cpf: string) {
+    if (!cpf || !/^\d{11}$/.test(cpf)) {
+      return of(false);
+    }
+
+    // Validação dos dígitos verificadores do CPF
+    if (!this.isValidCpf(cpf)) {
+      this.formGroup.get('cpf')?.setErrors({ cpfInvalid: true });
+      return of(false);
+    }
+
+    const currentId = this.formGroup.get('id')?.value;
+    if (currentId) {
+      const originalUser = this.activatedRoute.snapshot.data['usuario'];
+      if (originalUser && originalUser.cpf === cpf) {
+        return of(false);
+      }
+    }
+
+    return this.usuarioService.checkCpfExists(cpf).pipe(
+      map((exists) => {
+        if (exists) {
+          this.formGroup.get('cpf')?.setErrors({ cpfExists: true });
+        }
+        return exists;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  validateEmail(email: string) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return of(false);
+    }
+
+    const currentId = this.formGroup.get('id')?.value;
+    if (currentId) {
+      const originalUser = this.activatedRoute.snapshot.data['usuario'];
+      if (originalUser && originalUser.email === email) {
+        return of(false);
+      }
+    }
+
+    return this.usuarioService.checkEmailExists(email).pipe(
+      map((exists) => {
+        if (exists) {
+          this.formGroup.get('email')?.setErrors({ emailExists: true });
+        }
+        return exists;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  isValidCpf(cpf: string): boolean {
+    if (!cpf || cpf.length !== 11 || !/^\d{11}$/.test(cpf)) {
+      return false;
+    }
+
+    // Verifica se todos os dígitos são iguais
+    if (/^(\d)\1+$/.test(cpf)) {
+      return false;
+    }
+
+    // Calcula o primeiro dígito verificador
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      sum += parseInt(cpf.charAt(i)) * (10 - i);
+    }
+    let firstDigit = 11 - (sum % 11);
+    if (firstDigit >= 10) {
+      firstDigit = 0;
+    }
+
+    if (parseInt(cpf.charAt(9)) !== firstDigit) {
+      return false;
+    }
+
+    // Calcula o segundo dígito verificador
+    sum = 0;
+    for (let i = 0; i < 10; i++) {
+      sum += parseInt(cpf.charAt(i)) * (11 - i);
+    }
+    let secondDigit = 11 - (sum % 11);
+    if (secondDigit >= 10) {
+      secondDigit = 0;
+    }
+
+    return parseInt(cpf.charAt(10)) === secondDigit;
+  }
+
   carregarDadosUsuario(usuario: Usuario) {
     this.formGroup.patchValue({
       id: usuario.id,
       nome: usuario.nome,
       login: usuario.login,
       email: usuario.email,
+      cpf: usuario.cpf,
       perfil: usuario.perfil.id,
     });
 
@@ -159,9 +299,7 @@ export class UsuarioFormComponent implements OnInit {
       this.snackBar.open(
         'Formulário inválido. Verifique os campos obrigatórios.',
         'Fechar',
-        {
-          duration: 3000,
-        }
+        { duration: 3000 }
       );
       return;
     }
@@ -175,7 +313,11 @@ export class UsuarioFormComponent implements OnInit {
       login: formData.login,
       email: formData.email,
       senha: formData.senha || undefined,
-      perfil: formData.perfil,
+      cpf: formData.cpf,
+      perfil: {
+        id: formData.perfil,
+        label: this.perfis.find((p) => p.id === formData.perfil)!.label,
+      },
       telefones: this.telefones,
       enderecos: this.enderecos,
       nomeImagem: '',
@@ -209,6 +351,10 @@ export class UsuarioFormComponent implements OnInit {
 
         if (errorMessage.includes('Login já está em uso')) {
           this.formGroup.get('login')?.setErrors({ loginExists: true });
+        } else if (errorMessage.includes('CPF já está em uso')) {
+          this.formGroup.get('cpf')?.setErrors({ cpfExists: true });
+        } else if (errorMessage.includes('E-mail já está em uso')) {
+          this.formGroup.get('email')?.setErrors({ emailExists: true });
         }
         this.isLoading = false;
       },

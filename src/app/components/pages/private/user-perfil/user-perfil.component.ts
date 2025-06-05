@@ -55,7 +55,7 @@ import { PublicHeaderComponent } from '../../../template/public/public-header/pu
   styleUrls: ['./user-perfil.component.css'],
 })
 export class UserPerfilComponent implements OnInit {
-  usuario$!: Observable<Usuario | null>; // Ajuste na tipagem
+  usuario$!: Observable<Usuario | null>;
   perfilForm!: FormGroup;
   imagePreview: string | null = null;
   selectedFile: File | null = null;
@@ -69,20 +69,43 @@ export class UserPerfilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Carrega o usuário logado
+    this.usuario$ = this.authService.getUsuarioLogado().pipe(
+      switchMap((usuario) => {
+        if (usuario) {
+          return of(usuario);
+        } else {
+          const usuarioId = this.authService.getUsuarioId();
+          if (usuarioId) {
+            return this.usuarioService.findById(usuarioId.toString()).pipe(
+              catchError((err) => {
+                this.snackBar.open('Erro ao carregar usuário', 'Fechar', {
+                  duration: 3000,
+                });
+                return of(null);
+              })
+            );
+          }
+          return of(null);
+        }
+      })
+    );
+
     this.perfilForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required, Validators.minLength(3)]],
       senha: ['', [Validators.minLength(6)]],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     });
 
-    this.usuario$ = this.authService.getUsuarioLogado();
     this.usuario$.subscribe((usuario) => {
       if (usuario) {
         this.perfilForm.patchValue({
           nome: usuario.nome,
           email: usuario.email,
           login: usuario.login,
+          cpf: usuario.cpf,
         });
         this.imagePreview = usuario.nomeImagem
           ? `http://localhost:8080/usuarios/download/imagem/${usuario.nomeImagem}`
@@ -181,10 +204,11 @@ export class UserPerfilComponent implements OnInit {
     const payload = {
       ...this.perfilForm.value,
       senha: this.perfilForm.value.senha || undefined,
-      perfil:
-        this.authService
-          .getUsuarioLogadoSnapshot()
-          ?.perfil.label.toUpperCase() || 'USER',
+      cpf: this.perfilForm.value.cpf, // Adiciona cpf
+      perfil: {
+        id: this.authService.getUsuarioLogadoSnapshot()?.perfil.id || 1,
+        label: 'USER',
+      },
       telefones: this.authService.getUsuarioLogadoSnapshot()?.telefones || [],
       enderecos: this.authService.getUsuarioLogadoSnapshot()?.enderecos || [],
     };
@@ -199,10 +223,14 @@ export class UserPerfilComponent implements OnInit {
       error: (err) => {
         const message = err.message.includes('Login já está em uso')
           ? 'Login já está em uso.'
+          : err.message.includes('CPF')
+          ? 'CPF inválido ou já em uso.'
           : `Erro ao atualizar perfil: ${err.message}`;
         this.snackBar.open(message, 'Fechar', { duration: 5000 });
         if (err.message.includes('Login já está em uso')) {
           this.perfilForm.get('login')?.setErrors({ loginExists: true });
+        } else if (err.message.includes('CPF')) {
+          this.perfilForm.get('cpf')?.setErrors({ cpfInvalid: true });
         }
       },
     });
@@ -221,14 +249,22 @@ export class UserPerfilComponent implements OnInit {
   uploadImagem(): void {
     const usuarioId = this.authService.getUsuarioId();
     if (usuarioId && this.selectedFile) {
+      const snackBarRef = this.snackBar.open('Enviando imagem...', 'Fechar');
+
       this.usuarioService.uploadImagem(usuarioId, this.selectedFile).subscribe({
         next: (updatedUsuario) => {
+          snackBarRef.dismiss();
           this.authService.updateUsuarioLogado(updatedUsuario);
+          this.imagePreview = `http://localhost:8080/usuarios/download/imagem/${
+            updatedUsuario.nomeImagem
+          }?timestamp=${Date.now()}`;
+          this.selectedFile = null;
           this.snackBar.open('Imagem atualizada com sucesso!', 'Fechar', {
             duration: 3000,
           });
         },
         error: (err) => {
+          snackBarRef.dismiss();
           this.snackBar.open(
             `Erro ao atualizar imagem: ${err.message}`,
             'Fechar',

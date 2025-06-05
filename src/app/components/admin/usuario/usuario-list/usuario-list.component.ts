@@ -36,7 +36,7 @@ import { PerfilPipe } from '../../../shared/pipes/perfil_.pipe';
   styleUrl: './usuario-list.component.css',
 })
 export class UsuarioListComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'nome', 'login', 'perfil', 'acao'];
+  displayedColumns: string[] = ['id', 'nome', 'login', 'cpf' ,'perfil', 'acao'];
   usuarios: Usuario[] = [];
   totalRecords = 0;
   pageSize = 8;

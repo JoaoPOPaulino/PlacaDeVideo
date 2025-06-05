@@ -63,15 +63,26 @@ export class UsuarioService {
       .pipe(catchError(() => of(false)));
   }
 
+  checkCpfExists(cpf: string): Observable<boolean> {
+    if (!cpf || !/^\d{11}$/.test(cpf)) {
+      return of(false);
+    }
+    return this.httpClient
+      .get<boolean>(`${this.url}/exists`, { params: { cpf } })
+      .pipe(catchError(() => of(false)));
+  }
+
   insert(usuario: any): Observable<Usuario> {
     const payload = {
       nome: usuario.nome,
       email: usuario.email,
       login: usuario.login,
       senha: usuario.senha,
-      perfil: usuario.perfil,
+      cpf: usuario.cpf,
+      perfil: usuario.perfil.id, // Envia apenas o ID do perfil
       telefones: usuario.telefones || [],
       enderecos: usuario.enderecos || [],
+      nomeImagem: usuario.nomeImagem || null, // Garante que nomeImagem seja null se não definido
     };
 
     return this.httpClient
@@ -85,9 +96,11 @@ export class UsuarioService {
       email: usuario.email,
       login: usuario.login,
       senha: usuario.senha,
-      perfil: usuario.perfil,
+      cpf: usuario.cpf,
+      perfil: usuario.perfil.id, // Envia apenas o ID do perfil
       telefones: usuario.telefones || [],
       enderecos: usuario.enderecos || [],
+      nomeImagem: usuario.nomeImagem || null, // Garante que nomeImagem seja null se não definido
     };
 
     return this.httpClient

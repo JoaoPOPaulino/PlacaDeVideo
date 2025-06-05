@@ -9,7 +9,7 @@ import { Usuario } from '../models/usuario/usuario.model';
   providedIn: 'root',
 })
 export class AuthService {
-  private baseURL: string = 'http://localhost:8080/auth';
+  private baseURL = 'http://localhost:8080/auth';
   private tokenKey = 'jwt_token';
   private usuarioLogadoKey = 'usuario_logado';
   private usuarioLogadoSubject = new BehaviorSubject<Usuario | null>(null);
@@ -23,16 +23,12 @@ export class AuthService {
   }
 
   private initUsuarioLogado() {
-    const usuario = this.localStorageService.getItem(this.usuarioLogadoKey);
+    const usuario = this.localStorageService.getItem<Usuario>(
+      this.usuarioLogadoKey
+    );
     if (usuario) {
-      try {
-        const usuarioLogado = JSON.parse(usuario);
-        this.setUsuarioLogado(usuarioLogado);
-        this.usuarioLogadoSubject.next(usuarioLogado);
-      } catch (error) {
-        console.error('Erro ao parsear usuário logado:', error);
-        this.removeUsuarioLogado();
-      }
+      this.setUsuarioLogado(usuario);
+      this.usuarioLogadoSubject.next(usuario);
     }
   }
 
@@ -56,25 +52,22 @@ export class AuthService {
     );
   }
 
+  getUsuario(): Usuario | null {
+    return this.getUsuarioLogadoSnapshot();
+  }
+
   getPerfil(): string | null {
-    const usuario = this.localStorageService.getItem(this.usuarioLogadoKey);
+    const usuario = this.localStorageService.getItem<Usuario>(
+      this.usuarioLogadoKey
+    );
     if (usuario) {
-      try {
-        const usuarioLogado = JSON.parse(usuario);
-        return usuarioLogado.perfil?.label?.toUpperCase() || null;
-      } catch (error) {
-        console.error('Erro ao obter perfil:', error);
-        return null;
-      }
+      return usuario.perfil?.label?.toUpperCase() || null;
     }
     return null;
   }
 
   setUsuarioLogado(usuario: Usuario): void {
-    this.localStorageService.setItem(
-      this.usuarioLogadoKey,
-      JSON.stringify(usuario)
-    );
+    this.localStorageService.setItem(this.usuarioLogadoKey, usuario);
   }
 
   setToken(token: string): void {
@@ -86,7 +79,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.localStorageService.getItem(this.tokenKey);
+    return this.localStorageService.getItem<string>(this.tokenKey);
   }
 
   removeToken(): void {
@@ -133,10 +126,16 @@ export class AuthService {
   }
 
   solicitarRecuperacaoSenha(loginOuEmail: string): Observable<void> {
-      return this.http.post<void>(`${this.baseURL}/solicitar-recuperacao`, { loginOuEmail });
+    return this.http.post<void>(`${this.baseURL}/solicitar-recuperacao`, {
+      loginOuEmail,
+    });
   }
 
-  resetarSenha(token: string, novaSenha: string): Observable<void> {
-    return this.http.post<void>(`${this.baseURL}/resetar-senha`, { token, novaSenha });
-}
+  resetarSenha(token: string, novaSenha: string): Observable<any> {
+    return this.http.post(
+      `${this.baseURL}/resetar-senha`,
+      { token, novaSenha },
+      { responseType: 'text' }
+    );
+  }
 }

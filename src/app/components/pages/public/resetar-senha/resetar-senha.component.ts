@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-resetar-senha',
@@ -20,13 +26,16 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    CommonModule
-  ]
+    CommonModule,
+    MatIconModule,
+  ],
 })
 export class ResetarSenhaComponent implements OnInit {
   resetarForm: FormGroup;
   isLoading = false;
   token: string | null = null;
+  hidePassword = true;
+  hideConfirmPassword = true;
 
   constructor(
     private fb: FormBuilder,
@@ -35,10 +44,13 @@ export class ResetarSenhaComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar
   ) {
-    this.resetarForm = this.fb.group({
-      novaSenha: ['', [Validators.required, Validators.minLength(6)]],
-      confirmarSenha: ['', [Validators.required]]
-    }, { validators: this.senhasIguaisValidator });
+    this.resetarForm = this.fb.group(
+      {
+        novaSenha: ['', [Validators.required, Validators.minLength(6)]],
+        confirmarSenha: ['', [Validators.required]],
+      },
+      { validators: this.senhasIguaisValidator }
+    );
   }
 
   ngOnInit(): void {
@@ -61,20 +73,27 @@ export class ResetarSenhaComponent implements OnInit {
       const novaSenha = this.resetarForm.get('novaSenha')!.value;
 
       this.authService.resetarSenha(this.token, novaSenha).subscribe({
-        next: () => {
+        next: (response: any) => {
           this.isLoading = false;
-          this.snackBar.open('Senha redefinida com sucesso!', 'Fechar', {
+          // Trata tanto resposta JSON quanto texto
+          const message = response?.message || response;
+          this.snackBar.open(message, 'Fechar', {
             duration: 3000,
           });
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Erro ao redefinir senha:', err); // Adicione este log
+          console.error('Erro ao redefinir senha:', err);
           this.isLoading = false;
-          this.snackBar.open('Erro ao redefinir senha. Tente novamente.', 'Fechar', {
-            duration: 3000,
+          // Mostra a mensagem de erro do servidor ou uma mensagem padrão
+          const errorMessage =
+            err.error?.text ||
+            err.error?.message ||
+            'Erro ao redefinir senha. Tente novamente.';
+          this.snackBar.open(errorMessage, 'Fechar', {
+            duration: 5000,
           });
-        }
+        },
       });
     }
   }

@@ -3,20 +3,20 @@
   <div class="profile-sidebar">
     <div class="profile-card">
       <div class="profile-image-container">
-        <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
-        <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
-          <mat-icon>person</mat-icon>
-        </div>
-        <div class="image-upload-actions">
-          <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
-            <mat-icon>photo_camera</mat-icon>
-          </button>
-          <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
-          <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
-            <mat-icon>save</mat-icon>
-          </button>
-        </div>
-      </div>
+  <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
+  <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
+    <mat-icon>person</mat-icon>
+  </div>
+</div>
+<div class="image-upload-actions">
+  <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
+    <mat-icon>photo_camera</mat-icon>
+  </button>
+  <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
+  <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
+    <mat-icon>save</mat-icon>
+  </button>
+</div>
       <div class="profile-info">
         <h2>{{ (usuario$ | async)?.nome }}</h2>
         <p>{{ (usuario$ | async)?.email }}</p>
@@ -79,6 +79,23 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
+              <mat-label>CPF</mat-label>
+              <input matInput formControlName="cpf" required />
+              <mat-icon matSuffix>credit_card</mat-icon>
+              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('required')">
+                CPF é obrigatório
+              </mat-error>
+              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('pattern')">
+                CPF deve conter 11 dígitos numéricos
+              </mat-error>
+              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('cpfInvalid')">
+                CPF inválido ou já em uso
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
               <mat-label>Login</mat-label>
               <input matInput formControlName="login" required />
               <mat-icon matSuffix>alternate_email</mat-icon>
@@ -115,7 +132,7 @@
         <div class="contact-section">
           <div class="section-header">
             <h3>Telefones</h3>
-            <button mat-stroked-button color="primary" (click)="openTelefoneDialog()">
+            <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
               <mat-icon>add</mat-icon>
               Adicionar Telefone
             </button>
@@ -140,8 +157,8 @@
         <div class="contact-section">
           <div class="section-header">
             <h3>Endereços</h3>
-            <button mat-stroked-button color="primary" (click)="openEnderecoDialog()">
-              <mat-icon>add</mat-icon>
+            <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
+              
               Adicionar Endereço
             </button>
           </div>

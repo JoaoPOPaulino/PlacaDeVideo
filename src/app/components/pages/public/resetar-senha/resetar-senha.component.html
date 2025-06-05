@@ -2,8 +2,11 @@
   <h2>Redefinir Senha</h2>
   <form [formGroup]="resetarForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nova Senha</mat-label>
-      <input matInput formControlName="novaSenha" type="password" />
+      <mat-label>Nova Senha (mínimo 6 caracteres)</mat-label>
+      <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="novaSenha" />
+      <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+        <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
       <mat-error *ngIf="resetarForm.get('novaSenha')?.hasError('required')">
         Campo obrigatório
       </mat-error>
@@ -14,7 +17,10 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Confirmar Senha</mat-label>
-      <input matInput formControlName="confirmarSenha" type="password" />
+      <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmarSenha" />
+      <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+        <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
       <mat-error *ngIf="resetarForm.get('confirmarSenha')?.hasError('required')">
         Campo obrigatório
       </mat-error>

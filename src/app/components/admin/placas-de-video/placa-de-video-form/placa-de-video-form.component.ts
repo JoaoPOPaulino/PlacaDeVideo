@@ -363,4 +363,5 @@ export class PlacaDeVideoFormComponent implements OnInit {
     console.warn('Categoria não reconhecida:', categoria);
     return 1; // Valor padrão para categoria desconhecida
   }
+
 }

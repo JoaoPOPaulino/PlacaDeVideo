@@ -50,6 +50,25 @@
           </mat-error>
         </mat-form-field>
 
+        <!-- CPF -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" required>
+          <mat-icon matSuffix>credit_card</mat-icon>
+          <mat-error *ngIf="formGroup.get('cpf')?.hasError('required')">
+            CPF é obrigatório
+          </mat-error>
+          <mat-error *ngIf="formGroup.get('cpf')?.hasError('pattern')">
+            CPF deve conter 11 dígitos numéricos
+          </mat-error>
+          <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfExists')">
+            Este CPF já está registrado
+          </mat-error>
+          <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfInvalid')">
+            CPF inválido ou já em uso
+          </mat-error>
+        </mat-form-field>
+
         <!-- Senha -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Senha</mat-label>

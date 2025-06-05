@@ -59,6 +59,7 @@ export class CadastroComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required, Validators.minLength(3)]],
       senha: ['', [Validators.required, Validators.minLength(4)]],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     });
   }
 
@@ -69,6 +70,7 @@ export class CadastroComponent implements OnInit {
   setupValidations() {
     const loginControl = this.formGroup.get('login');
     const emailControl = this.formGroup.get('email');
+    const cpfControl = this.formGroup.get('cpf');
 
     if (loginControl) {
       loginControl.valueChanges
@@ -89,6 +91,31 @@ export class CadastroComponent implements OnInit {
         )
         .subscribe();
     }
+
+    if (cpfControl) {
+      cpfControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap((value) => this.validateCpf(value))
+        )
+        .subscribe();
+    }
+  }
+
+  validateCpf(cpf: string) {
+    if (!cpf || !/^\d{11}$/.test(cpf)) {
+      return of(false);
+    }
+    return this.usuarioService.checkCpfExists(cpf).pipe(
+      map((exists) => {
+        if (exists) {
+          this.formGroup.get('cpf')?.setErrors({ cpfExists: true });
+        }
+        return exists;
+      }),
+      catchError(() => of(false))
+    );
   }
 
   validateLogin(login: string) {
@@ -134,9 +161,11 @@ export class CadastroComponent implements OnInit {
       email: formData.email,
       login: formData.login,
       senha: formData.senha,
-      perfil: 'USER', // Enviar como string 'USER'
+      cpf: formData.cpf,
+      perfil: 1, // Envia o ID do perfil diretamente como número
       telefones: [],
       enderecos: [],
+      nomeImagem: null,
     };
 
     this.usuarioService.insert(novoUsuario).subscribe({
@@ -153,9 +182,7 @@ export class CadastroComponent implements OnInit {
             this.snackBar.open(
               'Conta criada, mas erro ao logar. Tente novamente.',
               'Fechar',
-              {
-                duration: 5000,
-              }
+              { duration: 5000 }
             );
             this.isLoading = false;
           },
@@ -163,8 +190,20 @@ export class CadastroComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao criar conta', err);
-        const errorMessage = err.message || 'Erro ao criar conta';
+        let errorMessage = 'Erro ao criar conta';
+        if (err.error && err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
         this.snackBar.open(errorMessage, 'Fechar', { duration: 5000 });
+        if (errorMessage.includes('Login já está em uso')) {
+          this.formGroup.get('login')?.setErrors({ loginExists: true });
+        } else if (errorMessage.includes('CPF já está em uso')) {
+          this.formGroup.get('cpf')?.setErrors({ cpfExists: true });
+        } else if (errorMessage.includes('E-mail já está em uso')) {
+          this.formGroup.get('email')?.setErrors({ emailExists: true });
+        }
         this.isLoading = false;
       },
       complete: () => {

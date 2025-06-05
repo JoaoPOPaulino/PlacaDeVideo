@@ -9,13 +9,15 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (!authService.isLoggedIn()) {
     authService.removeToken();
     authService.removeUsuarioLogado();
-    router.navigate(['/admin/login'], { queryParams: { returnUrl: state.url } });
+    router.navigate(['/admin/login'], {
+      queryParams: { returnUrl: state.url },
+    });
     return false;
   }
 
   const perfil = authService.getPerfil();
   if (perfil !== 'ADMIN') {
-    router.navigate(['/']);
+    router.navigate(['/acesso-negado']);
     return false;
   }
 

@@ -10,10 +10,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
 import { CartUIService } from '../../services/cart-ui.service';
 import { AuthService } from '../../services/auth.service';
 import { PlacaDeVideoService } from '../../services/placa-de-video.service';
-import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-cart',
@@ -30,7 +30,7 @@ import { MatCardModule } from '@angular/material/card';
     MatCardModule,
   ],
   templateUrl: './cart.component.html',
-  styleUrl: './cart.component.css',
+  styleUrls: ['./cart.component.css'],
 })
 export class CartComponent implements OnInit, OnDestroy {
   items: ItemCarrinho[] = [];
@@ -84,7 +84,7 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   get subtotal(): number {
-    return this.cartService.subtotal;
+    return this.cartService.getSubtotal();
   }
 
   getImageUrl(imageName: string | undefined): string {
