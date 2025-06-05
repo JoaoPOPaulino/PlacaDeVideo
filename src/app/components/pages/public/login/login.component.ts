@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -46,7 +48,6 @@ export class LoginComponent implements OnInit {
       login: ['', [Validators.required, Validators.minLength(3)]],
       senha: ['', [Validators.required, Validators.minLength(3)]],
     });
-    
   }
 
   onSubmit() {
@@ -60,33 +61,58 @@ export class LoginComponent implements OnInit {
           this.isLoading = false;
           const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
           this.router.navigateByUrl(returnUrl);
-          this.snackBar.open('Login realizado com sucesso!', 'Fechar', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-          });
+          this.showNotification('🚀 Login realizado com sucesso!', 'success');
         },
         error: (err) => {
           this.isLoading = false;
-          const errorMessage =
-            err.status === 404 ? 'Usuário ou senha inválidos' : 'Erro ao conectar com o servidor';
-          this.snackBar.open(errorMessage, 'Fechar', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-          });
+          const errorMessage = this.getErrorMessage(err);
+          this.showNotification(errorMessage, 'error');
         },
       });
     } else {
-      this.snackBar.open('Por favor, preencha todos os campos corretamente', 'Fechar', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-      });
+      this.markFormGroupTouched();
+      this.showNotification('⚠️ Por favor, preencha todos os campos corretamente', 'error');
     }
   }
 
   onRegister() {
     this.router.navigateByUrl('/cadastro');
+  }
+
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
+
+  private getErrorMessage(err: any): string {
+    switch (err.status) {
+      case 404:
+        return '🔒 Usuário ou senha inválidos';
+      case 401:
+        return '🔒 Credenciais inválidas';
+      case 500:
+        return '🔧 Erro interno do servidor';
+      case 0:
+        return '🌐 Erro de conexão. Verifique sua internet';
+      default:
+        return '❌ Erro ao conectar com o servidor';
+    }
+  }
+
+  private markFormGroupTouched() {
+    Object.keys(this.loginForm.controls).forEach(key => {
+      const control = this.loginForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  private showNotification(message: string, type: 'success' | 'error') {
+    const config = {
+      duration: 4000,
+      verticalPosition: 'top' as const,
+      horizontalPosition: 'center' as const,
+      panelClass: type === 'success' ? 'success-snackbar' : 'error-snackbar'
+    };
+
+    this.snackBar.open(message, 'Fechar', config);
   }
 }

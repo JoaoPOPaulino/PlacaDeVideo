@@ -171,4 +171,23 @@ export class UsuarioService {
       formData
     );
   }
+
+  changePassword(usuarioId: number, currentPassword: string, newPassword: string): Observable<any> {
+  return this.httpClient.post(`${this.url}/${usuarioId}/change-password`, {
+    currentPassword,
+    newPassword
+  });
+}
+
+requestPasswordReset(email: string): Observable<any> {
+  return this.httpClient.post(`${this.url}/request-password-reset`, { email }).pipe(
+    catchError(error => {
+      // Tratamento mais detalhado de erros
+      if (error.status === 404) {
+        return throwError(() => new Error('E-mail não encontrado no sistema.'));
+      }
+      return throwError(() => new Error('Erro ao processar solicitação. Tente novamente mais tarde.'));
+    })
+  );
+}
 }

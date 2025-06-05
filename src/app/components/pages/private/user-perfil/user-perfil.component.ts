@@ -33,6 +33,13 @@ import {
 import { FooterComponent } from '../../../template/shared/footer/footer.component';
 import { PublicHeaderComponent } from '../../../template/public/public-header/public-header.component';
 
+
+enum ProfileTab {
+  PERSONAL_INFO = 'PERSONAL_INFO',
+  SECURITY = 'SECURITY',
+  ORDERS = 'ORDERS'
+}
+
 @Component({
   selector: 'app-user-perfil',
   standalone: true,
@@ -55,6 +62,14 @@ import { PublicHeaderComponent } from '../../../template/public/public-header/pu
   styleUrls: ['./user-perfil.component.css'],
 })
 export class UserPerfilComponent implements OnInit {
+
+  activeTab: ProfileTab = ProfileTab.PERSONAL_INFO;
+  ProfileTab = ProfileTab;
+
+  securityForm!: FormGroup;
+  showChangePassword = false;
+  passwordChanged = false;
+
   usuario$!: Observable<Usuario | null>;
   perfilForm!: FormGroup;
   imagePreview: string | null = null;
@@ -95,9 +110,14 @@ export class UserPerfilComponent implements OnInit {
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required, Validators.minLength(3)]],
-      senha: ['', [Validators.minLength(6)]],
       cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
     });
+
+    this.securityForm = this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validator: this.passwordMatchValidator });
 
     this.usuario$.subscribe((usuario) => {
       if (usuario) {
@@ -118,6 +138,11 @@ export class UserPerfilComponent implements OnInit {
     });
 
     this.setupValidations();
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    return form.get('newPassword')?.value === form.get('confirmPassword')?.value 
+      ? null : { mismatch: true };
   }
 
   setupValidations() {
@@ -183,28 +208,20 @@ export class UserPerfilComponent implements OnInit {
     );
   }
 
-  onSubmit(): void {
+  onSubmitPersonalInfo(): void {
     if (this.perfilForm.invalid) {
-      this.snackBar.open(
-        'Formulário inválido. Verifique os campos.',
-        'Fechar',
-        { duration: 3000 }
-      );
+      this.snackBar.open('Formulário inválido. Verifique os campos.', 'Fechar', { duration: 3000 });
       return;
     }
 
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
+      this.snackBar.open('Usuário não encontrado.', 'Fechar', { duration: 3000 });
       return;
     }
 
     const payload = {
       ...this.perfilForm.value,
-      senha: this.perfilForm.value.senha || undefined,
-      cpf: this.perfilForm.value.cpf, // Adiciona cpf
       perfil: {
         id: this.authService.getUsuarioLogadoSnapshot()?.perfil.id || 1,
         label: 'USER',
@@ -216,9 +233,7 @@ export class UserPerfilComponent implements OnInit {
     this.usuarioService.update(payload, usuarioId).subscribe({
       next: (updatedUsuario) => {
         this.authService.updateUsuarioLogado(updatedUsuario);
-        this.snackBar.open('Perfil atualizado com sucesso!', 'Fechar', {
-          duration: 3000,
-        });
+        this.snackBar.open('Perfil atualizado com sucesso!', 'Fechar', { duration: 3000 });
       },
       error: (err) => {
         const message = err.message.includes('Login já está em uso')
@@ -414,4 +429,60 @@ export class UserPerfilComponent implements OnInit {
       });
     }
   }
+
+  onChangePassword(): void {
+    if (this.securityForm.invalid) {
+      this.snackBar.open('Preencha todos os campos corretamente.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    const usuarioId = this.authService.getUsuarioId();
+    if (!usuarioId) {
+      this.snackBar.open('Usuário não encontrado.', 'Fechar', { duration: 3000 });
+      return;
+    }
+
+    const { currentPassword, newPassword } = this.securityForm.value;
+
+    this.usuarioService.changePassword(usuarioId, currentPassword, newPassword).subscribe({
+      next: () => {
+        this.passwordChanged = true;
+        this.securityForm.reset();
+        this.snackBar.open('Senha alterada com sucesso!', 'Fechar', { duration: 3000 });
+      },
+      error: (err) => {
+        this.snackBar.open(err.error?.message || 'Erro ao alterar senha', 'Fechar', { duration: 5000 });
+      }
+    });
+  }
+
+  onRequestPasswordReset(): void {
+  const email = this.perfilForm.get('email')?.value;
+  if (!email) {
+    this.snackBar.open('E-mail não encontrado no formulário.', 'Fechar', { duration: 3000 });
+    return;
+  }
+
+  const snackBarRef = this.snackBar.open('Enviando e-mail de recuperação...', 'Fechar');
+
+  this.usuarioService.requestPasswordReset(email).subscribe({
+    next: () => {
+      snackBarRef.dismiss();
+      this.snackBar.open('E-mail de recuperação enviado! Verifique sua caixa de entrada.', 'Fechar', { 
+        duration: 5000,
+        panelClass: ['success-snackbar'] 
+      });
+    },
+    error: (err) => {
+      snackBarRef.dismiss();
+      const errorMessage = err.error?.message || 
+                         err.message || 
+                         'Erro ao enviar e-mail de recuperação. Tente novamente mais tarde.';
+      this.snackBar.open(errorMessage, 'Fechar', { 
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
 }

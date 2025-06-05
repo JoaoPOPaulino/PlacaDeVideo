@@ -1,95 +1,83 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { catchError } from 'rxjs/operators';
 import { Pagamento } from '../models/pagamento/pagamento.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PagamentoService {
-  private apiUrl = `${environment.apiUrl}/pagamentos`;
-  private abacatePayUrl = environment.abacatePay.url;
-  private abacatePayApiKey = environment.abacatePay.apiKey;
+  private url = 'http://localhost:8080/pagamentos';
 
   constructor(private http: HttpClient) {}
 
   processarPagamento(
     pedidoId: number,
     valor: number,
-    tipoPagamento: 'PIX'
+    metodo: string,
+    customer: { name: string; email: string; cellphone: string; taxId: string }
   ): Observable<Pagamento> {
-    if (tipoPagamento !== 'PIX') {
-      return throwError(
-        () => new Error('Apenas pagamento via Pix é suportado.')
-      );
+    if (metodo !== 'PIX') {
+      return throwError(() => new Error('Apenas pagamento via Pix é suportado.'));
     }
 
-    const payload = {
-      valor: valor,
-      descricao: `Pagamento do pedido ${pedidoId}`,
-      metodo: 'pix',
+    const paymentData = {
+      pedidoId,
+      valor: Math.round(valor * 100), // Converter para centavos
+      metodo,
+      customer: {
+        name: customer.name || 'Cliente Teste',
+        email: customer.email || 'cliente@example.com',
+        cellphone: customer.cellphone || '(55) 99999-9999',
+        taxId: customer.taxId || '123.456.789-01',
+      },
     };
 
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.abacatePayApiKey}`,
       'Content-Type': 'application/json',
     });
 
-    // Chamar a API da AbacatePay
+    console.log('Enviando para o backend:', {
+      url: this.url,
+      payload: paymentData,
+      headers: headers.keys(),
+    });
+
     return this.http
-      .post<{ pix: { qrCode: string } }>(this.abacatePayUrl, payload, {
-        headers,
-      })
-      .pipe(
-        catchError((error) => {
-          console.error('Erro ao chamar AbacatePay:', error);
-          return throwError(
-            () => new Error('Falha ao gerar chave Pix: ' + error.message)
-          );
-        }),
-        switchMap((response) => {
-          if (!response.pix || !response.pix.qrCode) {
-            return throwError(
-              () => new Error('Chave Pix não retornada pela AbacatePay.')
-            );
-          }
-
-          // Preparar payload para o backend
-          const pagamentoDto = {
-            dataPagamento: new Date().toISOString(),
-            valorPago: valor,
-            status: 'PENDENTE',
-            tipoPagamento: 'PIX',
-          };
-
-          // Enviar chave Pix ao backend
-          return this.http
-            .post<Pagamento>(`${this.apiUrl}/salvar/${pedidoId}`, {
-              ...pagamentoDto,
-              chavePix: response.pix.qrCode,
-            })
-            .pipe(
-              catchError((error) => {
-                console.error('Erro ao salvar pagamento no backend:', error);
-                return throwError(
-                  () => new Error('Falha ao salvar pagamento: ' + error.message)
-                );
-              })
-            );
-        })
-      );
+      .post<Pagamento>(this.url, paymentData, { headers })
+      .pipe(catchError(this.handleError));
   }
 
   verificarStatusPagamento(pedidoId: number): Observable<Pagamento> {
-    return this.http.get<Pagamento>(`${this.apiUrl}/pedido/${pedidoId}`).pipe(
-      catchError((error) => {
-        console.error('Erro ao verificar status do pagamento:', error);
-        return throwError(
-          () => new Error('Falha ao verificar status: ' + error.message)
-        );
-      })
-    );
+    return this.http
+      .get<Pagamento>(`${this.url}/pedido/${pedidoId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Erro desconhecido';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Erro: ${error.error.message}`;
+    } else {
+      errorMessage = this.getServerErrorMessage(error);
+    }
+    console.error('Erro no PagamentoService:', errorMessage);
+    return throwError(() => new Error(errorMessage));
+  }
+
+  private getServerErrorMessage(error: HttpErrorResponse): string {
+    switch (error.status) {
+      case 400:
+        return error.error?.message || 'Requisição inválida';
+      case 401:
+        return 'Autenticação falhou';
+      case 404:
+        return 'Recurso não encontrado';
+      case 500:
+        return error.error?.message || 'Erro interno no servidor';
+      default:
+        return `Erro ${error.status}: ${error.message}`;
+    }
   }
 }

@@ -4,22 +4,31 @@
   <form [formGroup]="formGroup">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Código de Área</mat-label>
-      <input matInput formControlName="codigoArea" placeholder="Ex: 62" maxlength="2">
+      <input matInput formControlName="codigoArea" 
+             placeholder="Ex: 62" 
+             maxlength="2"
+             (input)="formatarDDD($event)">
       <mat-error *ngIf="formGroup.get('codigoArea')?.hasError('required')">
         Código de área é obrigatório
       </mat-error>
-      <mat-error *ngIf="formGroup.get('codigoArea')?.hasError('pattern')">
-        Deve conter 2 dígitos
+      <mat-error *ngIf="formGroup.get('codigoArea')?.hasError('pattern') ||
+                       formGroup.get('codigoArea')?.hasError('minlength') ||
+                       formGroup.get('codigoArea')?.hasError('maxlength')">
+        Deve conter exatamente 2 dígitos
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Número</mat-label>
-      <input matInput formControlName="numero" placeholder="Ex: 999999999">
+      <input matInput formControlName="numero" 
+             placeholder="Ex: 999999999" 
+             maxlength="9"
+             (input)="formatarTelefone($event)">
       <mat-error *ngIf="formGroup.get('numero')?.hasError('required')">
         Número é obrigatório
       </mat-error>
-      <mat-error *ngIf="formGroup.get('numero')?.hasError('pattern')">
+      <mat-error *ngIf="formGroup.get('numero')?.hasError('pattern') ||
+                       formGroup.get('numero')?.hasError('minlength')">
         Deve conter 8 ou 9 dígitos
       </mat-error>
     </mat-form-field>

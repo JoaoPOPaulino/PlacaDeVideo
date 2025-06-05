@@ -4,26 +4,39 @@
   <form [formGroup]="formGroup">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>CEP</mat-label>
-      <input matInput formControlName="cep" placeholder="Ex: 74000000" maxlength="8">
+      <input matInput formControlName="cep" 
+             placeholder="Ex: 74000000" 
+             maxlength="8"
+             (input)="formatarCEP($event)">
       <mat-error *ngIf="formGroup.get('cep')?.hasError('required')">
         CEP é obrigatório
       </mat-error>
-      <mat-error *ngIf="formGroup.get('cep')?.hasError('pattern')">
-        Deve conter 8 dígitos
+      <mat-error *ngIf="formGroup.get('cep')?.hasError('pattern') ||
+                       formGroup.get('cep')?.hasError('minlength') ||
+                       formGroup.get('cep')?.hasError('maxlength')">
+        Deve conter exatamente 8 dígitos
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Estado</mat-label>
-      <input matInput formControlName="estado" placeholder="Ex: GO" maxlength="2">
+      <mat-label>Estado (UF)</mat-label>
+      <input matInput formControlName="estado" 
+             placeholder="Ex: GO" 
+             maxlength="2"
+             (input)="formatarEstado($event)">
       <mat-error *ngIf="formGroup.get('estado')?.hasError('required')">
         Estado é obrigatório
+      </mat-error>
+      <mat-error *ngIf="formGroup.get('estado')?.hasError('minlength') ||
+                       formGroup.get('estado')?.hasError('maxlength')">
+        Deve conter exatamente 2 letras
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Cidade</mat-label>
-      <input matInput formControlName="cidade" placeholder="Ex: Goiânia">
+      <input matInput formControlName="cidade" 
+             placeholder="Ex: Goiânia">
       <mat-error *ngIf="formGroup.get('cidade')?.hasError('required')">
         Cidade é obrigatória
       </mat-error>
@@ -31,12 +44,14 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Quadra</mat-label>
-      <input matInput formControlName="quadra" placeholder="Ex: QD 10">
+      <input matInput formControlName="quadra" 
+             placeholder="Ex: QD 10">
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Rua</mat-label>
-      <input matInput formControlName="rua" placeholder="Ex: Rua 15">
+      <input matInput formControlName="rua" 
+             placeholder="Ex: Rua 15">
       <mat-error *ngIf="formGroup.get('rua')?.hasError('required')">
         Rua é obrigatória
       </mat-error>
@@ -44,9 +59,15 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Número</mat-label>
-      <input matInput type="number" formControlName="numero" placeholder="Ex: 100">
+      <input matInput type="text" 
+             formControlName="numero" 
+             placeholder="Ex: 100"
+             (keypress)="apenasNumeros($event)">
       <mat-error *ngIf="formGroup.get('numero')?.hasError('required')">
         Número é obrigatório
+      </mat-error>
+      <mat-error *ngIf="formGroup.get('numero')?.hasError('pattern')">
+        Apenas números são permitidos
       </mat-error>
     </mat-form-field>
   </form>

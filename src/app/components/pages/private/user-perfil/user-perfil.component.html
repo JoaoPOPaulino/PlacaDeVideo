@@ -3,20 +3,20 @@
   <div class="profile-sidebar">
     <div class="profile-card">
       <div class="profile-image-container">
-  <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
-  <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
-    <mat-icon>person</mat-icon>
-  </div>
-</div>
-<div class="image-upload-actions">
-  <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
-    <mat-icon>photo_camera</mat-icon>
-  </button>
-  <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
-  <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
-    <mat-icon>save</mat-icon>
-  </button>
-</div>
+        <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
+        <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
+          <mat-icon>person</mat-icon>
+        </div>
+      </div>
+      <div class="image-upload-actions">
+        <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+        <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
+        <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
+          <mat-icon>save</mat-icon>
+        </button>
+      </div>
       <div class="profile-info">
         <h2>{{ (usuario$ | async)?.nome }}</h2>
         <p>{{ (usuario$ | async)?.email }}</p>
@@ -24,15 +24,15 @@
     </div>
 
     <mat-nav-list class="profile-menu">
-      <a mat-list-item routerLink="/minha-conta" routerLinkActive="active">
+      <a mat-list-item (click)="activeTab = ProfileTab.PERSONAL_INFO" [class.active]="activeTab === ProfileTab.PERSONAL_INFO">
         <mat-icon>account_circle</mat-icon>
         <span>Informações Pessoais</span>
       </a>
-      <a mat-list-item routerLink="/seguranca" routerLinkActive="active">
+      <a mat-list-item (click)="activeTab = ProfileTab.SECURITY" [class.active]="activeTab === ProfileTab.SECURITY">
         <mat-icon>lock</mat-icon>
         <span>Segurança</span>
       </a>
-      <a mat-list-item routerLink="/pedidos" routerLinkActive="active">
+      <a mat-list-item (click)="activeTab = ProfileTab.ORDERS" [class.active]="activeTab === ProfileTab.ORDERS">
         <mat-icon>receipt</mat-icon>
         <span>Meus Pedidos</span>
       </a>
@@ -40,14 +40,15 @@
   </div>
 
   <div class="profile-content">
-    <mat-card class="content-card">
+    <!-- Informações Pessoais -->
+    <mat-card class="content-card" *ngIf="activeTab === ProfileTab.PERSONAL_INFO">
       <mat-card-header>
         <mat-card-title>Informações Pessoais</mat-card-title>
         <mat-card-subtitle>Atualize seus dados de contato e endereços</mat-card-subtitle>
       </mat-card-header>
 
       <mat-card-content>
-        <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="profile-form">
+        <form [formGroup]="perfilForm" (ngSubmit)="onSubmitPersonalInfo()" class="profile-form">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Nome Completo</mat-label>
@@ -92,9 +93,7 @@
                 CPF inválido ou já em uso
               </mat-error>
             </mat-form-field>
-          </div>
 
-          <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Login</mat-label>
               <input matInput formControlName="login" required />
@@ -107,16 +106,6 @@
               </mat-error>
               <mat-error *ngIf="perfilForm.get('login')?.hasError('loginExists')">
                 Login já está em uso
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Senha</mat-label>
-              <input matInput type="password" formControlName="senha" />
-              <mat-icon matSuffix>vpn_key</mat-icon>
-              <mat-hint>Deixe em branco para não alterar</mat-hint>
-              <mat-error *ngIf="perfilForm.get('senha')?.hasError('minlength')">
-                A senha deve ter pelo menos 6 caracteres
               </mat-error>
             </mat-form-field>
           </div>
@@ -158,7 +147,7 @@
           <div class="section-header">
             <h3>Endereços</h3>
             <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
-              
+              <mat-icon>add</mat-icon>
               Adicionar Endereço
             </button>
           </div>
@@ -178,6 +167,101 @@
               </button>
             </mat-list-item>
           </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Segurança -->
+    <mat-card class="content-card" *ngIf="activeTab === ProfileTab.SECURITY">
+      <mat-card-header>
+        <mat-card-title>Segurança</mat-card-title>
+        <mat-card-subtitle>Gerencie sua senha e segurança da conta</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="security-options">
+          <button mat-raised-button color="primary" (click)="showChangePassword = true" *ngIf="!showChangePassword">
+            <mat-icon>vpn_key</mat-icon>
+            Alterar Senha
+          </button>
+
+          <button mat-raised-button color="warn" (click)="onRequestPasswordReset()" [disabled]="!perfilForm.get('email')?.valid">
+            <mat-icon>mail</mat-icon>
+            Redefinir Senha por E-mail
+          </button>
+        </div>
+
+        <form *ngIf="showChangePassword" [formGroup]="securityForm" (ngSubmit)="onChangePassword()" class="security-form">
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Senha Atual</mat-label>
+      <input matInput type="password" formControlName="currentPassword" required />
+      <mat-icon matSuffix>lock</mat-icon>
+      <mat-error *ngIf="securityForm.get('currentPassword')?.hasError('required')">
+        Senha atual é obrigatória
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-row">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Nova Senha</mat-label>
+      <input matInput type="password" formControlName="newPassword" required />
+      <mat-icon matSuffix>lock_outline</mat-icon>
+      <mat-error *ngIf="securityForm.get('newPassword')?.hasError('required')">
+        Nova senha é obrigatória
+      </mat-error>
+      <mat-error *ngIf="securityForm.get('newPassword')?.hasError('minlength')">
+        A senha deve ter pelo menos 6 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Confirmar Nova Senha</mat-label>
+      <input matInput type="password" formControlName="confirmPassword" required />
+      <mat-icon matSuffix>lock_outline</mat-icon>
+      <mat-error *ngIf="securityForm.get('confirmPassword')?.hasError('required')">
+        Confirmação de senha é obrigatória
+      </mat-error>
+      <mat-error *ngIf="securityForm.errors?.['mismatch']">
+        As senhas não coincidem
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="securityForm.invalid">
+      <mat-icon>save</mat-icon>
+      Salvar Nova Senha
+    </button>
+    <button mat-button (click)="showChangePassword = false; securityForm.reset()">
+      Cancelar
+    </button>
+  </div>
+</form>
+
+        <div *ngIf="passwordChanged" class="password-changed-message">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <span>Sua senha foi alterada com sucesso!</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Meus Pedidos -->
+    <mat-card class="content-card" *ngIf="activeTab === ProfileTab.ORDERS">
+      <mat-card-header>
+        <mat-card-title>Meus Pedidos</mat-card-title>
+        <mat-card-subtitle>Visualize seu histórico de pedidos</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="empty-orders-message">
+          <mat-icon>receipt</mat-icon>
+          <p>Você ainda não fez nenhum pedido</p>
+          <button mat-raised-button color="primary" routerLink="/produtos">
+            <mat-icon>shopping_cart</mat-icon>
+            Ver Produtos
+          </button>
         </div>
       </mat-card-content>
     </mat-card>

@@ -11,15 +11,22 @@
         <mat-card-content>
           <mat-list>
             <mat-list-item *ngFor="let item of items">
-              <img [src]="getImageUrl(item.nomeImagem)" alt="{{ item.nome }}" class="cart-item-image" width="60" height="150" (error)="onImageError($event)" />
+              <img
+                [src]="getImageUrl(item.nomeImagem)"
+                alt="{{ item.nome }}"
+                class="cart-item-image"
+                width="60"
+                height="150"
+                (error)="onImageError($event)"
+              />
               <div class="item-details">
                 <h3>{{ item.nome }}</h3>
-                <p>{{ item.quantidade }} x {{ item.preco | currency:'BRL' }}</p>
+                <p>{{ item.quantidade }} x {{ item.preco | currency: 'BRL' }}</p>
               </div>
             </mat-list-item>
           </mat-list>
           <mat-divider></mat-divider>
-          <p class="subtotal"><strong>Subtotal:</strong> {{ subtotal | currency:'BRL' }}</p>
+          <p class="subtotal"><strong>Subtotal:</strong> {{ subtotal | currency: 'BRL' }}</p>
         </mat-card-content>
       </mat-card>
 
@@ -28,18 +35,76 @@
         <mat-radio-group formControlName="formaPagamento" class="payment-options">
           <mat-radio-button value="PIX">Pix</mat-radio-button>
         </mat-radio-group>
-        <mat-error *ngIf="checkoutForm.get('formaPagamento')?.touched && checkoutForm.get('formaPagamento')?.hasError('required')">
+        <mat-error
+          *ngIf="
+            checkoutForm.get('formaPagamento')?.touched &&
+            checkoutForm.get('formaPagamento')?.hasError('required')
+          "
+        >
           Selecione uma forma de pagamento
         </mat-error>
 
         <mat-form-field appearance="outline" class="input-field">
           <mat-label>CPF</mat-label>
           <input matInput formControlName="cpfCnpj" placeholder="Digite seu CPF" maxlength="11" />
-          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('required')">
+          <mat-error
+            *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('required')"
+          >
             CPF é obrigatório
           </mat-error>
-          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('pattern')">
+          <mat-error
+            *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('pattern')"
+          >
             CPF deve conter 11 dígitos
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nome" placeholder="Digite seu nome" />
+          <mat-error
+            *ngIf="checkoutForm.get('nome')?.touched && checkoutForm.get('nome')?.hasError('required')"
+          >
+            Nome é obrigatório
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="Digite seu email" />
+          <mat-error
+            *ngIf="checkoutForm.get('email')?.touched && checkoutForm.get('email')?.hasError('required')"
+          >
+            Email é obrigatório
+          </mat-error>
+          <mat-error
+            *ngIf="checkoutForm.get('email')?.touched && checkoutForm.get('email')?.hasError('email')"
+          >
+            Email inválido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          <mat-label>Telefone</mat-label>
+          <input
+            matInput
+            formControlName="telefone"
+            placeholder="(99) 99999-9999"
+            mask="(00) 00000-0000"
+          />
+          <mat-error
+            *ngIf="
+              checkoutForm.get('telefone')?.touched && checkoutForm.get('telefone')?.hasError('required')
+            "
+          >
+            Telefone é obrigatório
+          </mat-error>
+          <mat-error
+            *ngIf="
+              checkoutForm.get('telefone')?.touched && checkoutForm.get('telefone')?.hasError('pattern')
+            "
+          >
+            Telefone deve estar no formato (99) 99999-9999
           </mat-error>
         </mat-form-field>
 
@@ -58,7 +123,10 @@
         <mat-card-content>
           <p><strong>Forma de Pagamento:</strong> Pix</p>
           <p><strong>CPF:</strong> {{ checkoutForm.get('cpfCnpj')?.value }}</p>
-          <p><strong>Total:</strong> {{ subtotal | currency:'BRL' }}</p>
+          <p><strong>Nome:</strong> {{ checkoutForm.get('nome')?.value }}</p>
+          <p><strong>Email:</strong> {{ checkoutForm.get('email')?.value }}</p>
+          <p><strong>Telefone:</strong> {{ checkoutForm.get('telefone')?.value }}</p>
+          <p><strong>Total:</strong> {{ subtotal | currency: 'BRL' }}</p>
         </mat-card-content>
         <mat-card-actions>
           <button mat-button color="accent" (click)="voltar()">Voltar</button>
@@ -75,7 +143,9 @@
         </mat-card-header>
         <mat-card-content>
           <p>Escaneie o QR Code abaixo para pagar com Pix:</p>
-          <img [src]="pixCode" alt="QR Code Pix" class="pix-qr" />
+          <img [src]="pixCode" alt="QR Code Pix" class="pix-qr" *ngIf="pixCode" />
+          <p *ngIf="chavePix"><strong>Código Pix:</strong> {{ chavePix }}</p>
+          <p>Instruções: Abra o app do seu banco, escaneie o QR Code ou copie o código Pix para realizar o pagamento.</p>
         </mat-card-content>
         <mat-card-actions>
           <button mat-raised-button color="primary" (click)="finalizar()">Concluir</button>

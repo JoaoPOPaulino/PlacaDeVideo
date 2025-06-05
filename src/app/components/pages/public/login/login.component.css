@@ -1,91 +1,134 @@
+/* Reset e configurações base */
+:host {
+  display: block;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background principal */
+:host::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+  z-index: -1;
+}
+
+/* Partículas animadas de fundo */
+.bg-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(0, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: float 6s infinite linear;
+}
+
+.particle:nth-child(1) { width: 4px; height: 4px; left: 20%; animation-delay: 0s; }
+.particle:nth-child(2) { width: 6px; height: 6px; left: 40%; animation-delay: 1s; }
+.particle:nth-child(3) { width: 3px; height: 3px; left: 60%; animation-delay: 2s; }
+.particle:nth-child(4) { width: 5px; height: 5px; left: 80%; animation-delay: 3s; }
+.particle:nth-child(5) { width: 4px; height: 4px; left: 10%; animation-delay: 4s; }
+
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* Overlay de circuitos */
+.circuit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 2px, transparent 2px);
+  background-size: 50px 50px;
+  z-index: 1;
+}
+
+/* Grid tecnológico */
+.tech-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: 1;
+}
+
+/* Container principal */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a237e, #4fc3f7);
   padding: 20px;
+  position: relative;
+  z-index: 2;
 }
 
+/* Caixa de login */
 .login-box {
-  background: #ffffff;
-  padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  padding: 50px 40px;
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(0, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
   text-align: center;
-  animation: fadeIn 0.5s ease-in-out;
+  position: relative;
+  animation: slideUp 0.8s ease-out;
 }
 
-.login-logo {
-  width: 120px;
-  margin: 0 auto 20px;
+.login-box::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+  border-radius: 22px;
+  z-index: -1;
+  opacity: 0.7;
+  animation: glow 2s ease-in-out infinite alternate;
 }
 
-.login-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #1a237e;
-  margin-bottom: 20px;
+@keyframes glow {
+  from { opacity: 0.7; }
+  to { opacity: 0.3; }
 }
 
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.login-input {
-  width: 100%;
-}
-
-.login-input mat-form-field {
-  transition: all 0.3s ease;
-}
-
-.login-button {
-  background: #1a237e;
-  color: #ffffff;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.login-button:hover:enabled {
-  background: #283593;
-  transform: translateY(-2px);
-}
-
-.login-button:disabled {
-  background: #b0bec5;
-  cursor: not-allowed;
-}
-
-.register-link {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #546e7a;
-}
-
-.register-link button {
-  color: #1a237e;
-  font-weight: 500;
-  margin-left: 5px;
-  transition: color 0.3s ease;
-}
-
-.register-link button:hover {
-  color: #283593;
-  text-decoration: underline;
-}
-
-@keyframes fadeIn {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(50px);
   }
   to {
     opacity: 1;
@@ -93,7 +136,278 @@
   }
 }
 
-.forgot-password {
-  margin-top: 10px;
+/* Seção da marca */
+.brand-section {
+  margin-bottom: 40px;
+}
+
+.gpu-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: pulse 2s infinite;
+}
+
+.gpu-icon-svg {
+  font-size: 40px !important;
+  color: white;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Títulos */
+.login-title {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+/* Formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.input-group {
+  position: relative;
+  text-align: left;
+}
+
+/* Customização dos mat-form-field */
+::ng-deep .custom-field {
+  width: 100%;
+}
+
+::ng-deep .custom-field .mat-mdc-form-field-wrapper {
+  padding: 0;
+}
+
+::ng-deep .custom-field .mat-mdc-form-field-flex {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .custom-field .mat-mdc-form-field-flex:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+}
+
+::ng-deep .custom-field.mat-focused .mat-mdc-form-field-flex {
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+::ng-deep .custom-field .mat-mdc-form-field-infix {
+  padding: 18px 50px 18px 20px;
+  border: none;
+  min-height: auto;
+}
+
+::ng-deep .custom-field .mat-mdc-input-element {
+  color: white;
+  font-size: 16px;
+  background: transparent;
+}
+
+::ng-deep .custom-field .mat-mdc-input-element::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+::ng-deep .custom-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Ícones dos inputs */
+.input-icon {
+  color: #00ffff !important;
+  font-size: 20px !important;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.password-toggle {
+  background: none !important;
+  border: none;
+  color: #00ffff;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #ff00ff !important;
+}
+
+/* Mensagens de erro */
+.error-message {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: left;
+  display: block;
+}
+
+/* Botão de login */
+.login-button {
+  background: linear-gradient(135deg, #00ffff, #ff00ff) !important;
+  color: white !important;
+  padding: 18px !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  height: auto !important;
+  min-height: 56px;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.login-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3) !important;
+}
+
+.login-button:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-text {
+  display: inline-block;
+}
+
+.login-spinner {
+  display: inline-block;
+}
+
+::ng-deep .login-spinner circle {
+  stroke: white;
+}
+
+/* Links do formulário */
+.form-links {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.register-link, .forgot-password {
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
+}
+
+.link-button {
+  background: none !important;
+  border: none !important;
+  color: #00ffff !important;
+  cursor: pointer;
+  font-weight: 500 !important;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-left: 5px;
+  padding: 0 !important;
+  min-width: auto !important;
+  height: auto !important;
+  line-height: normal !important;
+}
+
+.link-button:hover {
+  color: #ff00ff !important;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 25px;
+    margin: 10px;
+  }
+  
+  .login-title {
+    font-size: 26px;
+  }
+  
+  ::ng-deep .custom-field .mat-mdc-form-field-infix {
+    padding: 15px 45px 15px 15px;
+  }
+  
+  .input-icon {
+    right: 12px;
+  }
+  
+  .password-toggle {
+    right: 8px;
+  }
+}
+
+/* Animações adicionais para interatividade */
+.input-group {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.input-group:nth-child(1) { animation-delay: 0.1s; }
+.input-group:nth-child(2) { animation-delay: 0.2s; }
+.login-button { animation: fadeInUp 0.6s ease-out 0.3s both; }
+.form-links { animation: fadeInUp 0.6s ease-out 0.4s both; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
