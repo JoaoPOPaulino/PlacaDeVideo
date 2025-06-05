@@ -6,6 +6,8 @@ import {
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { Usuario } from '../models/usuario/usuario.model';
+import { Endereco } from '../models/usuario/endereco.model';
+import { Telefone } from '../models/usuario/telefone.model';
 
 @Injectable({
   providedIn: 'root',
@@ -91,22 +93,41 @@ export class UsuarioService {
   }
 
   update(usuario: any, id: number): Observable<Usuario> {
-    const payload = {
-      nome: usuario.nome,
-      email: usuario.email,
-      login: usuario.login,
-      senha: usuario.senha,
-      cpf: usuario.cpf,
-      perfil: usuario.perfil.id, // Envia apenas o ID do perfil
-      telefones: usuario.telefones || [],
-      enderecos: usuario.enderecos || [],
-      nomeImagem: usuario.nomeImagem || null, // Garante que nomeImagem seja null se não definido
-    };
+  // Preparar o payload conforme esperado pelo backend
+  const payload = {
+    nome: usuario.nome,
+    email: usuario.email,
+    login: usuario.login,
+    cpf: usuario.cpf,
+    perfil: usuario.perfil?.id || 1, // Garante que tenha um ID de perfil
+    telefones: usuario.telefones?.map((t: Telefone) => ({
+      codigoArea: t.codigoArea,
+      numero: t.numero
+    })) || [],
+    enderecos: usuario.enderecos?.map((e: Endereco) => ({
+      cep: e.cep,
+      estado: e.estado,
+      cidade: e.cidade,
+      quadra: e.quadra,
+      rua: e.rua,
+      numero: e.numero
+    })) || []
+  };
 
-    return this.httpClient
-      .put<Usuario>(`${this.url}/${id}`, payload)
-      .pipe(catchError(this.handleError));
-  }
+  return this.httpClient.put<Usuario>(`${this.url}/${id}`, payload).pipe(
+    map(updatedUsuario => this.convertToModel(updatedUsuario)),
+    catchError(error => {
+      console.error('Erro na requisição:', error);
+      let errorMessage = 'Erro ao atualizar usuário';
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      return throwError(() => new Error(errorMessage));
+    })
+  );
+}
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Erro desconhecido';

@@ -291,44 +291,56 @@ export class UserPerfilComponent implements OnInit {
   }
 
   openTelefoneDialog(): void {
-    const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, {
-      width: '400px',
-    });
+  const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, {
+    width: '400px'
+  });
 
-    dialogRef.afterClosed().subscribe((telefone: Telefone) => {
-      if (telefone) {
-        const usuarioId = this.authService.getUsuarioId();
-        if (usuarioId) {
-          const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-          const updatedTelefones = [
-            ...(currentUsuario?.telefones || []),
-            telefone,
-          ];
-          const payload = {
-            ...currentUsuario,
-            telefones: updatedTelefones,
-            enderecos: currentUsuario?.enderecos || [],
-            perfil: currentUsuario?.perfil.label.toUpperCase(),
-          };
-          this.usuarioService.update(payload, usuarioId).subscribe({
-            next: (updatedUsuario) => {
-              this.authService.updateUsuarioLogado(updatedUsuario);
-              this.snackBar.open('Telefone adicionado com sucesso!', 'Fechar', {
-                duration: 3000,
-              });
-            },
-            error: (err) => {
-              this.snackBar.open(
-                `Erro ao adicionar telefone: ${err.message}`,
-                'Fechar',
-                { duration: 5000 }
-              );
-            },
-          });
+  dialogRef.afterClosed().subscribe((telefone: Telefone) => {
+    if (telefone) {
+      const usuarioId = this.authService.getUsuarioId();
+      if (usuarioId) {
+        const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+        if (!currentUsuario) {
+          this.snackBar.open('Usuário não encontrado', 'Fechar', { duration: 3000 });
+          return;
         }
+
+        // Criar cópia dos telefones existentes
+        const updatedTelefones = [...(currentUsuario.telefones || [])];
+        updatedTelefones.push(telefone);
+
+        // Preparar payload para atualização
+        const payload = {
+          ...currentUsuario,
+          telefones: updatedTelefones,
+          enderecos: currentUsuario.enderecos || [],
+          perfil: { 
+            id: currentUsuario.perfil?.id || 1,
+            label: currentUsuario.perfil?.label || 'USER'
+          }
+        };
+
+        this.usuarioService.update(payload, usuarioId).subscribe({
+          next: (updatedUsuario) => {
+            this.authService.updateUsuarioLogado(updatedUsuario);
+            this.usuario$ = of(updatedUsuario); // Atualiza o observable
+            this.snackBar.open('Telefone adicionado com sucesso!', 'Fechar', {
+              duration: 3000
+            });
+          },
+          error: (err) => {
+            console.error('Erro ao adicionar telefone:', err);
+            this.snackBar.open(
+              `Erro ao adicionar telefone: ${err.message}`,
+              'Fechar',
+              { duration: 5000 }
+            );
+          }
+        });
       }
-    });
-  }
+    }
+  });
+}
 
   openEnderecoDialog(): void {
     const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, {
