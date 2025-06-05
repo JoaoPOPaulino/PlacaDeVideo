@@ -1,4 +1,8 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://sua-api-producao.com/api',
+  apiUrl: 'http://localhost:8080/api',
+  abacatePay: {
+    url: 'https://api.abacatepay.com/pagamentos',
+    apiKey: 'abc_dev_baWuDuS3DhcZFD3EpdznEYkH',
+  },
 };
