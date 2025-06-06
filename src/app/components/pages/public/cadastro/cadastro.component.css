@@ -1,99 +1,223 @@
-/* Container principal para centralizar o cartão */
-.cadastro-container {
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(to right, #6E45E2, #FF6636); /* Mesmo gradiente da tela de login */
-  padding: 20px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Estilo do cartão */
-.cadastro-card {
-  background: #fff;
+.login-container {
+  display: flex;
+  position: relative;
+  max-width: 1000px;
   width: 100%;
-  max-width: 500px;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
-  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Título do cartão */
-mat-card-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Estilo do formulário */
-form {
+.login-box {
+  flex: 1;
+  padding: 3rem;
+  background: rgba(15, 15, 35, 0.7);
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Espaçamento entre campos */
+  justify-content: center;
 }
 
-/* Campos de formulário */
-.full-width {
+.brand-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gpu-icon-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+}
+
+.gpu-icon {
+  font-size: 36px;
+  height: 36px;
+  width: 36px;
+  color: white;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  position: relative;
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+  display: block;
+}
+
+::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
 
-/* Botão de submit (Criar Conta) */
-.btn-submit {
-  width: 100%;
-  height: 48px;
-  font-size: 16px;
-  background: #FF6636; /* Cor consistente com o login */
-  color: #fff;
-  transition: background 0.3s;
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.btn-submit:hover {
-  background: #FF5722; /* Cor de hover */
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
 }
 
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Botão de cancelar */
-.btn-cancel {
-  width: 100%;
-  height: 48px;
-  font-size: 16px;
-  color: #FF6636;
-  border-color: #FF6636;
-  transition: all 0.3s;
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: #0072ff !important;
+  box-shadow: 0 0 0 1px #0072ff;
 }
 
-.btn-cancel:hover {
-  background: #FF6636;
-  color: #fff;
+::ng-deep .mat-mdc-input-element {
+  color: white !important;
 }
 
-/* Ícones dentro dos botões */
-.btn-submit mat-icon,
-.btn-cancel mat-icon {
+::ng-deep .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #0072ff !important;
+}
+
+.input-icon {
+  color: rgba(255, 255, 255, 0.6) !important;
   margin-right: 8px;
-  vertical-align: middle;
 }
 
-/* Animação de loading */
-.loading {
-  animation: spin 1s linear infinite;
-  margin-right: 8px;
+.login-button {
+  height: 48px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 114, 255, 0.4) !important;
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-left: 8px;
+}
+
+.footer-link:hover {
+  color: #00c6ff;
+  text-decoration: underline;
+}
+
+/* Tech Decoration */
+.tech-decoration {
+  flex: 1;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(0,20,40,0.3)"/><path d="M20,20 L80,20 L80,80 L20,80 Z" stroke="rgba(0,150,255,0.1)" stroke-width="1" fill="none"/></svg>');
+  background-size: cover;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.circuit-line {
+  height: 1px;
+  width: 80%;
+  background: linear-gradient(90deg, transparent, rgba(0, 198, 255, 0.3), transparent);
+  margin: 20px 0;
+}
+
+.hexagon {
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 114, 255, 0.1);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 1px solid rgba(0, 198, 255, 0.2);
+  animation: pulse 4s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
 }
 
 /* Responsividade */
-@media (max-width: 480px) {
-  .cadastro-card {
-    padding: 20px;
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .tech-decoration {
+    display: none;
+  }
+  
+  .login-box {
+    padding: 2rem;
   }
 }

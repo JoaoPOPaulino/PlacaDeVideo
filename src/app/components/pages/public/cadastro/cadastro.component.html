@@ -1,110 +1,134 @@
-<div class="cadastro-container">
-  <mat-card class="cadastro-card">
-    <mat-card-header>
-      <mat-card-title>Criar Conta</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="formGroup" (ngSubmit)="criarConta()">
-        <!-- Nome -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nome</mat-label>
-          <input matInput formControlName="nome" required>
-          <mat-icon matSuffix>person</mat-icon>
-          <mat-error *ngIf="formGroup.get('nome')?.hasError('required')">
-            Nome é obrigatório
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('nome')?.hasError('minlength')">
-            Nome deve ter no mínimo 3 caracteres
-          </mat-error>
-        </mat-form-field>
+<div class="login-wrapper">
+  <div class="login-container">
+    <div class="login-box">
+      <div class="brand-section">
+        <div class="gpu-icon-container">
+          <mat-icon class="gpu-icon">memory</mat-icon>
+        </div>
+        <h1 class="login-title">NexusGPU</h1>
+        <p class="login-subtitle">Junte-se à nossa plataforma</p>
+      </div>
+      
+      <form [formGroup]="formGroup" (ngSubmit)="criarConta()" class="login-form">
+        <!-- Nome Completo -->
+        <div class="input-group">
+          <mat-form-field appearance="fill">
+            <mat-label>Nome Completo</mat-label>
+            <input 
+              matInput 
+              formControlName="nome" 
+              autocomplete="name"
+            />
+            <mat-icon matPrefix class="input-icon">person</mat-icon>
+          </mat-form-field>
+          <div class="error-message" *ngIf="formGroup.get('nome')?.errors && formGroup.get('nome')?.touched">
+            <span *ngIf="formGroup.get('nome')?.hasError('required')">Nome é obrigatório</span>
+            <span *ngIf="formGroup.get('nome')?.hasError('minlength')">Mínimo de 3 caracteres</span>
+          </div>
+        </div>
 
         <!-- Email -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" required>
-          <mat-icon matSuffix>email</mat-icon>
-          <mat-error *ngIf="formGroup.get('email')?.hasError('required')">
-            Email é obrigatório
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('email')?.hasError('email')">
-            Email inválido
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('email')?.hasError('emailExists')">
-            Este email já está registrado
-          </mat-error>
-        </mat-form-field>
+        <div class="input-group">
+          <mat-form-field appearance="fill">
+            <mat-label>E-mail</mat-label>
+            <input 
+              matInput 
+              formControlName="email" 
+              autocomplete="email"
+            />
+            <mat-icon matPrefix class="input-icon">email</mat-icon>
+          </mat-form-field>
+          <div class="error-message" *ngIf="formGroup.get('email')?.errors && formGroup.get('email')?.touched">
+            <span *ngIf="formGroup.get('email')?.hasError('required')">E-mail é obrigatório</span>
+            <span *ngIf="formGroup.get('email')?.hasError('email')">E-mail inválido</span>
+            <span *ngIf="formGroup.get('email')?.hasError('emailExists')">E-mail já cadastrado</span>
+          </div>
+        </div>
 
         <!-- Login -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Login</mat-label>
-          <input matInput formControlName="login" required>
-          <mat-icon matSuffix>badge</mat-icon>
-          <mat-error *ngIf="formGroup.get('login')?.hasError('required')">
-            Login é obrigatório
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('login')?.hasError('minlength')">
-            Login deve ter no mínimo 3 caracteres
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('login')?.hasError('loginExists')">
-            Este login já está em uso
-          </mat-error>
-        </mat-form-field>
+        <div class="input-group">
+          <mat-form-field appearance="fill">
+            <mat-label>Nome de Usuário</mat-label>
+            <input 
+              matInput 
+              formControlName="login" 
+              autocomplete="username"
+            />
+            <mat-icon matPrefix class="input-icon">alternate_email</mat-icon>
+          </mat-form-field>
+          <div class="error-message" *ngIf="formGroup.get('login')?.errors && formGroup.get('login')?.touched">
+            <span *ngIf="formGroup.get('login')?.hasError('required')">Usuário é obrigatório</span>
+            <span *ngIf="formGroup.get('login')?.hasError('minlength')">Mínimo de 3 caracteres</span>
+            <span *ngIf="formGroup.get('login')?.hasError('loginExists')">Usuário já existe</span>
+          </div>
+        </div>
 
         <!-- CPF -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>CPF</mat-label>
-          <input matInput formControlName="cpf" required>
-          <mat-icon matSuffix>credit_card</mat-icon>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('required')">
-            CPF é obrigatório
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('pattern')">
-            CPF deve conter 11 dígitos numéricos
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfExists')">
-            Este CPF já está registrado
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfInvalid')">
-            CPF inválido ou já em uso
-          </mat-error>
-        </mat-form-field>
+        <div class="input-group">
+          <mat-form-field appearance="fill">
+            <mat-label>CPF</mat-label>
+            <input 
+              matInput 
+              formControlName="cpf" 
+              mask="000.000.000-00"
+              autocomplete="off"
+            />
+            <mat-icon matPrefix class="input-icon">fingerprint</mat-icon>
+          </mat-form-field>
+          <div class="error-message" *ngIf="formGroup.get('cpf')?.errors && formGroup.get('cpf')?.touched">
+            <span *ngIf="formGroup.get('cpf')?.hasError('required')">CPF é obrigatório</span>
+            <span *ngIf="formGroup.get('cpf')?.hasError('pattern')">CPF inválido</span>
+            <span *ngIf="formGroup.get('cpf')?.hasError('cpfExists')">CPF já cadastrado</span>
+          </div>
+        </div>
 
         <!-- Senha -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Senha</mat-label>
-          <input matInput type="password" formControlName="senha" required>
-          <mat-icon matSuffix>lock</mat-icon>
-          <mat-error *ngIf="formGroup.get('senha')?.hasError('required')">
-            Senha é obrigatória
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('senha')?.hasError('minlength')">
-            Senha deve ter no mínimo 4 caracteres
-          </mat-error>
-        </mat-form-field>
+        <div class="input-group">
+          <mat-form-field appearance="fill">
+            <mat-label>Senha</mat-label>
+            <input 
+              matInput 
+              formControlName="senha" 
+              [type]="hidePassword ? 'password' : 'text'"
+              autocomplete="new-password"
+            />
+            <mat-icon matPrefix class="input-icon">lock</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="togglePasswordVisibility()"
+              type="button"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </mat-form-field>
+          <div class="error-message" *ngIf="formGroup.get('senha')?.errors && formGroup.get('senha')?.touched">
+            <span *ngIf="formGroup.get('senha')?.hasError('required')">Senha é obrigatória</span>
+            <span *ngIf="formGroup.get('senha')?.hasError('minlength')">Mínimo de 4 caracteres</span>
+          </div>
+        </div>
 
-        <mat-card-actions>
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="isLoading"
-            class="btn-submit"
-          >
-            <mat-icon>person_add</mat-icon>
-            Criar Conta
-          </button>
-          <button
-            mat-stroked-button
-            type="button"
-            routerLink="/login"
-            [disabled]="isLoading"
-            class="btn-cancel"
-          >
-            <mat-icon>cancel</mat-icon>
-            Cancelar
-          </button>
-        </mat-card-actions>
+        <button
+          mat-raised-button
+          type="submit"
+          class="login-button"
+          [disabled]="isLoading || formGroup.invalid"
+        >
+          <span *ngIf="!isLoading">CRIAR CONTA</span>
+          <mat-spinner *ngIf="isLoading" diameter="24"></mat-spinner>
+        </button>
       </form>
-    </mat-card-content>
-  </mat-card>
+      
+      <div class="form-footer">
+        <span>Já tem uma conta?</span>
+        <a class="footer-link" routerLink="/login">Faça login</a>
+      </div>
+    </div>
+    
+    <div class="tech-decoration">
+      <div class="circuit-line"></div>
+      <div class="hexagon"></div>
+      <div class="circuit-line"></div>
+    </div>
+  </div>
 </div>

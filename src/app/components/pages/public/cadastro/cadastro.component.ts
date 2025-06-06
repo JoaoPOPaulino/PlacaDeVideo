@@ -24,6 +24,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-cadastro',
@@ -39,6 +40,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatCardModule,
     MatSnackBarModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.css'],
@@ -46,6 +48,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class CadastroComponent implements OnInit {
   formGroup: FormGroup;
   isLoading = false;
+  hidePassword = true;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -59,12 +62,20 @@ export class CadastroComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required, Validators.minLength(3)]],
       senha: ['', [Validators.required, Validators.minLength(4)]],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+      cpf: ['', [
+          Validators.required,
+          Validators.pattern(/^\d{11}$/),
+          Validators.maxLength(11),
+        ],],
     });
   }
 
   ngOnInit(): void {
     this.setupValidations();
+  }
+
+   togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
   }
 
   setupValidations() {
@@ -162,7 +173,7 @@ export class CadastroComponent implements OnInit {
       login: formData.login,
       senha: formData.senha,
       cpf: formData.cpf,
-      perfil: 1, // Envia o ID do perfil diretamente como número
+      perfil: {id: 1},
       telefones: [],
       enderecos: [],
       nomeImagem: null,

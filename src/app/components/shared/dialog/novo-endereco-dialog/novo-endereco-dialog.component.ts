@@ -89,22 +89,20 @@ export class NovoEnderecoDialogComponent {
     input.value = value;
     this.formGroup.get('estado')?.setValue(value);
   }
-
-  salvar(): void {
-    if (this.formGroup.valid) {
-      const endereco: Endereco = {
-        id: 0,
-        cep: this.formGroup.value.cep,
-        estado: this.formGroup.value.estado,
-        cidade: this.formGroup.value.cidade,
-        quadra: this.formGroup.value.quadra,
-        rua: this.formGroup.value.rua,
-        numero: parseInt(this.formGroup.value.numero)
-      };
-      this.dialogRef.close(endereco);
-    }
+salvar(): void {
+  if (this.formGroup.valid) {
+    const endereco: Endereco = {
+      id: 0,
+      cep: this.formGroup.value.cep,
+      estado: this.formGroup.value.estado,
+      cidade: this.formGroup.value.cidade,
+      quadra: this.formGroup.value.quadra || null,
+      rua: this.formGroup.value.rua,
+      numero: parseInt(this.formGroup.value.numero)
+    };
+    this.dialogRef.close(endereco);
   }
-
+}
   cancelar(): void {
     this.dialogRef.close();
   }

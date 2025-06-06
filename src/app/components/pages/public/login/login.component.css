@@ -1,413 +1,218 @@
-/* Reset e configurações base */
 :host {
   display: block;
   min-height: 100vh;
-  position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
 }
 
-/* Background principal */
-:host::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
-  z-index: -1;
-}
-
-/* Partículas animadas de fundo */
-.bg-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.particle {
-  position: absolute;
-  background: rgba(0, 255, 255, 0.6);
-  border-radius: 50%;
-  animation: float 6s infinite linear;
-}
-
-.particle:nth-child(1) { width: 4px; height: 4px; left: 20%; animation-delay: 0s; }
-.particle:nth-child(2) { width: 6px; height: 6px; left: 40%; animation-delay: 1s; }
-.particle:nth-child(3) { width: 3px; height: 3px; left: 60%; animation-delay: 2s; }
-.particle:nth-child(4) { width: 5px; height: 5px; left: 80%; animation-delay: 3s; }
-.particle:nth-child(5) { width: 4px; height: 4px; left: 10%; animation-delay: 4s; }
-
-@keyframes float {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-}
-
-/* Overlay de circuitos */
-.circuit-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 2px, transparent 2px),
-    radial-gradient(circle at 75% 75%, rgba(255, 0, 255, 0.1) 2px, transparent 2px);
-  background-size: 50px 50px;
-  z-index: 1;
-}
-
-/* Grid tecnológico */
-.tech-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-  z-index: 1;
-}
-
-/* Container principal */
-.login-container {
+.login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 20px;
+  padding: 2rem;
   position: relative;
-  z-index: 2;
+  overflow: hidden;
 }
 
-/* Caixa de login */
-.login-box {
-  background: rgba(15, 15, 25, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  padding: 50px 40px;
-  border-radius: 20px;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(0, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+.login-container {
+  display: flex;
+  position: relative;
+  max-width: 1000px;
   width: 100%;
-  max-width: 450px;
-  text-align: center;
-  position: relative;
-  animation: slideUp 0.8s ease-out;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.login-box::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
-  border-radius: 22px;
-  z-index: -1;
-  opacity: 0.7;
-  animation: glow 2s ease-in-out infinite alternate;
+.login-box {
+  flex: 1;
+  padding: 3rem;
+  background: rgba(15, 15, 35, 0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-@keyframes glow {
-  from { opacity: 0.7; }
-  to { opacity: 0.3; }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Seção da marca */
 .brand-section {
-  margin-bottom: 40px;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gpu-icon-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
 }
 
 .gpu-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
-  background: linear-gradient(135deg, #00ffff, #ff00ff);
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  animation: pulse 2s infinite;
-}
-
-.gpu-icon-svg {
-  font-size: 40px !important;
+  font-size: 36px;
+  height: 36px;
+  width: 36px;
   color: white;
-  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-/* Títulos */
 .login-title {
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #00ffff, #ff00ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 10px;
-  text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  color: white;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
 }
 
 .login-subtitle {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  margin-bottom: 30px;
+  font-size: 1rem;
 }
 
-/* Formulário */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 1.5rem;
 }
 
 .input-group {
   position: relative;
-  text-align: left;
 }
 
-/* Customização dos mat-form-field */
-::ng-deep .custom-field {
+::ng-deep .mat-mdc-form-field {
   width: 100%;
 }
 
-::ng-deep .custom-field .mat-mdc-form-field-wrapper {
-  padding: 0;
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-::ng-deep .custom-field .mat-mdc-form-field-flex {
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(0, 255, 255, 0.2);
-  border-radius: 12px;
-  padding: 0;
-  align-items: center;
-  transition: all 0.3s ease;
+::ng-deep .mat-mdc-form-field-focus-overlay {
+  background-color: transparent !important;
 }
 
-::ng-deep .custom-field .mat-mdc-form-field-flex:hover {
-  border-color: rgba(0, 255, 255, 0.4);
+::ng-deep .mat-mdc-form-field:hover .mat-mdc-text-field-wrapper {
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-::ng-deep .custom-field.mat-focused .mat-mdc-form-field-flex {
-  border-color: #00ffff;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.08);
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: #0072ff !important;
+  box-shadow: 0 0 0 1px #0072ff;
 }
 
-::ng-deep .custom-field .mat-mdc-form-field-infix {
-  padding: 18px 50px 18px 20px;
-  border: none;
-  min-height: auto;
-}
-
-::ng-deep .custom-field .mat-mdc-input-element {
-  color: white;
-  font-size: 16px;
-  background: transparent;
-}
-
-::ng-deep .custom-field .mat-mdc-input-element::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-::ng-deep .custom-field .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-/* Ícones dos inputs */
-.input-icon {
-  color: #00ffff !important;
-  font-size: 20px !important;
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.password-toggle {
-  background: none !important;
-  border: none;
-  color: #00ffff;
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: color 0.3s ease;
-}
-
-.password-toggle:hover {
-  color: #ff00ff !important;
-}
-
-/* Mensagens de erro */
-.error-message {
-  color: #ff4444;
-  font-size: 12px;
-  margin-top: 5px;
-  text-align: left;
-  display: block;
-}
-
-/* Botão de login */
-.login-button {
-  background: linear-gradient(135deg, #00ffff, #ff00ff) !important;
+::ng-deep .mat-mdc-input-element {
   color: white !important;
-  padding: 18px !important;
-  border: none !important;
-  border-radius: 12px !important;
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  cursor: pointer;
+}
+
+::ng-deep .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #0072ff !important;
+}
+
+.input-icon {
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin-right: 8px;
+}
+
+.login-button {
+  height: 48px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  margin-top: 1rem;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  height: auto !important;
-  min-height: 56px;
-}
-
-.login-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.login-button:hover:not(:disabled)::before {
-  left: 100%;
 }
 
 .login-button:hover:not(:disabled) {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 114, 255, 0.4) !important;
 }
 
 .login-button:disabled {
-  opacity: 0.6 !important;
-  cursor: not-allowed;
-  transform: none !important;
+  opacity: 0.7;
 }
 
-.btn-text {
-  display: inline-block;
+.form-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
 }
 
-.login-spinner {
-  display: inline-block;
+.footer-link {
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
-::ng-deep .login-spinner circle {
-  stroke: white;
+.footer-link:hover {
+  color: #00c6ff;
+  text-decoration: underline;
 }
 
-/* Links do formulário */
-.form-links {
-  margin-top: 30px;
+.divider {
+  margin: 0 12px;
+}
+
+/* Tech Decoration */
+.tech-decoration {
+  flex: 1;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(0,20,40,0.3)"/><path d="M20,20 L80,20 L80,80 L20,80 Z" stroke="rgba(0,150,255,0.1)" stroke-width="1" fill="none"/></svg>');
+  background-size: cover;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
 }
 
-.register-link, .forgot-password {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
+.circuit-line {
+  height: 1px;
+  width: 80%;
+  background: linear-gradient(90deg, transparent, rgba(0, 198, 255, 0.3), transparent);
+  margin: 20px 0;
 }
 
-.link-button {
-  background: none !important;
-  border: none !important;
-  color: #00ffff !important;
-  cursor: pointer;
-  font-weight: 500 !important;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  margin-left: 5px;
-  padding: 0 !important;
-  min-width: auto !important;
-  height: auto !important;
-  line-height: normal !important;
+.hexagon {
+  width: 80px;
+  height: 80px;
+  background: rgba(0, 114, 255, 0.1);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 1px solid rgba(0, 198, 255, 0.2);
+  animation: pulse 4s infinite ease-in-out;
 }
 
-.link-button:hover {
-  color: #ff00ff !important;
-  text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
 }
 
-/* Responsivo */
-@media (max-width: 480px) {
+/* Responsividade */
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  
+  .tech-decoration {
+    display: none;
+  }
+  
   .login-box {
-    padding: 30px 25px;
-    margin: 10px;
-  }
-  
-  .login-title {
-    font-size: 26px;
-  }
-  
-  ::ng-deep .custom-field .mat-mdc-form-field-infix {
-    padding: 15px 45px 15px 15px;
-  }
-  
-  .input-icon {
-    right: 12px;
-  }
-  
-  .password-toggle {
-    right: 8px;
-  }
-}
-
-/* Animações adicionais para interatividade */
-.input-group {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.input-group:nth-child(1) { animation-delay: 0.1s; }
-.input-group:nth-child(2) { animation-delay: 0.2s; }
-.login-button { animation: fadeInUp 0.6s ease-out 0.3s both; }
-.form-links { animation: fadeInUp 0.6s ease-out 0.4s both; }
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    padding: 2rem;
   }
 }

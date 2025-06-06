@@ -119,55 +119,55 @@
         </form>
 
         <div class="contact-section">
-          <div class="section-header">
-            <h3>Telefones</h3>
-            <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
-              <mat-icon>add</mat-icon>
-              Adicionar Telefone
-            </button>
-          </div>
+  <div class="section-header">
+    <h3>Telefones</h3>
+    <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
+      <mat-icon>add</mat-icon>
+      Adicionar Telefone
+    </button>
+  </div>
 
-          <mat-list class="contact-list">
-            <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
-              <p>Nenhum telefone cadastrado</p>
-            </mat-list-item>
-            <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones; let i = index" class="contact-item">
-              <mat-icon matListIcon>phone</mat-icon>
-              <div matLine>
-                <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeTelefone(i)" matTooltip="Remover telefone">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
+  <mat-list class="contact-list">
+    <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
+      <p>Nenhum telefone cadastrado</p>
+    </mat-list-item>
+    <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones; let i = index" class="contact-item">
+      <mat-icon matListIcon>phone</mat-icon>
+      <div matLine>
+        <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
+      </div>
+      <button mat-icon-button color="warn" (click)="removeTelefone(telefone.id)" matTooltip="Remover telefone">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
+</div>
 
-        <div class="contact-section">
-          <div class="section-header">
-            <h3>Endereços</h3>
-            <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
-              <mat-icon>add</mat-icon>
-              Adicionar Endereço
-            </button>
-          </div>
+<div class="contact-section">
+  <div class="section-header">
+    <h3>Endereços</h3>
+    <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
+      <mat-icon>add</mat-icon>
+      Adicionar Endereço
+    </button>
+  </div>
 
-          <mat-list class="contact-list">
-            <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
-              <p>Nenhum endereço cadastrado</p>
-            </mat-list-item>
-            <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos; let i = index" class="contact-item">
-              <mat-icon matListIcon>location_on</mat-icon>
-              <div matLine>
-                <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
-                <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeEndereco(i)" matTooltip="Remover endereço">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
+  <mat-list class="contact-list">
+    <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
+      <p>Nenhum endereço cadastrado</p>
+    </mat-list-item>
+    <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos; let i = index" class="contact-item">
+      <mat-icon matListIcon>location_on</mat-icon>
+      <div matLine>
+        <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
+        <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
+      </div>
+      <button mat-icon-button color="warn" (click)="removeEndereco(endereco.id)" matTooltip="Remover endereço">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
+</div>
       </mat-card-content>
     </mat-card>
 

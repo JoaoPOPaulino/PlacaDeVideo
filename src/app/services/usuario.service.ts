@@ -93,13 +93,12 @@ export class UsuarioService {
   }
 
   update(usuario: any, id: number): Observable<Usuario> {
-  // Preparar o payload conforme esperado pelo backend
   const payload = {
     nome: usuario.nome,
     email: usuario.email,
     login: usuario.login,
     cpf: usuario.cpf,
-    perfil: usuario.perfil?.id || 1, // Garante que tenha um ID de perfil
+    perfil: usuario.perfil || 1, // Garante que perfil seja um número
     telefones: usuario.telefones?.map((t: Telefone) => ({
       codigoArea: t.codigoArea,
       numero: t.numero
@@ -108,11 +107,14 @@ export class UsuarioService {
       cep: e.cep,
       estado: e.estado,
       cidade: e.cidade,
-      quadra: e.quadra,
+      quadra: e.quadra || null,
       rua: e.rua,
       numero: e.numero
-    })) || []
+    })) || [],
+    nomeImagem: usuario.nomeImagem || null
   };
+
+  console.log('Payload enviado:', payload);
 
   return this.httpClient.put<Usuario>(`${this.url}/${id}`, payload).pipe(
     map(updatedUsuario => this.convertToModel(updatedUsuario)),
@@ -163,25 +165,32 @@ export class UsuarioService {
     return this.httpClient.get<number>(`${this.url}/count`, { params });
   }
 
-  private convertToModel(usuario: any): Usuario {
-    const result = new Usuario();
-    Object.assign(result, usuario);
+ private convertToModel(usuario: any): Usuario {
+  const result = new Usuario();
+  Object.assign(result, usuario);
 
-    if (typeof usuario.perfil === 'string') {
-      result.perfil = {
-        id: usuario.perfil === 'USER' ? 1 : 2,
-        label: usuario.perfil === 'USER' ? 'Usuário' : 'Administrador',
-      };
-    } else if (usuario.perfil) {
-      result.perfil = usuario.perfil;
-    } else {
-      console.warn('Perfil não encontrado, usando padrão USER');
-      result.perfil = { id: 1, label: 'Usuário' };
-    }
-
-    return result;
+  if (typeof usuario.perfil === 'string') {
+    result.perfil = {
+      id: usuario.perfil === 'USER' ? 1 : 2,
+      label: usuario.perfil === 'USER' ? 'Usuário' : 'Administrador',
+    };
+  } else if (usuario.perfil) {
+    result.perfil = usuario.perfil;
+  } else {
+    console.warn('Perfil não encontrado, usando padrão USER');
+    result.perfil = { id: 1, label: 'Usuário' };
+  }
+  
+  if (usuario.telefones) {
+    result.telefones = usuario.telefones.map((t: any) => ({
+      id: t.id,
+      codigoArea: t.codigoArea,
+      numero: t.numero
+    }));
   }
 
+  return result;
+}
   uploadImagem(id: number, file: File): Observable<Usuario> {
     const formData = new FormData();
     formData.append('imagem', file);
@@ -211,4 +220,45 @@ requestPasswordReset(email: string): Observable<any> {
     })
   );
 }
+  addTelefone(id: number, telefone: Telefone): Observable<Usuario> {
+    const payload = {
+      codigoArea: telefone.codigoArea,
+      numero: telefone.numero
+    };
+    return this.httpClient.post<Usuario>(`${this.url}/${id}/telefones`, payload).pipe(
+      map(updatedUsuario => this.convertToModel(updatedUsuario)),
+      catchError(this.handleError)
+    );
+  }
+
+  removeTelefone(id: number, telefoneId: number): Observable<Usuario> {
+    return this.httpClient.delete<Usuario>(`${this.url}/${id}/telefones/${telefoneId}`).pipe(
+      map(updatedUsuario => this.convertToModel(updatedUsuario)),
+      catchError(this.handleError)
+    );
+  }
+
+  addEndereco(id: number, endereco: Endereco): Observable<Usuario> {
+    const payload = {
+      cep: endereco.cep,
+      estado: endereco.estado,
+      cidade: endereco.cidade,
+      quadra: endereco.quadra || null,
+      rua: endereco.rua,
+      numero: endereco.numero
+    };
+    return this.httpClient.post<Usuario>(`${this.url}/${id}/enderecos`, payload).pipe(
+      map(updatedUsuario => this.convertToModel(updatedUsuario)),
+      catchError(this.handleError)
+    );
+  }
+
+  removeEndereco(id: number, enderecoId: number): Observable<Usuario> {
+    return this.httpClient.delete<Usuario>(`${this.url}/${id}/enderecos/${enderecoId}`).pipe(
+      map(updatedUsuario => this.convertToModel(updatedUsuario)),
+      catchError(this.handleError)
+    );
+  }
+
+
 }

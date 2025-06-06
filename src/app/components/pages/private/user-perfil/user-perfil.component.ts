@@ -291,153 +291,79 @@ export class UserPerfilComponent implements OnInit {
   }
 
   openTelefoneDialog(): void {
-  const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, {
-    width: '400px'
-  });
-
-  dialogRef.afterClosed().subscribe((telefone: Telefone) => {
-    if (telefone) {
-      const usuarioId = this.authService.getUsuarioId();
-      if (usuarioId) {
-        const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-        if (!currentUsuario) {
-          this.snackBar.open('Usuário não encontrado', 'Fechar', { duration: 3000 });
-          return;
-        }
-
-        // Criar cópia dos telefones existentes
-        const updatedTelefones = [...(currentUsuario.telefones || [])];
-        updatedTelefones.push(telefone);
-
-        // Preparar payload para atualização
-        const payload = {
-          ...currentUsuario,
-          telefones: updatedTelefones,
-          enderecos: currentUsuario.enderecos || [],
-          perfil: { 
-            id: currentUsuario.perfil?.id || 1,
-            label: currentUsuario.perfil?.label || 'USER'
-          }
-        };
-
-        this.usuarioService.update(payload, usuarioId).subscribe({
-          next: (updatedUsuario) => {
-            this.authService.updateUsuarioLogado(updatedUsuario);
-            this.usuario$ = of(updatedUsuario); // Atualiza o observable
-            this.snackBar.open('Telefone adicionado com sucesso!', 'Fechar', {
-              duration: 3000
-            });
-          },
-          error: (err) => {
-            console.error('Erro ao adicionar telefone:', err);
-            this.snackBar.open(
-              `Erro ao adicionar telefone: ${err.message}`,
-              'Fechar',
-              { duration: 5000 }
-            );
-          }
-        });
-      }
-    }
-  });
-}
-
-  openEnderecoDialog(): void {
-    const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, {
-      width: '400px',
-    });
-
-    dialogRef.afterClosed().subscribe((endereco: Endereco) => {
-      if (endereco) {
+    const dialogRef = this.dialog.open(NovoTelefoneDialogComponent, { width: '400px' });
+    dialogRef.afterClosed().subscribe((telefone: Telefone) => {
+      if (telefone) {
         const usuarioId = this.authService.getUsuarioId();
         if (usuarioId) {
-          const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-          const updatedEnderecos = [
-            ...(currentUsuario?.enderecos || []),
-            endereco,
-          ];
-          const payload = {
-            ...currentUsuario,
-            telefones: currentUsuario?.telefones || [],
-            enderecos: updatedEnderecos,
-            perfil: currentUsuario?.perfil.label.toUpperCase(),
-          };
-          this.usuarioService.update(payload, usuarioId).subscribe({
+          this.usuarioService.addTelefone(usuarioId, telefone).subscribe({
             next: (updatedUsuario) => {
               this.authService.updateUsuarioLogado(updatedUsuario);
-              this.snackBar.open('Endereço adicionado com sucesso!', 'Fechar', {
-                duration: 3000,
-              });
+              this.usuario$ = of(updatedUsuario);
+              this.snackBar.open('Telefone adicionado com sucesso!', 'Sucesso', { duration: 3000 });
             },
             error: (err) => {
-              this.snackBar.open(
-                `Erro ao adicionar endereço: ${err.message}`,
-                'Fechar',
-                { duration: 5000 }
-              );
-            },
+              console.error('Erro ao adicionar telefone:', err);
+              this.snackBar.open(`Erro ao adicionar telefone: ${err.message}`, 'Fechar', { duration: 5000 });
+            }
           });
         }
       }
     });
   }
 
-  removeTelefone(index: number): void {
+  removeTelefone(telefoneId: number): void {
     const usuarioId = this.authService.getUsuarioId();
     if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      const updatedTelefones = [...(currentUsuario?.telefones || [])];
-      updatedTelefones.splice(index, 1);
-      const payload = {
-        ...currentUsuario,
-        telefones: updatedTelefones,
-        enderecos: currentUsuario?.enderecos || [],
-        perfil: currentUsuario?.perfil.label.toUpperCase(),
-      };
-      this.usuarioService.update(payload, usuarioId).subscribe({
+      this.usuarioService.removeTelefone(usuarioId, telefoneId).subscribe({
         next: (updatedUsuario) => {
           this.authService.updateUsuarioLogado(updatedUsuario);
-          this.snackBar.open('Telefone removido com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
+          this.usuario$ = of(updatedUsuario);
+          this.snackBar.open('Telefone removido com sucesso!', 'Sucesso', { duration: 3000 });
         },
         error: (err) => {
-          this.snackBar.open(
-            `Erro ao remover telefone: ${err.message}`,
-            'Fechar',
-            { duration: 5000 }
-          );
-        },
+          console.error('Erro ao remover telefone:', err);
+          this.snackBar.open(`Erro ao remover telefone: ${err.message}`, 'Fechar', { duration: 5000 });
+        }
       });
     }
   }
 
-  removeEndereco(index: number): void {
+  openEnderecoDialog(): void {
+    const dialogRef = this.dialog.open(NovoEnderecoDialogComponent, { width: '400px' });
+    dialogRef.afterClosed().subscribe((endereco: Endereco) => {
+      if (endereco) {
+        const usuarioId = this.authService.getUsuarioId();
+        if (usuarioId) {
+          this.usuarioService.addEndereco(usuarioId, endereco).subscribe({
+            next: (updatedUsuario) => {
+              this.authService.updateUsuarioLogado(updatedUsuario);
+              this.usuario$ = of(updatedUsuario);
+              this.snackBar.open('Endereço adicionado com sucesso!', 'Sucesso', { duration: 3000 });
+            },
+            error: (err) => {
+              console.error('Erro ao adicionar endereço:', err);
+              this.snackBar.open(`Erro ao adicionar endereço: ${err.message}`, 'Fechar', { duration: 5000 });
+            }
+          });
+        }
+      }
+    });
+  }
+
+  removeEndereco(enderecoId: number): void {
     const usuarioId = this.authService.getUsuarioId();
     if (usuarioId) {
-      const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-      const updatedEnderecos = [...(currentUsuario?.enderecos || [])];
-      updatedEnderecos.splice(index, 1);
-      const payload = {
-        ...currentUsuario,
-        telefones: currentUsuario?.telefones || [],
-        enderecos: updatedEnderecos,
-        perfil: currentUsuario?.perfil.label.toUpperCase(),
-      };
-      this.usuarioService.update(payload, usuarioId).subscribe({
+      this.usuarioService.removeEndereco(usuarioId, enderecoId).subscribe({
         next: (updatedUsuario) => {
           this.authService.updateUsuarioLogado(updatedUsuario);
-          this.snackBar.open('Endereço removido com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
+          this.usuario$ = of(updatedUsuario);
+          this.snackBar.open('Endereço removido com sucesso!', 'Sucesso', { duration: 3000 });
         },
         error: (err) => {
-          this.snackBar.open(
-            `Erro ao remover endereço: ${err.message}`,
-            'Fechar',
-            { duration: 5000 }
-          );
-        },
+          console.error('Erro ao remover endereço:', err);
+          this.snackBar.open(`Erro ao remover endereço: ${err.message}`, 'Fechar', { duration: 5000 });
+        }
       });
     }
   }
