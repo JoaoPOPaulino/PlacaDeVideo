@@ -1,92 +1,87 @@
-<div class="cart-content">
+<div class="cart-container">
   <ng-container *ngIf="items.length > 0; else emptyCart">
-    <mat-card *ngFor="let item of items" class="cart-item">
-      <img
-        mat-card-image
-        [src]="getImageUrl(item.nomeImagem)"
-        [alt]="item.nome"
-        class="product-image"
-        (error)="onImageError($event)"
-      />
+    <div class="cart-header">
+      <h2 class="cart-title">
+        <mat-icon>shopping_cart</mat-icon>
+        Seu Carrinho
+      </h2>
+      <button mat-stroked-button class="clear-cart-btn" (click)="clearCart()">
+        <mat-icon>delete_sweep</mat-icon>
+        Limpar Tudo
+      </button>
+    </div>
 
-      <mat-card-content>
-        <h3 class="item-name">{{ item.nome }}</h3>
-        <p class="item-price">
-          {{ item.preco | currency: 'BRL':'symbol':'1.2-2' }}
-        </p>
-
-        <div class="quantity-control">
-          <button
-            mat-mini-button
-            color="primary"
-            (click)="updateItemQuantity(item, item.quantidade - 1)"
-          >
-            <mat-icon>remove</mat-icon>
-          </button>
-
-          <input
-            matInput
-            type="number"
-            [(ngModel)]="item.quantidade"
-            (change)="updateItemQuantity(item, item.quantidade)"
-            min="1"
-            class="quantity-input"
+    <div class="cart-items">
+      <div *ngFor="let item of items" class="cart-item-card">
+        <div class="item-image-container">
+          <img 
+            [src]="getImageUrl(item.nomeImagem)" 
+            [alt]="item.nome"
+            class="item-image"
+            (error)="onImageError($event)"
           />
-
-          <button
-            mat-mini-button
-            color="primary"
-            (click)="updateItemQuantity(item, item.quantidade + 1)"
-          >
-            <mat-icon>add</mat-icon>
-          </button>
         </div>
 
-        <p class="item-total">
-          Total:
-          {{
-            (item.preco * item.quantidade) | currency: 'BRL':'symbol':'1.2-2'
-          }}
-        </p>
-      </mat-card-content>
+        <div class="item-details">
+          <h3 class="item-name">{{ item.nome }}</h3>
+          
+          <div class="price-info">
+            <span class="unit-price">{{ item.preco | currency:'BRL':'symbol':'1.2-2' }}</span>
+            <span class="item-total">{{ (item.preco * item.quantidade) | currency:'BRL':'symbol':'1.2-2' }}</span>
+          </div>
 
-      <mat-card-actions>
-        <button
-          mat-icon-button
-          color="warn"
-          aria-label="Remover item"
-          (click)="removeItem(item.id)"
-        >
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-card-actions>
-    </mat-card>
+          <div class="item-controls">
+            <div class="quantity-selector">
+              <button mat-icon-button class="quantity-btn" (click)="updateItemQuantity(item, item.quantidade - 1)">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="quantity-value">{{ item.quantidade }}</span>
+              <button mat-icon-button class="quantity-btn" (click)="updateItemQuantity(item, item.quantidade + 1)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <button mat-icon-button class="remove-btn" (click)="removeItem(item.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span class="summary-value">{{ subtotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="summary-row">
+        <span>Frete</span>
+        <span class="summary-value">Calculado no checkout</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row total">
+        <span>Total Estimado</span>
+        <span class="summary-value">{{ subtotal | currency:'BRL':'symbol':'1.2-2' }}</span>
+      </div>
+
+      <button mat-raised-button class="checkout-btn" (click)="finalizePurchase()">
+        <mat-icon>shopping_bag</mat-icon>
+        Finalizar Compra
+      </button>
+    </div>
   </ng-container>
 
   <ng-template #emptyCart>
-    <div class="empty-cart">
-      <mat-icon class="empty-cart-icon">shopping_cart</mat-icon>
-      <p>Seu carrinho está vazio</p>
-      <a mat-raised-button color="primary" routerLink="/produtos">
-        Explorar Produtos
-      </a>
+    <div class="empty-cart-state">
+      <div class="empty-cart-content">
+        <mat-icon class="empty-cart-icon">shopping_cart_off</mat-icon>
+        <h3>Seu carrinho está vazio</h3>
+        <p>Explore nossa seleção de produtos de alta performance</p>
+        <button mat-raised-button color="primary" routerLink="/produtos" class="browse-btn">
+          <mat-icon>explore</mat-icon>
+          Explorar Produtos
+        </button>
+      </div>
     </div>
   </ng-template>
-</div>
-
-<mat-divider *ngIf="items.length > 0"></mat-divider>
-
-<div class="sidenav-footer" *ngIf="items.length > 0">
-  <div class="subtotal">
-    <span>Subtotal:</span>
-    <span>{{ subtotal | currency: 'BRL':'symbol':'1.2-2' }}</span>
-  </div>
-
-  <button mat-raised-button color="primary" (click)="finalizePurchase()">
-    Finalizar Compra
-  </button>
-
-  <button mat-stroked-button color="warn" (click)="clearCart()">
-    Limpar Carrinho
-  </button>
 </div>
