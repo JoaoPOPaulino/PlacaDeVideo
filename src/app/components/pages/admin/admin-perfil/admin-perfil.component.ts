@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,12 +23,16 @@ import {
   switchMap,
 } from 'rxjs/operators';
 import { AuthService } from '../../../../services/auth.service';
-import { UsuarioService } from '../../../../services/usuario.service';
 import { Usuario } from '../../../../models/usuario/usuario.model';
-import { Telefone } from '../../../../models/usuario/telefone.model';
+import { Telefone } from './../../../../models/usuario/telefone.model';
+import { MatSidenavModule } from '@angular/material/sidenav'; // For SidebarComponent
+import { MatToolbarModule } from '@angular/material/toolbar'; // Required by SidebarComponent
+import { RouterModule, RouterOutlet } from '@angular/router'; // For SidebarComponent
 import { Endereco } from '../../../../models/usuario/endereco.model';
-import { NovoTelefoneDialogComponent } from '../../../shared/dialog/novo-telefone-dialog/novo-telefone-dialog.component';
+import { UsuarioService } from '../../../../services/usuario.service';
 import { NovoEnderecoDialogComponent } from '../../../shared/dialog/novo-endereco-dialog/novo-endereco-dialog.component';
+import { NovoTelefoneDialogComponent } from '../../../shared/dialog/novo-telefone-dialog/novo-telefone-dialog.component';
+import { SidebarComponent } from '../../../template/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-perfil',
@@ -44,6 +48,12 @@ import { NovoEnderecoDialogComponent } from '../../../shared/dialog/novo-enderec
     MatSnackBarModule,
     ReactiveFormsModule,
     MatDialogModule,
+    SidebarComponent,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterModule,
+    RouterOutlet,
+    NgClass,
   ],
   templateUrl: './admin-perfil.component.html',
   styleUrls: ['./admin-perfil.component.css'],
@@ -235,7 +245,7 @@ export class AdminPerfilComponent implements OnInit {
     const usuarioId = this.authService.getUsuarioId();
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
     if (usuarioId && currentUsuario) {
-      const updatedTelefones = [...(currentUsuario.telefones || []), telefone];
+      const updatedTelefones = [...(currentUsuario?.telefones || []), telefone];
       const payload = {
         ...currentUsuario,
         telefones: updatedTelefones,
@@ -247,6 +257,27 @@ export class AdminPerfilComponent implements OnInit {
         Number(usuarioId),
         'Telefone adicionado com sucesso!',
         'adicionar telefone'
+      );
+    }
+  }
+
+  removeTelefone(telefoneId: number): void {
+    const usuarioId = this.authService.getUsuarioId();
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
+      const updatedTelefones =
+        currentUsuario?.telefones?.filter((t) => t.id !== telefoneId) || [];
+      const payload = {
+        ...currentUsuario,
+        telefones: updatedTelefones,
+        enderecos: currentUsuario.enderecos || [],
+        perfil: currentUsuario.perfil.label.toUpperCase(),
+      };
+      this.updateUsuario(
+        payload,
+        Number(usuarioId),
+        'Telefone removido com sucesso!',
+        'remover telefone'
       );
     }
   }
@@ -280,33 +311,12 @@ export class AdminPerfilComponent implements OnInit {
     }
   }
 
-  removeTelefone(index: number): void {
+  removeEndereco(enderecoId: number): void {
     const usuarioId = this.authService.getUsuarioId();
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
     if (usuarioId && currentUsuario) {
-      const updatedTelefones = [...(currentUsuario.telefones || [])];
-      updatedTelefones.splice(index, 1);
-      const payload = {
-        ...currentUsuario,
-        telefones: updatedTelefones,
-        enderecos: currentUsuario.enderecos || [],
-        perfil: currentUsuario.perfil.label.toUpperCase(),
-      };
-      this.updateUsuario(
-        payload,
-        Number(usuarioId),
-        'Telefone removido com sucesso!',
-        'remover telefone'
-      );
-    }
-  }
-
-  removeEndereco(index: number): void {
-    const usuarioId = this.authService.getUsuarioId();
-    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-    if (usuarioId && currentUsuario) {
-      const updatedEnderecos = [...(currentUsuario.enderecos || [])];
-      updatedEnderecos.splice(index, 1);
+      const updatedEnderecos =
+        currentUsuario?.enderecos?.filter((e) => e.id !== enderecoId) || [];
       const payload = {
         ...currentUsuario,
         telefones: currentUsuario.telefones || [],

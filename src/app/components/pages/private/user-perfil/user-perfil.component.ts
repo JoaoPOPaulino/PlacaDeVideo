@@ -84,7 +84,6 @@ export class UserPerfilComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Carrega o usuário logado
     this.usuario$ = this.authService.getUsuarioLogado().pipe(
       switchMap((usuario) => {
         if (usuario) {

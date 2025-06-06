@@ -62,7 +62,7 @@
 
 /* Links do menu principal com cor clara para melhor visibilidade */
 .nav-link {
-  color: #cbd5e1; /* cinza claro */
+  color: #cbd5e1 !important; /* cinza claro */
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 8px;

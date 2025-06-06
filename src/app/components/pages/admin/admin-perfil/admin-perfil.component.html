@@ -1,120 +1,102 @@
-<div class="profile-admin-container">
-  <mat-card class="profile-card">
-    <div class="avatar-container">
-      <div class="avatar-wrapper">
-        <div class="avatar-overlay" (click)="fileInput.click()">
-          <mat-icon>camera_alt</mat-icon>
-        </div>
+<mat-drawer-container class="container">
+  <mat-drawer-content class="content">
+    <mat-card class="profile-card">
+      <div class="avatar-container">
         <img *ngIf="imagePreview; else noImage" [src]="imagePreview" alt="Imagem de perfil" class="profile-avatar">
         <ng-template #noImage>
           <div class="profile-avatar-placeholder">
             <mat-icon>person</mat-icon>
           </div>
         </ng-template>
-        <input #fileInput type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden #fileInput>
+        <button mat-raised-button color="primary" (click)="fileInput.click()" class="upload-button">
+          <mat-icon>camera_alt</mat-icon> Escolher Foto
+        </button>
+        <button mat-raised-button color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" class="upload-button">
+          <mat-icon>cloud_upload</mat-icon> Atualizar Foto
+        </button>
       </div>
-      <button mat-raised-button color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" class="upload-button">
-        <mat-icon>cloud_upload</mat-icon>
-        Atualizar Foto
-      </button>
-    </div>
 
-    <mat-card-content>
-      <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="profile-form">
-        <div class="form-grid">
-          <mat-form-field appearance="outline">
+      <mat-card-content>
+        <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="profile-form">
+          <mat-form-field appearance="fill">
             <mat-label>Nome Completo</mat-label>
             <input matInput formControlName="nome" required />
-            <mat-icon matSuffix>person</mat-icon>
+            <mat-icon matPrefix>person</mat-icon>
             <mat-error *ngIf="perfilForm.get('nome')?.hasError('required')">Nome é obrigatório</mat-error>
-            <mat-error *ngIf="perfilForm.get('nome')?.hasError('minlength')">Nome deve ter pelo menos 3 caracteres</mat-error>
+            <mat-error *ngIf="perfilForm.get('nome')?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>E-mail</mat-label>
             <input matInput formControlName="email" type="email" required />
-            <mat-icon matSuffix>email</mat-icon>
+            <mat-icon matPrefix>email</mat-icon>
             <mat-error *ngIf="perfilForm.get('email')?.hasError('required')">Email é obrigatório</mat-error>
             <mat-error *ngIf="perfilForm.get('email')?.hasError('email')">Email inválido</mat-error>
-            <mat-error *ngIf="perfilForm.get('email')?.hasError('emailExists')">Email já está em uso</mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Login</mat-label>
             <input matInput formControlName="login" required />
-            <mat-icon matSuffix>alternate_email</mat-icon>
+            <mat-icon matPrefix>alternate_email</mat-icon>
             <mat-error *ngIf="perfilForm.get('login')?.hasError('required')">Login é obrigatório</mat-error>
-            <mat-error *ngIf="perfilForm.get('login')?.hasError('minlength')">Login deve ter pelo menos 3 caracteres</mat-error>
-            <mat-error *ngIf="perfilForm.get('login')?.hasError('loginExists')">Login já está em uso</mat-error>
+            <mat-error *ngIf="perfilForm.get('login')?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Senha</mat-label>
             <input matInput type="password" formControlName="senha" />
-            <mat-icon matSuffix>vpn_key</mat-icon>
+            <mat-icon matPrefix>vpn_key</mat-icon>
             <mat-hint>Deixe em branco para não alterar</mat-hint>
-            <mat-error *ngIf="perfilForm.get('senha')?.hasError('minlength')">A senha deve ter pelo menos 6 caracteres</mat-error>
+            <mat-error *ngIf="perfilForm.get('senha')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
           </mat-form-field>
-        </div>
 
-        <div class="form-actions">
           <button mat-raised-button color="primary" type="submit" [disabled]="perfilForm.invalid">
-            <mat-icon>save</mat-icon>
-            Salvar Alterações
+            <mat-icon>save</mat-icon> Salvar Alterações
           </button>
-        </div>
-      </form>
+        </form>
 
-      <div class="contact-section">
-        <div class="section-header">
-          <h3><mat-icon>phone</mat-icon> Telefones</h3>
-          <button mat-stroked-button color="primary" (click)="openTelefoneDialog()">
-            <mat-icon>add</mat-icon>
-            Adicionar Telefone
+        <div class="contact-section">
+          <h3>Telefones</h3>
+          <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
+            <mat-icon>add</mat-icon> Adicionar Telefone
           </button>
-        </div>
-
-        <mat-list class="contact-list">
-          <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
-            <p>Nenhum telefone cadastrado</p>
-          </mat-list-item>
-          <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones; let i = index" class="contact-item">
-            <mat-icon matListIcon>phone</mat-icon>
-            <div matLine>
-              <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
-            </div>
-            <button mat-icon-button color="warn" (click)="removeTelefone(i)" matTooltip="Remover telefone">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-list-item>
-        </mat-list>
-      </div>
-
-      <div class="contact-section">
-        <div class="section-header">
-          <h3><mat-icon>location_on</mat-icon> Endereços</h3>
-          <button mat-stroked-button color="primary" (click)="openEnderecoDialog()">
-            <mat-icon>add</mat-icon>
-            Adicionar Endereço
-          </button>
+          <mat-list>
+            <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
+              Nenhum telefone cadastrado
+            </mat-list-item>
+            <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones">
+              <mat-icon matListIcon>phone</mat-icon>
+              <span matLine>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
+              <button mat-icon-button color="warn" (click)="removeTelefone(telefone.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-list>
         </div>
 
-        <mat-list class="contact-list">
-          <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
-            <p>Nenhum endereço cadastrado</p>
-          </mat-list-item>
-          <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos; let i = index" class="contact-item">
-            <mat-icon matListIcon>home</mat-icon>
-            <div matLine>
-              <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
-              <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
-            </div>
-            <button mat-icon-button color="warn" (click)="removeEndereco(i)" matTooltip="Remover endereço">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-list-item>
-        </mat-list>
-      </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+        <div class="contact-section">
+          <h3>Endereços</h3>
+          <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
+            <mat-icon>add</mat-icon> Adicionar Endereço
+          </button>
+          <mat-list>
+            <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
+              Nenhum endereço cadastrado
+            </mat-list-item>
+            <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos">
+              <mat-icon matListIcon>location_on</mat-icon>
+              <div matLine>
+                <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
+                <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
+              </div>
+              <button mat-icon-button color="warn" (click)="removeEndereco(endereco.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </mat-drawer-content>
+</mat-drawer-container>

@@ -1,85 +1,156 @@
-<div class="detalhes-container">
+<div class="product-detail-container">
   <mat-spinner *ngIf="!placa" diameter="50" class="spinner"></mat-spinner>
-  <div *ngIf="placa" class="produto-detalhes">
-    <mat-card class="produto-card">
-      <img mat-card-image [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}" class="produto-imagem">
-      <mat-card-content>
-        <h1>{{placa.nome}}</h1>
-        <p class="preco">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
-        <p><strong>Fabricante:</strong> {{placa.fabricante.nome || 'Desconhecido'}}</p>
-        <p><strong>Categoria:</strong> {{placa.categoria || 'Desconhecida'}}</p>
-        <p><strong>Especificações Técnicas:</strong></p>
-        <ul>
-          <li>Memória: {{placa.especificacaoTecnica.memoria}}</li>
-          <li>Clock: {{placa.especificacaoTecnica.clock}}</li>
-          <li>Barramento: {{placa.especificacaoTecnica.barramento}}</li>
-          <li>Consumo de Energia: {{placa.especificacaoTecnica.consumoEnergia}}</li>
-        </ul>
-        <p><strong>Descrição:</strong> {{placa.descricao || 'Sem descrição disponível.'}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="addToCart()">Adicionar ao Carrinho</button>
-      </mat-card-actions>
-    </mat-card>
-
-    <!-- Seção de Avaliações -->
-    <mat-card class="avaliacoes-card">
-      <mat-card-header>
-        <mat-card-title>Avaliações</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list *ngIf="avaliacoes.length > 0; else noAvaliacoes">
-          <mat-list-item *ngFor="let avaliacao of avaliacoes" class="avaliacao-item">
-            <div class="avaliacao-content">
-              <p>
-                <strong>{{avaliacao.usuario.nome}}</strong> - 
-                {{ avaliacao.nota != null ? (avaliacao.nota + ' - ' + getNotaLabel(avaliacao.nota)) : 'Sem nota' }}
-                ({{avaliacao.dataCriacao | date:'short'}})
-              </p>
-              <p>{{avaliacao.comentario}}</p>
+  
+  <div *ngIf="placa" class="product-tech-grid">
+    <!-- Card Principal do Produto -->
+    <div class="product-main-card">
+      <div class="product-image-container">
+        <img [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}" class="product-image">
+    
+        <div class="product-badges-container">
+          <div class="product-badge" *ngIf="placa.categoria">
+            <span class="badge-chip">{{placa.categoria}}</span>
+          </div>
+          <div class="product-badge" *ngIf="placa.fabricante?.nome">
+            <span class="badge-chip">{{placa.fabricante.nome}}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="product-info">
+        <h1 class="product-title">{{placa.nome}}</h1>
+        
+        <div class="price-section">
+          <span class="current-price">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</span>
+        </div>
+        
+        <div class="product-actions">
+          <button mat-raised-button class="add-to-cart-btn" (click)="addToCart()">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Adicionar ao Carrinho
+          </button>
+        </div>
+        
+        <div class="product-description">
+          <h3>Descrição</h3>
+          <p>{{placa.descricao || 'Sem descrição disponível.'}}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Especificações Técnicas -->
+    <div class="specs-card">
+      <h2 class="section-title">
+        <mat-icon>memory</mat-icon>
+        Especificações Técnicas
+      </h2>
+      
+      <div class="specs-grid">
+        <div class="spec-item">
+          <mat-icon>memory</mat-icon>
+          <div>
+            <span class="spec-label">Memória</span>
+            <span class="spec-value">{{placa.especificacaoTecnica.memoria}}</span>
+          </div>
+        </div>
+        
+        <div class="spec-item">
+          <mat-icon>speed</mat-icon>
+          <div>
+            <span class="spec-label">Clock</span>
+            <span class="spec-value">{{placa.especificacaoTecnica.clock}}</span>
+          </div>
+        </div>
+        
+        <div class="spec-item">
+          <mat-icon>settings_ethernet</mat-icon>
+          <div>
+            <span class="spec-label">Barramento</span>
+            <span class="spec-value">{{placa.especificacaoTecnica.barramento}}</span>
+          </div>
+        </div>
+        
+        <div class="spec-item">
+          <mat-icon>bolt</mat-icon>
+          <div>
+            <span class="spec-label">Consumo</span>
+            <span class="spec-value">{{placa.especificacaoTecnica.consumoEnergia}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Avaliações -->
+    <div class="reviews-card">
+      <h2 class="section-title">
+        <mat-icon>star_rate</mat-icon>
+        Avaliações
+      </h2>
+      
+      <div *ngIf="avaliacoes.length > 0; else noReviews" class="reviews-list">
+        <div *ngFor="let avaliacao of avaliacoes" class="review-item">
+          <div class="review-header">
+            <div class="review-author">{{avaliacao.usuario.nome}}</div>
+            <div class="review-rating" *ngIf="avaliacao.nota != null">
+              <span *ngFor="let star of getStars(avaliacao.nota)">
+                <mat-icon>{{star === 1 ? 'star' : 'star_border'}}</mat-icon>
+              </span>
+              <span class="rating-label">{{getNotaLabel(avaliacao.nota)}}</span>
             </div>
-          </mat-list-item>
-        </mat-list>
-        <ng-template #noAvaliacoes>
-          <p>Nenhuma avaliação disponível.</p>
-        </ng-template>
-      </mat-card-content>
-
-      <!-- Formulário de Nova Avaliação -->
-      <mat-card-content *ngIf="isLoggedIn">
-        <h3>Deixe sua Avaliação</h3>
-        <form [formGroup]="avaliacaoForm" (ngSubmit)="submitAvaliacao()" class="avaliacao-form">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Nota (opcional)</mat-label>
-            <mat-select formControlName="nota">
-              <mat-option [value]="null">Sem nota</mat-option>
-              <mat-option value="1">1 - Péssimo</mat-option>
-              <mat-option value="2">2 - Ruim</mat-option>
-              <mat-option value="3">3 - Bom</mat-option>
-              <mat-option value="4">4 - Ótimo</mat-option>
-              <mat-option value="5">5 - Excelente</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Comentário</mat-label>
-            <textarea matInput formControlName="comentario" rows="4" required></textarea>
-            <mat-error *ngIf="avaliacaoForm.get('comentario')?.hasError('required')">
-              Comentário é obrigatório
-            </mat-error>
-            <mat-error *ngIf="avaliacaoForm.get('comentario')?.hasError('minlength')">
-              Comentário deve ter pelo menos 10 caracteres
-            </mat-error>
-          </mat-form-field>
+            <div class="review-date">{{avaliacao.dataCriacao | date:'dd/MM/yyyy'}}</div>
+          </div>
+          <div class="review-content">{{avaliacao.comentario}}</div>
+        </div>
+      </div>
+      
+      <ng-template #noReviews>
+        <div class="no-reviews">
+          <mat-icon>rate_review</mat-icon>
+          <p>Nenhuma avaliação disponível</p>
+        </div>
+      </ng-template>
+      
+      <!-- Formulário de Avaliação -->
+      <div *ngIf="isLoggedIn" class="review-form">
+        <h3 class="form-title">Deixe sua avaliação</h3>
+        
+        <form [formGroup]="avaliacaoForm" (ngSubmit)="submitAvaliacao()">
+          <div class="form-group">
+            <mat-form-field appearance="fill">
+              <mat-label>Sua nota (opcional)</mat-label>
+              <mat-select formControlName="nota">
+                <mat-option [value]="null">Sem nota</mat-option>
+                <mat-option *ngFor="let i of [1,2,3,4,5]" [value]="i">
+                  {{i}} - {{getNotaLabel(i)}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-group">
+            <mat-form-field appearance="fill">
+              <mat-label>Seu comentário</mat-label>
+              <textarea matInput formControlName="comentario" rows="4" required></textarea>
+              <mat-error *ngIf="avaliacaoForm.get('comentario')?.hasError('required')">
+                Comentário é obrigatório
+              </mat-error>
+              <mat-error *ngIf="avaliacaoForm.get('comentario')?.hasError('minlength')">
+                Mínimo de 10 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
           <div class="form-actions">
             <button mat-raised-button color="primary" type="submit" [disabled]="avaliacaoForm.invalid">
               Enviar Avaliação
             </button>
           </div>
         </form>
-      </mat-card-content>
-      <mat-card-content *ngIf="!isLoggedIn">
-        <p>Faça <a routerLink="/login">login</a> para deixar uma avaliação.</p>
-      </mat-card-content>
-    </mat-card>
+      </div>
+      
+      <div *ngIf="!isLoggedIn" class="login-prompt">
+        <p>Faça <a routerLink="/login">login</a> para deixar sua avaliação</p>
+      </div>
+    </div>
   </div>
 </div>
