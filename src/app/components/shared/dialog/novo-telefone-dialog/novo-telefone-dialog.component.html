@@ -1,43 +1,45 @@
-<h2 mat-dialog-title>Adicionar Novo Telefone</h2>
+<h2 mat-dialog-title>
+  <mat-icon>add_ic_call</mat-icon>
+  Adicionar Telefone
+</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Código de Área</mat-label>
+  <form [formGroup]="formGroup" class="nexus-form">
+    <mat-form-field appearance="outline" class="nexus-field">
+      <mat-label>DDD</mat-label>
       <input matInput formControlName="codigoArea" 
              placeholder="Ex: 62" 
              maxlength="2"
              (input)="formatarDDD($event)">
-      <mat-error *ngIf="formGroup.get('codigoArea')?.hasError('required')">
-        Código de área é obrigatório
-      </mat-error>
-      <mat-error *ngIf="formGroup.get('codigoArea')?.hasError('pattern') ||
-                       formGroup.get('codigoArea')?.hasError('minlength') ||
-                       formGroup.get('codigoArea')?.hasError('maxlength')">
-        Deve conter exatamente 2 dígitos
+      <mat-icon matPrefix>dialpad</mat-icon>
+      <mat-error *ngIf="formGroup.get('codigoArea')?.invalid">
+        Informe 2 dígitos
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="nexus-field">
       <mat-label>Número</mat-label>
       <input matInput formControlName="numero" 
              placeholder="Ex: 999999999" 
              maxlength="9"
              (input)="formatarTelefone($event)">
-      <mat-error *ngIf="formGroup.get('numero')?.hasError('required')">
-        Número é obrigatório
-      </mat-error>
-      <mat-error *ngIf="formGroup.get('numero')?.hasError('pattern') ||
-                       formGroup.get('numero')?.hasError('minlength')">
-        Deve conter 8 ou 9 dígitos
+      <mat-icon matPrefix>call</mat-icon>
+      <mat-error *ngIf="formGroup.get('numero')?.invalid">
+        Informe 8 ou 9 dígitos
       </mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid">
-    Adicionar
+<mat-dialog-actions align="end" class="nexus-actions">
+  <button mat-stroked-button mat-dialog-close class="nexus-btn nexus-btn-cancel">
+    Cancelar
+  </button>
+  <button mat-flat-button 
+          color="primary" 
+          (click)="salvar()" 
+          [disabled]="formGroup.invalid"
+          class="nexus-btn nexus-btn-primary">
+    Salvar
   </button>
 </mat-dialog-actions>

@@ -62,11 +62,14 @@ export class CadastroComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       login: ['', [Validators.required, Validators.minLength(3)]],
       senha: ['', [Validators.required, Validators.minLength(4)]],
-      cpf: ['', [
-          Validators.required,
-          Validators.pattern(/^\d{11}$/),
+      cpf: [
+        '',
+        [
+          Validators.pattern(/^\d+$/), // Só aceita números
+          Validators.minLength(11), // Mínimo 11 dígitos
           Validators.maxLength(11),
-        ],],
+        ],
+      ],
     });
   }
 
@@ -74,7 +77,7 @@ export class CadastroComponent implements OnInit {
     this.setupValidations();
   }
 
-   togglePasswordVisibility() {
+  togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
   }
 
@@ -173,7 +176,7 @@ export class CadastroComponent implements OnInit {
       login: formData.login,
       senha: formData.senha,
       cpf: formData.cpf,
-      perfil: {id: 1},
+      perfil: { id: 1 },
       telefones: [],
       enderecos: [],
       nomeImagem: null,

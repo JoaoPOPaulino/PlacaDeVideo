@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, tap } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Usuario } from '../models/usuario/usuario.model';
@@ -125,17 +125,25 @@ export class AuthService {
     this.setUsuarioLogado(updatedUsuario);
   }
 
-  solicitarRecuperacaoSenha(loginOuEmail: string): Observable<void> {
-    return this.http.post<void>(`${this.baseURL}/solicitar-recuperacao`, {
+  solicitarRecuperacaoSenha(loginOuEmail: string): Observable<any> {
+    return this.http.post(`${this.baseURL}/solicitar-recuperacao`, {
       loginOuEmail,
     });
   }
 
   resetarSenha(token: string, novaSenha: string): Observable<any> {
-    return this.http.post(
-      `${this.baseURL}/resetar-senha`,
-      { token, novaSenha },
-      { responseType: 'text' }
-    );
+    return this.http.post(`${this.baseURL}/resetar-senha`, {
+      token,
+      novaSenha,
+    });
+  }
+
+  validarSenha(usuarioId: number, senha: string): Observable<boolean> {
+    return this.http
+      .post<boolean>(`${this.baseURL}/validar-senha`, {
+        usuarioId,
+        senha,
+      })
+      .pipe(catchError(() => of(false)));
   }
 }

@@ -75,4 +75,7 @@ export class PublicHeaderComponent implements OnInit, OnDestroy {
   openCart(): void {
     this.cartUIService.openCart();
   }
+  closeCart(): void {
+    this.cartUIService.closeCart();
+  }
 }

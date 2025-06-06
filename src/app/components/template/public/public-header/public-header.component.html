@@ -1,60 +1,49 @@
-<mat-toolbar color="primary" class="public-header">
+<mat-toolbar class="custom-toolbar">
   <div class="header-container">
     <!-- Logo e Nome -->
-    <a routerLink="/" class="brand">
-      <mat-icon class="logo-icon">memory</mat-icon>
-      <span class="brand-name">NexusGPU</span>
+    <a routerLink="/" class="brand-section">
+      <div class="gpu-icon-container">
+        <mat-icon class="logo-icon">memory</mat-icon>
+      </div>
+      <span class="brand-title">NexusGPU</span>
     </a>
 
-    <!-- Menu principal (desktop) -->
+    <!-- Menu principal -->
     <nav class="main-nav">
-      <a mat-button routerLink="/produtos" routerLinkActive="active">Produtos</a>
-      <a mat-button routerLink="/ofertas" routerLinkActive="active">Ofertas</a>
-      <a mat-button routerLink="/sobre" routerLinkActive="active">Sobre Nós</a>
+      <a mat-button routerLink="/produtos" routerLinkActive="nav-active" class="nav-link">Produtos</a>
+      <a mat-button routerLink="/ofertas" routerLinkActive="nav-active" class="nav-link">Ofertas</a>
+      <a mat-button routerLink="/sobre" routerLinkActive="nav-active" class="nav-link">Sobre Nós</a>
     </nav>
 
     <!-- Ícones de ação -->
-    <div class="action-icons">
-      <button mat-icon-button [matMenuTriggerFor]="searchMenu">
-        <mat-icon>search</mat-icon>
-      </button>
-
-      <button mat-icon-button (click)="openCart()">
+    <div class="action-buttons">
+      <button mat-icon-button (click)="openCart()" class="action-btn" matTooltip="Carrinho">
         <mat-icon>shopping_cart</mat-icon>
-        <span class="badge">{{ cartItemsCount }}</span>
+        <span class="cart-badge" *ngIf="cartItemsCount > 0">{{ cartItemsCount }}</span>
       </button>
 
-      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" class="action-btn" matTooltip="Perfil">
         <mat-icon>account_circle</mat-icon>
       </button>
     </div>
   </div>
 </mat-toolbar>
 
-<!-- Menus -->
-<mat-menu #searchMenu="matMenu">
-  <div class="search-menu">
-    <input type="text" placeholder="Buscar produtos..." />
-    <button mat-icon-button>
-      <mat-icon>search</mat-icon>
-    </button>
-  </div>
-</mat-menu>
-
-<mat-menu #userMenu="matMenu">
+<!-- Menu de usuário -->
+<mat-menu #userMenu="matMenu" class="user-menu">
   <ng-container *ngIf="!isLoggedIn; else loggedInMenu">
-    <button mat-menu-item routerLink="/login">
+    <button mat-menu-item routerLink="/login" class="menu-item">
       <mat-icon>login</mat-icon>
       <span>Login</span>
     </button>
   </ng-container>
 
   <ng-template #loggedInMenu>
-    <button mat-menu-item [routerLink]="isAdmin ? '/admin/minha-conta' : '/cliente/minha-conta'">
+    <button mat-menu-item [routerLink]="isAdmin ? '/admin/minha-conta' : '/cliente/minha-conta'" class="menu-item">
       <mat-icon>account_circle</mat-icon>
       <span>Minha Conta</span>
     </button>
-    <button mat-menu-item (click)="logout()">
+    <button mat-menu-item (click)="logout()" class="menu-item logout-item">
       <mat-icon>logout</mat-icon>
       <span>Sair</span>
     </button>

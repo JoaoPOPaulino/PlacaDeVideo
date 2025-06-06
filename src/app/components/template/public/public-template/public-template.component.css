@@ -1,6 +1,16 @@
 /* components/template/public-template/public-template.component.css */
+mat-sidenav-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
 .content {
-    min-height: calc(100vh - 120px); /* Ajuste conforme altura do header+footer */
-    padding: 20px;
-    background-color: #f5f5f5;
-  }
+  min-height: calc(100vh - 120px); /* Ajuste conforme altura do header+footer */
+  padding: 20px;
+  background: transparent; /* Mude de #f5f5f5 para transparent */
+}
+
+/* Garante que o sidenav-content ocupe todo o espaço */
+mat-sidenav-content {
+  background: transparent;
+}

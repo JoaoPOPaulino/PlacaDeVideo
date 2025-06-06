@@ -1,30 +1,43 @@
-<section class="hero">
+<section class="hero-section">
   <div class="hero-content">
-    <h1>As melhores placas de vídeo do mercado</h1>
-    <p>Encontre a placa perfeita para seu setup gamer</p>
-    <a mat-raised-button color="primary" routerLink="/produtos">Ver Produtos</a>
+    <div class="brand-section">
+      <div class="gpu-icon-container">
+        <mat-icon class="gpu-icon">memory</mat-icon>
+      </div>
+      <h1 class="hero-title">NexusGPU</h1>
+      <p class="hero-subtitle">Performance além dos gráficos</p>
+    </div>
+    <h2>As melhores placas de vídeo do mercado</h2>
+    <p class="hero-description">Encontre a placa perfeita para seu setup gamer</p>
+    <a mat-raised-button class="hero-button" routerLink="/produtos">VER PRODUTOS</a>
   </div>
 </section>
 
-<section class="featured-products">
-  <h2>Destaques</h2>
+<section class="featured-section">
+  <div class="section-container">
+    <h2 class="section-title">Destaques</h2>
+    <mat-spinner *ngIf="loading" diameter="50" class="loading-spinner"></mat-spinner>
 
-  <mat-spinner *ngIf="loading" diameter="50"></mat-spinner>
-
-  <div class="products-grid" *ngIf="!loading">
-    <mat-card *ngFor="let product of featuredProducts" class="product-card">
-      <img [src]="getImageUrl(product.nomeImagem)" alt="{{product.nome}}" class="product-image" />
-      <mat-card-content>
-        <h3>{{ product.nome }}</h3>
-        <p class="price">{{ product.preco | currency: 'BRL':'symbol':'1.2-2' }}</p>
-        <p class="category">{{ product.categoria || 'Categoria desconhecida' }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="viewDetails(product.id)">Detalhes</button>
-        <button mat-raised-button color="accent" (click)="addToCart(product)">
-          <mat-icon>add_shopping_cart</mat-icon> Adicionar
-        </button>
-      </mat-card-actions>
-    </mat-card>
+    <div class="products-grid" *ngIf="!loading">
+      <mat-card *ngFor="let product of featuredProducts" class="product-card">
+        <div class="card-image-container">
+          <img [src]="getImageUrl(product.nomeImagem)" alt="{{product.nome}}" class="product-image" />
+        </div>
+        <mat-card-content>
+          <h3 class="product-title">{{ product.nome }}</h3>
+          <p class="product-price">{{ product.preco | currency: 'BRL':'symbol':'1.2-2' }}</p>
+          <p class="product-category">{{ product.categoria || 'Categoria desconhecida' }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button class="details-button" (click)="viewDetails(product.id)">
+            Detalhes
+          </button>
+          <button mat-raised-button class="cart-button" (click)="addToCart(product)">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Adicionar
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
 </section>

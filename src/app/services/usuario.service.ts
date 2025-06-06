@@ -84,7 +84,7 @@ export class UsuarioService {
       perfil: usuario.perfil.id, // Envia apenas o ID do perfil
       telefones: usuario.telefones || [],
       enderecos: usuario.enderecos || [],
-      nomeImagem: usuario.nomeImagem || null, // Garante que nomeImagem seja null se não definido
+      nomeImagem: usuario.nomeImagem || null,
     };
 
     return this.httpClient
@@ -93,50 +93,43 @@ export class UsuarioService {
   }
 
   update(usuario: any, id: number): Observable<Usuario> {
-  const payload = {
-    nome: usuario.nome,
-    email: usuario.email,
-    login: usuario.login,
-    cpf: usuario.cpf,
-    perfil: usuario.perfil || 1, // Garante que perfil seja um número
-    telefones: usuario.telefones?.map((t: Telefone) => ({
-      codigoArea: t.codigoArea,
-      numero: t.numero
-    })) || [],
-    enderecos: usuario.enderecos?.map((e: Endereco) => ({
-      cep: e.cep,
-      estado: e.estado,
-      cidade: e.cidade,
-      quadra: e.quadra || null,
-      rua: e.rua,
-      numero: e.numero
-    })) || [],
-    nomeImagem: usuario.nomeImagem || null
-  };
+    const payload = {
+      nome: usuario.nome,
+      email: usuario.email,
+      login: usuario.login,
+      cpf: usuario.cpf,
+      perfil: usuario.perfil || 1, // Garante que perfil seja um número
+      nomeImagem: usuario.nomeImagem || null,
+    };
 
-  console.log('Payload enviado:', payload);
+    console.log('Payload enviado:', payload);
 
-  return this.httpClient.put<Usuario>(`${this.url}/${id}`, payload).pipe(
-    map(updatedUsuario => this.convertToModel(updatedUsuario)),
-    catchError(error => {
-      console.error('Erro na requisição:', error);
-      let errorMessage = 'Erro ao atualizar usuário';
-      if (error.error?.message) {
-        errorMessage = error.error.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      return throwError(() => new Error(errorMessage));
-    })
-  );
-}
+    return this.httpClient.put<Usuario>(`${this.url}/${id}`, payload).pipe(
+      map((updatedUsuario) => this.convertToModel(updatedUsuario)),
+      catchError((error) => {
+        console.error('Erro na requisição:', error);
+        let errorMessage = 'Erro ao atualizar usuário';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
 
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Erro desconhecido';
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Erro: ${error.error.message}`;
     } else {
-      errorMessage = this.getServerErrorMessage(error);
+      if (error.status === 400 && Array.isArray(error.error)) {
+        errorMessage = error.error.join('; '); // Join validation messages
+      } else {
+        errorMessage =
+          error.error?.message || this.getServerErrorMessage(error);
+      }
     }
     return throwError(() => new Error(errorMessage));
   }
@@ -165,32 +158,32 @@ export class UsuarioService {
     return this.httpClient.get<number>(`${this.url}/count`, { params });
   }
 
- private convertToModel(usuario: any): Usuario {
-  const result = new Usuario();
-  Object.assign(result, usuario);
+  private convertToModel(usuario: any): Usuario {
+    const result = new Usuario();
+    Object.assign(result, usuario);
 
-  if (typeof usuario.perfil === 'string') {
-    result.perfil = {
-      id: usuario.perfil === 'USER' ? 1 : 2,
-      label: usuario.perfil === 'USER' ? 'Usuário' : 'Administrador',
-    };
-  } else if (usuario.perfil) {
-    result.perfil = usuario.perfil;
-  } else {
-    console.warn('Perfil não encontrado, usando padrão USER');
-    result.perfil = { id: 1, label: 'Usuário' };
-  }
-  
-  if (usuario.telefones) {
-    result.telefones = usuario.telefones.map((t: any) => ({
-      id: t.id,
-      codigoArea: t.codigoArea,
-      numero: t.numero
-    }));
-  }
+    if (typeof usuario.perfil === 'string') {
+      result.perfil = {
+        id: usuario.perfil === 'USER' ? 1 : 2,
+        label: usuario.perfil === 'USER' ? 'Usuário' : 'Administrador',
+      };
+    } else if (usuario.perfil) {
+      result.perfil = usuario.perfil;
+    } else {
+      console.warn('Perfil não encontrado, usando padrão USER');
+      result.perfil = { id: 1, label: 'Usuário' };
+    }
 
-  return result;
-}
+    if (usuario.telefones) {
+      result.telefones = usuario.telefones.map((t: any) => ({
+        id: t.id,
+        codigoArea: t.codigoArea,
+        numero: t.numero,
+      }));
+    }
+
+    return result;
+  }
   uploadImagem(id: number, file: File): Observable<Usuario> {
     const formData = new FormData();
     formData.append('imagem', file);
@@ -202,40 +195,59 @@ export class UsuarioService {
     );
   }
 
-  changePassword(usuarioId: number, currentPassword: string, newPassword: string): Observable<any> {
-  return this.httpClient.post(`${this.url}/${usuarioId}/change-password`, {
-    currentPassword,
-    newPassword
-  });
-}
+  changePassword(
+    usuarioId: number,
+    currentPassword: string,
+    newPassword: string
+  ): Observable<void> {
+    return this.httpClient
+      .post<void>(`${this.url}/${usuarioId}/change-password`, {
+        currentPassword,
+        newPassword,
+      })
+      .pipe(catchError(this.handleError));
+  }
 
-requestPasswordReset(email: string): Observable<any> {
-  return this.httpClient.post(`${this.url}/request-password-reset`, { email }).pipe(
-    catchError(error => {
-      // Tratamento mais detalhado de erros
-      if (error.status === 404) {
-        return throwError(() => new Error('E-mail não encontrado no sistema.'));
-      }
-      return throwError(() => new Error('Erro ao processar solicitação. Tente novamente mais tarde.'));
-    })
-  );
-}
+  requestPasswordReset(email: string): Observable<any> {
+    return this.httpClient
+      .post(`${this.url}/request-password-reset`, { email })
+      .pipe(
+        catchError((error) => {
+          // Tratamento mais detalhado de erros
+          if (error.status === 404) {
+            return throwError(
+              () => new Error('E-mail não encontrado no sistema.')
+            );
+          }
+          return throwError(
+            () =>
+              new Error(
+                'Erro ao processar solicitação. Tente novamente mais tarde.'
+              )
+          );
+        })
+      );
+  }
   addTelefone(id: number, telefone: Telefone): Observable<Usuario> {
     const payload = {
       codigoArea: telefone.codigoArea,
-      numero: telefone.numero
+      numero: telefone.numero,
     };
-    return this.httpClient.post<Usuario>(`${this.url}/${id}/telefones`, payload).pipe(
-      map(updatedUsuario => this.convertToModel(updatedUsuario)),
-      catchError(this.handleError)
-    );
+    return this.httpClient
+      .post<Usuario>(`${this.url}/${id}/telefones`, payload)
+      .pipe(
+        map((updatedUsuario) => this.convertToModel(updatedUsuario)),
+        catchError(this.handleError)
+      );
   }
 
   removeTelefone(id: number, telefoneId: number): Observable<Usuario> {
-    return this.httpClient.delete<Usuario>(`${this.url}/${id}/telefones/${telefoneId}`).pipe(
-      map(updatedUsuario => this.convertToModel(updatedUsuario)),
-      catchError(this.handleError)
-    );
+    return this.httpClient
+      .delete<Usuario>(`${this.url}/${id}/telefones/${telefoneId}`)
+      .pipe(
+        map((updatedUsuario) => this.convertToModel(updatedUsuario)),
+        catchError(this.handleError)
+      );
   }
 
   addEndereco(id: number, endereco: Endereco): Observable<Usuario> {
@@ -245,20 +257,22 @@ requestPasswordReset(email: string): Observable<any> {
       cidade: endereco.cidade,
       quadra: endereco.quadra || null,
       rua: endereco.rua,
-      numero: endereco.numero
+      numero: endereco.numero,
     };
-    return this.httpClient.post<Usuario>(`${this.url}/${id}/enderecos`, payload).pipe(
-      map(updatedUsuario => this.convertToModel(updatedUsuario)),
-      catchError(this.handleError)
-    );
+    return this.httpClient
+      .post<Usuario>(`${this.url}/${id}/enderecos`, payload)
+      .pipe(
+        map((updatedUsuario) => this.convertToModel(updatedUsuario)),
+        catchError(this.handleError)
+      );
   }
 
   removeEndereco(id: number, enderecoId: number): Observable<Usuario> {
-    return this.httpClient.delete<Usuario>(`${this.url}/${id}/enderecos/${enderecoId}`).pipe(
-      map(updatedUsuario => this.convertToModel(updatedUsuario)),
-      catchError(this.handleError)
-    );
+    return this.httpClient
+      .delete<Usuario>(`${this.url}/${id}/enderecos/${enderecoId}`)
+      .pipe(
+        map((updatedUsuario) => this.convertToModel(updatedUsuario)),
+        catchError(this.handleError)
+      );
   }
-
-
 }

@@ -8,6 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatIconModule],
   templateUrl: './sobre.component.html',
-  styleUrl: './sobre.component.css'
+  styleUrl: './sobre.component.css',
 })
-export class SobreComponent {}
+export class SobreComponent {
+  openGitHub() {
+    window.open('https://github.com/JoaoPOPaulino/PlacaDeVideo', '_blank');
+  }
+}

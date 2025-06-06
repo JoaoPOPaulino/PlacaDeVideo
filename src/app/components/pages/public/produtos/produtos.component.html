@@ -1,71 +1,79 @@
-<div class="produtos-container">
-  <!-- Search and Filters -->
-  <div class="filters-section">
-    <mat-form-field appearance="outline" class="search-bar">
-      <mat-label>Buscar produtos</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Nome da placa...">
-      <button mat-icon-button matSuffix (click)="onSearch()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </mat-form-field>
+<section class="products-section">
+  <div class="section-container">
+    <h2 class="section-title">Produtos</h2>
 
-    <div class="filters">
-      <mat-form-field appearance="outline">
-        <mat-label>Fabricante</mat-label>
-        <mat-select [(ngModel)]="filterFabricante" (selectionChange)="applyFilters()">
-          <mat-option [value]="null">Todos</mat-option>
-          <mat-option *ngFor="let fabricante of fabricantes" [value]="fabricante.id">
-            {{ fabricante.nome }}
-          </mat-option>
-        </mat-select>
+    <!-- Search and Filters -->
+    <div class="filters-section">
+      <mat-form-field appearance="fill" class="search-bar">
+        <mat-label>Buscar produtos</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Nome da placa...">
+        <button mat-icon-button matSuffix (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Categoria</mat-label>
-        <mat-select [(ngModel)]="filterCategoria" (selectionChange)="applyFilters()">
-          <mat-option [value]="null">Todas</mat-option>
-          <mat-option *ngFor="let categoria of categorias" [value]="categoria">
-            {{ categoria }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="filters">
+        <mat-form-field appearance="fill" class="filter-field">
+          <mat-label>Fabricante</mat-label>
+          <mat-select [(ngModel)]="filterFabricante" (selectionChange)="applyFilters()">
+            <mat-option [value]="null">Todos</mat-option>
+            <mat-option *ngFor="let fabricante of fabricantes" [value]="fabricante.id">
+              {{ fabricante.nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="filter-field">
+          <mat-label>Categoria</mat-label>
+          <mat-select [(ngModel)]="filterCategoria" (selectionChange)="applyFilters()">
+            <mat-option [value]="null">Todas</mat-option>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria">
+              {{ categoria }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <mat-spinner *ngIf="loading" diameter="50" class="loading-spinner"></mat-spinner>
+
+    <!-- Product Grid -->
+    <div class="products-grid" *ngIf="!loading">
+      <mat-card *ngFor="let placa of placas" class="product-card">
+        <div class="card-image-container">
+          <img [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}" class="product-image" />
+        </div>
+        <mat-card-content>
+          <h3 class="product-title">{{placa.nome}}</h3>
+          <p class="product-price">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
+          <p class="product-manufacturer">{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
+          <p class="product-category">{{placa.categoria || ''}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button class="details-button" (click)="viewDetails(placa.id)">Detalhes</button>
+          <button mat-raised-button class="cart-button" (click)="addToCart(placa)">
+            <mat-icon>adicionar_carrinho_de_compras</mat-icon> Adicionar
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator
+      class="custom-paginator"
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[8, 16, 24]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      ng-if="!loading && totalItems > 0">
+    </mat-paginator>
+
+    <!-- No Results -->
+    <div class="no-results" *ngIf="!loading && placas.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>Nenhum produto encontrado.</p>
     </div>
   </div>
-
-  <!-- Loading Spinner -->
-  <mat-spinner *ngIf="loading" diameter="50" class="loading-spinner"></mat-spinner>
-
-  <!-- Product Grid -->
-  <div class="products-grid" *ngIf="!loading">
-    <mat-card *ngFor="let placa of placas" class="product-card">
-      <img [src]="getImageUrl(placa.nomeImagem)" alt="{{placa.nome}}" class="product-image" />
-      <mat-card-content>
-        <h3>{{placa.nome}}</h3>
-        <p class="price">{{placa.preco | currency:'BRL':'symbol':'1.2-2'}}</p>
-        <p class="manufacturer">{{placa.fabricante.nome || 'Fabricante desconhecido'}}</p>
-        <p class="category">{{placa.categoria || 'Categoria desconhecida'}}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="viewDetails(placa.id)">Detalhes</button>
-        <button mat-raised-button color="accent" (click)="addToCart(placa)">
-          <mat-icon>add_shopping_cart</mat-icon> Adicionar
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
-  <!-- Pagination -->
-  <mat-paginator
-    [length]="totalItems"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="[8, 16, 24]"
-    (page)="onPageChange($event)"
-    showFirstLastButtons
-    *ngIf="!loading && totalItems > 0">
-  </mat-paginator>
-
-  <div class="no-results" *ngIf="!loading && placas.length === 0">
-    <mat-icon>search_off</mat-icon>
-    <p>Nenhum produto encontrado</p>
-  </div>
-</div>
+</section>

@@ -1,81 +1,86 @@
-<h2 mat-dialog-title>Adicionar Novo Endereço</h2>
+<h2 mat-dialog-title>
+  <mat-icon>location_on</mat-icon>
+  Adicionar Endereço
+</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="formGroup">
-    <mat-form-field appearance="outline" class="full-width">
+  <form [formGroup]="formGroup" class="nexus-form">
+    <mat-form-field appearance="outline" class="nexus-field">
       <mat-label>CEP</mat-label>
       <input matInput formControlName="cep" 
              placeholder="Ex: 74000000" 
              maxlength="8"
              (input)="formatarCEP($event)">
-      <mat-error *ngIf="formGroup.get('cep')?.hasError('required')">
-        CEP é obrigatório
-      </mat-error>
-      <mat-error *ngIf="formGroup.get('cep')?.hasError('pattern') ||
-                       formGroup.get('cep')?.hasError('minlength') ||
-                       formGroup.get('cep')?.hasError('maxlength')">
-        Deve conter exatamente 8 dígitos
+      <mat-icon matPrefix>pin</mat-icon>
+      <mat-error *ngIf="formGroup.get('cep')?.invalid">
+        Informe 8 dígitos
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Estado (UF)</mat-label>
-      <input matInput formControlName="estado" 
-             placeholder="Ex: GO" 
-             maxlength="2"
-             (input)="formatarEstado($event)">
-      <mat-error *ngIf="formGroup.get('estado')?.hasError('required')">
-        Estado é obrigatório
-      </mat-error>
-      <mat-error *ngIf="formGroup.get('estado')?.hasError('minlength') ||
-                       formGroup.get('estado')?.hasError('maxlength')">
-        Deve conter exatamente 2 letras
-      </mat-error>
-    </mat-form-field>
+    <div class="nexus-row">
+      <mat-form-field appearance="outline" class="nexus-field nexus-field-small">
+        <mat-label>UF</mat-label>
+        <input matInput formControlName="estado" 
+               placeholder="Ex: GO" 
+               maxlength="2"
+               (input)="formatarEstado($event)">
+        <mat-error *ngIf="formGroup.get('estado')?.invalid">
+          Informe 2 letras
+        </mat-error>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Cidade</mat-label>
-      <input matInput formControlName="cidade" 
-             placeholder="Ex: Goiânia">
-      <mat-error *ngIf="formGroup.get('cidade')?.hasError('required')">
-        Cidade é obrigatória
-      </mat-error>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="nexus-field">
+        <mat-label>Cidade</mat-label>
+        <input matInput formControlName="cidade" 
+               placeholder="Ex: Goiânia">
+        <mat-error *ngIf="formGroup.get('cidade')?.invalid">
+          Campo obrigatório
+        </mat-error>
+      </mat-form-field>
+    </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Quadra</mat-label>
-      <input matInput formControlName="quadra" 
-             placeholder="Ex: QD 10">
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="nexus-field">
       <mat-label>Rua</mat-label>
       <input matInput formControlName="rua" 
              placeholder="Ex: Rua 15">
-      <mat-error *ngIf="formGroup.get('rua')?.hasError('required')">
-        Rua é obrigatória
+      <mat-icon matPrefix>road</mat-icon>
+      <mat-error *ngIf="formGroup.get('rua')?.invalid">
+        Campo obrigatório
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Número</mat-label>
-      <input matInput type="text" 
-             formControlName="numero" 
-             placeholder="Ex: 100"
-             (keypress)="apenasNumeros($event)">
-      <mat-error *ngIf="formGroup.get('numero')?.hasError('required')">
-        Número é obrigatório
-      </mat-error>
-      <mat-error *ngIf="formGroup.get('numero')?.hasError('pattern')">
-        Apenas números são permitidos
-      </mat-error>
-    </mat-form-field>
+    <div class="nexus-row">
+      <mat-form-field appearance="outline" class="nexus-field nexus-field-small">
+        <mat-label>Número</mat-label>
+        <input matInput type="text" 
+               formControlName="numero" 
+               placeholder="Ex: 100"
+               (keypress)="apenasNumeros($event)">
+        <mat-icon matPrefix>tag</mat-icon>
+        <mat-error *ngIf="formGroup.get('numero')?.invalid">
+          Informe o número
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="nexus-field">
+        <mat-label>Quadra</mat-label>
+        <input matInput formControlName="quadra" 
+               placeholder="Ex: QD 10">
+        <mat-icon matPrefix>grid_on</mat-icon>
+      </mat-form-field>
+    </div>
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid">
-    Adicionar
+<mat-dialog-actions align="end" class="nexus-actions">
+  <button mat-stroked-button mat-dialog-close class="nexus-btn nexus-btn-cancel">
+    Cancelar
+  </button>
+  <button mat-flat-button 
+          color="primary" 
+          (click)="salvar()" 
+          [disabled]="formGroup.invalid"
+          class="nexus-btn nexus-btn-primary">
+    Salvar
   </button>
 </mat-dialog-actions>

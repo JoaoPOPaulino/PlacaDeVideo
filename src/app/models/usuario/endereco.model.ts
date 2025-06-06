@@ -3,7 +3,7 @@ export class Endereco {
   cep!: string;
   estado!: string;
   cidade!: string;
-  quadra!: string;
+  quadra?: string;
   rua!: string;
   numero!: number;
 }

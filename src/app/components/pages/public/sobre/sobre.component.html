@@ -1,47 +1,45 @@
 <div class="sobre-container">
+  <header>
     <h1>Sobre Nós</h1>
-  
-    <section class="equipe">
-      <a href="https://www.instagram.com/jp.oliveirapaulino/" target="_blank">
+  </header>
+
+  <section class="equipe">
+    <h2>Nossa Equipe</h2>
+    <div class="fotos-container">
+      <a href="https://www.instagram.com/jp.oliveirapaulino/" target="_blank" aria-label="Instagram João Pedro">
         <img src="assets/imagens/caricatura-joao.png" alt="João Pedro" class="foto" />
       </a>
-      <a href="https://www.instagram.com/not_luizz_/" target="_blank">
+      <a href="https://www.instagram.com/not_luizz_/" target="_blank" aria-label="Instagram Luiz Cláudio">
         <img src="assets/imagens/caricatura-luiz.png" alt="Luiz Cláudio" class="foto" />
       </a>
-      <p>
-        Somos dois estudantes apaixonados por tecnologia e criatividade: <strong>João Pedro</strong> e <strong>Luiz Cláudio</strong>.
-        Este projeto foi desenvolvido para a disciplina de <em>Tópicos Especiais em Programação II</em>, sob orientação do ilustre <strong>Professor Jânio Júnior</strong>.
-      </p>
-    </section>
-  
-    <section class="projeto">
-      <h2>O Projeto</h2>
-      <p>
-        O tema escolhido foi um e-commerce de placas de vídeo — sim, aquelas belezinhas que fazem qualquer gamer suar frio
-        ao ver o preço. Criamos o <strong>NexusGPU</strong>, uma plataforma moderna, funcional e cheia de estilo para quem
-        quer comprar uma GPU top de linha sem travar a nave.
-      </p>
-      <p>
-        Desenvolvido com <strong>Angular</strong>, utilizando <em>standalone components</em>, animações, serviços, roteamento e integração com APIs.
-      </p>
-    </section>
-  
-    <!-- -->
-    <section class="extras">
-      <button class="github-btn" onclick="window.open('https://github.com/JoaoPOPaulino/PlacaDeVideo', '_blank')">
-        🔗 Ver projeto no GitHub
-      </button>
-    </section>
-    <!-- -->
+    </div>
+    <p>
+      Somos dois estudantes apaixonados por tecnologia e criatividade: <strong>João Pedro</strong> e <strong>Luiz Cláudio</strong>.
+      Este projeto foi desenvolvido para a disciplina de <em>Tópicos Especiais em Programação II</em>, sob orientação do ilustre <strong>Professor Jânio Júnior</strong>.
+    </p>
+  </section>
 
-  
-    <section class="depoimento">
-      <h2>Depoimento do Professor</h2>
-      <blockquote>
-        "Fiquei impressionado com o trabalho dos meninos. Só não foi melhor que o último jogo do Corinthians — brincadeira, claro!
-        Parabéns, João e Luiz!" <br />
-        <cite>— Prof. Jânio Júnior (torcedor sofredor)</cite>
-      </blockquote>
-    </section>
-  </div>
-  
+  <section class="projeto">
+    <h2>O Projeto</h2>
+    <p>
+      O tema escolhido foi um e-commerce de placas de vídeo — sim, aquelas belezinhas que fazem qualquer gamer suar frio
+      ao ver o preço. Criamos o <strong>NexusGPU</strong>, uma plataforma moderna, funcional e cheia de estilo para quem
+      quer comprar uma GPU top de linha sem travar a nave.
+    </p>
+    <p>
+      Desenvolvido com <strong>Angular</strong>, utilizando <em>standalone components</em>, animações, serviços, roteamento e integração com APIs.
+    </p>
+  </section>
+
+  <section class="extras">
+    <button class="github-btn" (click)="openGitHub()">🔗 Ver projeto no GitHub</button>
+  </section>
+
+  <section class="depoimento">
+    <blockquote>
+      Debugging é como ser o detetive numa história de crime onde você mesmo é o assassino.
+      OBS: Só não gosta de PHP quem não se garante.
+      <footer>— Prof. Jânio Júnior (torcedor sofredor)</footer>
+    </blockquote>
+  </section>
+</div>

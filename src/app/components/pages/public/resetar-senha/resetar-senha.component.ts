@@ -71,28 +71,23 @@ export class ResetarSenhaComponent implements OnInit {
     if (this.resetarForm.valid && this.token) {
       this.isLoading = true;
       const novaSenha = this.resetarForm.get('novaSenha')!.value;
-
       this.authService.resetarSenha(this.token, novaSenha).subscribe({
-        next: (response: any) => {
+        next: (response) => {
           this.isLoading = false;
-          // Trata tanto resposta JSON quanto texto
-          const message = response?.message || response;
-          this.snackBar.open(message, 'Fechar', {
-            duration: 3000,
-          });
+          this.snackBar.open(
+            response.message || 'Senha redefinida com sucesso',
+            'Fechar',
+            { duration: 3000 }
+          );
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          console.error('Erro ao redefinir senha:', err);
           this.isLoading = false;
-          // Mostra a mensagem de erro do servidor ou uma mensagem padrão
-          const errorMessage =
-            err.error?.text ||
-            err.error?.message ||
-            'Erro ao redefinir senha. Tente novamente.';
-          this.snackBar.open(errorMessage, 'Fechar', {
-            duration: 5000,
-          });
+          this.snackBar.open(
+            err.error?.message || 'Erro ao redefinir senha.',
+            'Fechar',
+            { duration: 5000 }
+          );
         },
       });
     }

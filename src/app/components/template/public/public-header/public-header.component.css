@@ -1,93 +1,206 @@
-.public-header {
+.custom-toolbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  padding: 0 20px;
+  background: linear-gradient(to right, rgba(15, 12, 41, 0.9), rgba(48, 43, 99, 0.9));
+  backdrop-filter: blur(8px);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  padding: 0 1rem;
+  height: 64px;
 }
 
 .header-container {
   display: flex;
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   align-items: center;
   justify-content: space-between;
 }
 
-.brand {
+.brand-section {
   display: flex;
   align-items: center;
   text-decoration: none;
   color: white;
-  margin-right: 20px;
+}
+
+.gpu-icon-container {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  border-radius: 8px;
+  margin-right: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 114, 255, 0.3);
 }
 
 .logo-icon {
-  margin-right: 8px;
+  font-size: 24px;
+  height: 24px;
+  width: 24px;
+  color: white;
 }
 
-.brand-name {
-  font-weight: bold;
-  font-size: 1.2rem;
+.brand-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .main-nav {
   display: flex;
-  flex-grow: 1;
+  align-items: center;
+  gap: 1rem;
 }
 
-.main-nav a {
-  color: white;
+/* Links do menu principal com cor clara para melhor visibilidade */
+.nav-link {
+  color: #cbd5e1; /* cinza claro */
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.action-icons {
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #00c6ff;
+}
+
+.nav-active {
+  background: rgba(255, 255, 255, 0.25);
+  color: #00c6ff;
+}
+
+.action-buttons {
   display: flex;
-  gap: 10px;
-  margin-left: auto;
+  gap: 0.5rem;
 }
 
-.action-icons button {
+.action-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 50%;
+  transition: all 0.3s ease;
   position: relative;
 }
 
-.badge {
+.action-btn:hover {
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  transform: scale(1.1);
+}
+
+.action-btn mat-icon {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cart-badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(45deg, #ff4444, #ff7878);
   color: white;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.search-menu {
-  display: flex;
-  padding: 5px 10px;
-  align-items: center;
+/* Menu do usuário */
+
+/* Fundo do painel do menu */
+.user-menu ::ng-deep .mat-menu-panel {
+  background: rgba(15, 15, 35, 0.95) !important; /* fundo escuro translúcido */
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.search-menu input {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 5px 10px;
-  margin-right: 5px;
+/* Padding do conteúdo */
+.user-menu ::ng-deep .mat-menu-content {
+  padding: 0.5rem 0;
 }
 
-.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+/* Itens do menu */
+.user-menu ::ng-deep .mat-menu-item {
+  color: #cbd5e1; /* texto cinza claro */
+  font-weight: 500;
+  background: transparent !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Responsivo: o menu principal continua visível */
+/* Hover e foco nos itens */
+.user-menu ::ng-deep .mat-menu-item:hover,
+.user-menu ::ng-deep .mat-menu-item.cdk-focused,
+.user-menu ::ng-deep .mat-menu-item.cdk-program-focused {
+  background-color: rgba(0, 198, 255, 0.2) !important; /* fundo azul clarinho */
+  color: #00c6ff !important; /* texto azul */
+}
+
+/* Ícones dentro do menu */
+.user-menu ::ng-deep .mat-menu-item mat-icon {
+  color: #7f9bb3;
+  margin-right: 0.5rem;
+}
+
+/* Estilo do item de logout */
+.logout-item {
+  color: #ff6b6b;
+}
+
+.logout-item:hover {
+  background-color: rgba(255, 107, 107, 0.2);
+  color: #ff8787;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
-  .action-icons {
-    margin-left: auto;
+  .custom-toolbar {
+    padding: 0 0.5rem;
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+  }
+
+  .main-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .action-buttons {
+    gap: 0.25rem;
   }
 }
 
-mat-menu button[mat-menu-item]:last-child {
-  color: #ff4444; /* Cor vermelha para o botão de logout */
+@media (max-width: 480px) {
+  .main-nav {
+    display: none;
+  }
+
+  .brand-section {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .action-buttons {
+    position: absolute;
+    right: 0.5rem;
+  }
 }
