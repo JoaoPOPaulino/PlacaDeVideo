@@ -1,20 +1,19 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { RouterModule } from '@angular/router';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
   catchError,
@@ -23,28 +22,29 @@ import {
   map,
   switchMap,
 } from 'rxjs/operators';
-import { Pedido } from '../../../../models/pedido/pedido.model';
-import { Endereco } from '../../../../models/usuario/endereco.model';
-import { Telefone } from '../../../../models/usuario/telefone.model';
-import { Usuario } from '../../../../models/usuario/usuario.model';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { RouterModule, RouterOutlet } from '@angular/router';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { AuthService } from '../../../../services/auth.service';
-import { PedidoService } from '../../../../services/pedido.service';
+import { Usuario } from '../../../../models/usuario/usuario.model';
+import { Telefone } from '../../../../models/usuario/telefone.model';
+import { Endereco } from '../../../../models/usuario/endereco.model';
 import { UsuarioService } from '../../../../services/usuario.service';
-import { ConfirmPasswordDialogComponent } from '../../../shared/dialog/confirm-password-dialog/confirm-password-dialog.component';
 import { NovoEnderecoDialogComponent } from '../../../shared/dialog/novo-endereco-dialog/novo-endereco-dialog.component';
 import { NovoTelefoneDialogComponent } from '../../../shared/dialog/novo-telefone-dialog/novo-telefone-dialog.component';
-import { OrderDetailsDialogComponent } from '../../../shared/dialog/order-details-dialog/order-details-dialog.component';
-import { FooterComponent } from '../../../template/shared/footer/footer.component';
-import { HeaderComponent } from '../../../template/shared/header/header.component';
+import { SidebarComponent } from '../../../template/sidebar/sidebar.component';
+import { ConfirmPasswordDialogComponent } from '../../../shared/dialog/confirm-password-dialog/confirm-password-dialog.component';
 
 enum ProfileTab {
   PERSONAL_INFO = 'PERSONAL_INFO',
   SECURITY = 'SECURITY',
-  ORDERS = 'ORDERS',
 }
 
 @Component({
-  selector: 'app-user-perfil',
+  selector: 'app-admin-perfil',
   standalone: true,
   imports: [
     CommonModule,
@@ -56,10 +56,14 @@ enum ProfileTab {
     MatListModule,
     MatSnackBarModule,
     ReactiveFormsModule,
-    RouterModule,
     MatDialogModule,
-    FooterComponent,
-    HeaderComponent,
+    SidebarComponent,
+    MatSidenavModule,
+    MatToolbarModule,
+    RouterModule,
+    RouterOutlet,
+    MatTabsModule,
+    MatTooltipModule,
   ],
   templateUrl: './admin-perfil.component.html',
   styleUrls: ['./admin-perfil.component.css'],
@@ -67,44 +71,29 @@ enum ProfileTab {
 export class AdminPerfilComponent implements OnInit {
   activeTab: ProfileTab = ProfileTab.PERSONAL_INFO;
   ProfileTab = ProfileTab;
-  originalValues: any;
-  securityForm!: FormGroup;
-  showChangePassword = false;
-  passwordChanged = false;
   usuario$!: Observable<Usuario | null>;
   perfilForm!: FormGroup;
+  securityForm!: FormGroup;
   imagePreview: string | null = null;
   selectedFile: File | null = null;
-  pedidos$!: Observable<Pedido[]>;
+  passwordChanged = false;
+  originalValues: any;
 
   constructor(
     private authService: AuthService,
     private usuarioService: UsuarioService,
-    private pedidoService: PedidoService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.usuario$ = this.authService.getUsuarioLogado().pipe(
-      switchMap((usuario) => {
-        if (usuario) return of(usuario);
-        const usuarioId = this.authService.getUsuarioId();
-        if (usuarioId) {
-          return this.usuarioService.findById(usuarioId.toString()).pipe(
-            catchError(() => {
-              this.snackBar.open('Erro ao carregar usuário', 'Fechar', {
-                duration: 3000,
-              });
-              return of(null);
-            })
-          );
-        }
-        return of(null);
-      })
-    );
+    this.initializeForms();
+    this.loadUserData();
+    this.setupValidations();
+  }
 
+  private initializeForms(): void {
     this.perfilForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
@@ -113,7 +102,7 @@ export class AdminPerfilComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\d{11}$/),
+          Validators.pattern(/^\d+$/),
           Validators.minLength(11),
           Validators.maxLength(11),
         ],
@@ -122,14 +111,23 @@ export class AdminPerfilComponent implements OnInit {
 
     this.securityForm = this.fb.group(
       {
-        currentPassword: ['', Validators.required],
+        currentPassword: ['', [Validators.required]],
         newPassword: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', Validators.required],
+        confirmPassword: ['', [Validators.required]],
       },
       { validator: this.passwordMatchValidator }
     );
+  }
 
-    this.usuario$.subscribe((usuario) => {
+  private passwordMatchValidator(form: FormGroup) {
+    return form.get('newPassword')?.value === form.get('confirmPassword')?.value
+      ? null
+      : { mismatch: true };
+  }
+
+  private loadUserData(): void {
+    this.usuario$ = this.authService.getUsuarioLogado();
+    this.usuario$.subscribe((usuario: Usuario | null) => {
       if (usuario) {
         this.perfilForm.patchValue({
           nome: usuario.nome,
@@ -146,73 +144,13 @@ export class AdminPerfilComponent implements OnInit {
         this.imagePreview = usuario.nomeImagem
           ? `http://localhost:8080/usuarios/download/imagem/${usuario.nomeImagem}`
           : null;
-        this.loadPedidos();
       } else {
-        this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-          duration: 3000,
-        });
+        this.showSnackBar('Usuário não encontrado.');
       }
     });
-
-    this.setupValidations();
   }
 
-  loadPedidos(): void {
-    const usuarioId = this.authService.getUsuarioId();
-    if (usuarioId) {
-      this.pedidos$ = this.pedidoService.getPedidosByUsuario(usuarioId).pipe(
-        catchError(() => {
-          this.snackBar.open('Erro ao carregar pedidos', 'Fechar', {
-            duration: 3000,
-          });
-          return of([]);
-        })
-      );
-    } else {
-      this.pedidos$ = of([]);
-    }
-  }
-
-  openOrderDetails(pedido: Pedido): void {
-    this.dialog.open(OrderDetailsDialogComponent, {
-      width: '550px',
-      data: pedido,
-    });
-  }
-
-  getStatusClass(status?: string): string {
-    switch (status?.toLowerCase()) {
-      case 'concluído':
-        return 'status-concluido';
-      case 'pendente':
-        return 'status-pendente';
-      case 'cancelado':
-        return 'status-cancelado';
-      default:
-        return 'status-pendente';
-    }
-  }
-
-  formatDate(date: string | null): string {
-    if (!date) return 'Data não disponível';
-    try {
-      return new Date(date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      });
-    } catch {
-      return 'Data inválida';
-    }
-  }
-
-  passwordMatchValidator(form: FormGroup) {
-    return form.get('newPassword')?.value === form.get('confirmPassword')?.value
-      ? null
-      : { mismatch: true };
-  }
-
-  setupValidations() {
+  private setupValidations(): void {
     const loginControl = this.perfilForm.get('login');
     const emailControl = this.perfilForm.get('email');
     const cpfControl = this.perfilForm.get('cpf');
@@ -226,6 +164,7 @@ export class AdminPerfilComponent implements OnInit {
         )
         .subscribe();
     }
+
     if (emailControl) {
       emailControl.valueChanges
         .pipe(
@@ -235,6 +174,7 @@ export class AdminPerfilComponent implements OnInit {
         )
         .subscribe();
     }
+
     if (cpfControl) {
       cpfControl.valueChanges
         .pipe(
@@ -288,55 +228,57 @@ export class AdminPerfilComponent implements OnInit {
     );
   }
 
-  async onSubmitPersonalInfo(): Promise<void> {
+  hasChanges(): boolean {
+    if (!this.originalValues || !this.perfilForm) return false;
+    const currentValues = this.perfilForm.value;
+    return Object.keys(this.originalValues).some(
+      (key) => currentValues[key] !== this.originalValues[key]
+    );
+  }
+
+  async onSubmit(): Promise<void> {
     if (this.perfilForm.invalid) {
-      this.snackBar.open(
-        'Formulário inválido. Verifique os campos.',
-        'Fechar',
-        { duration: 3000 }
-      );
+      this.showSnackBar('Formulário inválido. Verifique os campos.');
       return;
     }
+
     const usuarioAtual = this.authService.getUsuarioLogadoSnapshot();
     if (!usuarioAtual) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
+      this.showSnackBar('Usuário não encontrado.');
       return;
     }
+
     const formValues = this.perfilForm.value;
     const camposSensiveisAlterados =
       formValues.login !== usuarioAtual.login ||
       formValues.email !== usuarioAtual.email ||
       formValues.cpf !== usuarioAtual.cpf;
+
     if (camposSensiveisAlterados) {
       const senhaValida = await firstValueFrom(
         this.openPasswordConfirmDialog('alterar informações sensíveis')
       );
       if (!senhaValida) {
-        this.snackBar.open(
-          'Senha incorreta. Alterações não salvas.',
-          'Fechar',
-          { duration: 3000 }
-        );
+        this.showSnackBar('Senha incorreta. Alterações não salvas.');
         return;
       }
     }
+
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
+      this.showSnackBar('Usuário não encontrado.');
       return;
     }
+
     const payload = {
       nome: formValues.nome,
       email: formValues.email,
       login: formValues.login,
       cpf: formValues.cpf.replace(/\D/g, ''),
-      perfil: usuarioAtual.perfil.id,
+      perfil: usuarioAtual.perfil.label.toUpperCase(),
       nomeImagem: usuarioAtual.nomeImagem,
     };
+
     this.usuarioService.update(payload, usuarioId).subscribe({
       next: (updatedUsuario) => {
         this.authService.updateUsuarioLogado(updatedUsuario);
@@ -346,16 +288,70 @@ export class AdminPerfilComponent implements OnInit {
           login: updatedUsuario.login,
           cpf: updatedUsuario.cpf,
         };
-        this.snackBar.open('Perfil atualizado com sucesso!', 'Fechar', {
-          duration: 3000,
-        });
+        this.showSnackBar('Perfil atualizado com sucesso!');
       },
       error: (err) => {
-        this.snackBar.open(
-          `Erro ao atualizar perfil: ${err.error?.message || err.message}`,
-          'Fechar',
-          { duration: 5000 }
+        const message = err.message.includes('Login já está em uso')
+          ? 'Login já está em uso.'
+          : `Erro ao atualizar perfil: ${err.error?.message || err.message}`;
+        this.showSnackBar(message, 5000);
+        if (err.message.includes('Login já está em uso')) {
+          this.perfilForm.get('login')?.setErrors({ loginExists: true });
+        }
+      },
+    });
+  }
+
+  onChangePassword(): void {
+    if (this.securityForm.invalid) {
+      this.showSnackBar('Preencha todos os campos corretamente.');
+      return;
+    }
+
+    const usuarioId = this.authService.getUsuarioId();
+    if (!usuarioId) {
+      this.showSnackBar('Usuário não encontrado.');
+      return;
+    }
+
+    const { currentPassword, newPassword } = this.securityForm.value;
+
+    this.usuarioService
+      .changePassword(usuarioId, currentPassword, newPassword)
+      .subscribe({
+        next: () => {
+          this.passwordChanged = true;
+          this.securityForm.reset();
+          this.showSnackBar('Senha alterada com sucesso!');
+        },
+        error: (err) => {
+          this.showSnackBar(
+            err.error?.message || 'Erro ao alterar senha',
+            5000
+          );
+        },
+      });
+  }
+
+  onRequestPasswordReset(): void {
+    const email = this.perfilForm.get('email')?.value;
+    if (!email) {
+      this.showSnackBar('E-mail não encontrado.');
+      return;
+    }
+
+    const snackBarRef = this.showSnackBar('Enviando e-mail...');
+    this.authService.solicitarRecuperacaoSenha(email).subscribe({
+      next: (response) => {
+        snackBarRef.dismiss();
+        this.showSnackBar(
+          response.message || 'E-mail de recuperação enviado!',
+          5000
         );
+      },
+      error: (err) => {
+        snackBarRef.dismiss();
+        this.showSnackBar(err.error?.message || 'Erro ao enviar e-mail.', 5000);
       },
     });
   }
@@ -373,7 +369,7 @@ export class AdminPerfilComponent implements OnInit {
   uploadImagem(): void {
     const usuarioId = this.authService.getUsuarioId();
     if (usuarioId && this.selectedFile) {
-      const snackBarRef = this.snackBar.open('Enviando imagem...', 'Fechar');
+      const snackBarRef = this.showSnackBar('Enviando imagem...');
       this.usuarioService.uploadImagem(usuarioId, this.selectedFile).subscribe({
         next: (updatedUsuario) => {
           snackBarRef.dismiss();
@@ -382,17 +378,11 @@ export class AdminPerfilComponent implements OnInit {
             updatedUsuario.nomeImagem
           }?timestamp=${Date.now()}`;
           this.selectedFile = null;
-          this.snackBar.open('Imagem atualizada com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
+          this.showSnackBar('Imagem atualizada com sucesso!');
         },
         error: (err) => {
           snackBarRef.dismiss();
-          this.snackBar.open(
-            `Erro ao atualizar imagem: ${err.message}`,
-            'Fechar',
-            { duration: 5000 }
-          );
+          this.showSnackBar(`Erro ao atualizar imagem: ${err.message}`, 5000);
         },
       });
     }
@@ -403,65 +393,49 @@ export class AdminPerfilComponent implements OnInit {
       width: '400px',
     });
     dialogRef.afterClosed().subscribe((telefone: Telefone) => {
-      if (telefone) {
-        const usuarioId = this.authService.getUsuarioId();
-        if (usuarioId) {
-          this.usuarioService.addTelefone(usuarioId, telefone).subscribe({
-            next: (updatedUsuario) => {
-              this.authService.updateUsuarioLogado(updatedUsuario);
-              this.usuario$ = of(updatedUsuario);
-              this.snackBar.open('Telefone adicionado com sucesso!', 'Fechar', {
-                duration: 3000,
-              });
-            },
-            error: (err) => {
-              this.snackBar.open(
-                `Erro ao adicionar telefone: ${err.message}`,
-                'Fechar',
-                { duration: 5000 }
-              );
-            },
-          });
-        }
-      }
+      if (telefone) this.addTelefone(telefone);
     });
   }
 
-  removeTelefone(telefoneId: number): void {
-    console.log('Tentando remover telefone com ID:', telefoneId); // Debug
+  private addTelefone(telefone: Telefone): void {
     const usuarioId = this.authService.getUsuarioId();
-    if (!usuarioId) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
+      const updatedTelefones = [...(currentUsuario.telefones || []), telefone];
+      const payload = {
+        ...currentUsuario,
+        telefones: updatedTelefones,
+        enderecos: currentUsuario.enderecos || [],
+        perfil: currentUsuario.perfil.label.toUpperCase(),
+      };
+      this.updateUsuario(
+        payload,
+        Number(usuarioId),
+        'Telefone adicionado com sucesso!',
+        'adicionar telefone'
+      );
     }
-    if (!telefoneId) {
-      this.snackBar.open('ID do telefone inválido.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
-    }
+  }
 
-    this.usuarioService.removeTelefone(usuarioId, telefoneId).subscribe({
-      next: (updatedUsuario) => {
-        this.authService.updateUsuarioLogado(updatedUsuario);
-        this.usuario$ = of(updatedUsuario);
-        this.snackBar.open('Telefone removido com sucesso!', 'Fechar', {
-          duration: 3000,
-        });
-      },
-      error: (err) => {
-        console.error('Erro ao remover telefone:', err); // Debug
-        this.snackBar.open(
-          `Erro ao remover telefone: ${
-            err.error?.message || 'Telefone não encontrado'
-          }`,
-          'Fechar',
-          { duration: 5000 }
-        );
-      },
-    });
+  removeTelefone(telefoneId: number): void {
+    const usuarioId = this.authService.getUsuarioId();
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
+      const updatedTelefones =
+        currentUsuario.telefones?.filter((t) => t.id !== telefoneId) || [];
+      const payload = {
+        ...currentUsuario,
+        telefones: updatedTelefones,
+        enderecos: currentUsuario.enderecos || [],
+        perfil: currentUsuario.perfil.label.toUpperCase(),
+      };
+      this.updateUsuario(
+        payload,
+        Number(usuarioId),
+        'Telefone removido com sucesso!',
+        'remover telefone'
+      );
+    }
   }
 
   openEnderecoDialog(): void {
@@ -469,192 +443,128 @@ export class AdminPerfilComponent implements OnInit {
       width: '400px',
     });
     dialogRef.afterClosed().subscribe((endereco: Endereco) => {
-      if (endereco) {
-        const usuarioId = this.authService.getUsuarioId();
-        if (usuarioId) {
-          this.usuarioService.addEndereco(usuarioId, endereco).subscribe({
-            next: (updatedUsuario) => {
-              this.authService.updateUsuarioLogado(updatedUsuario);
-              this.usuario$ = of(updatedUsuario);
-              this.snackBar.open('Endereço adicionado com sucesso!', 'Fechar', {
-                duration: 3000,
-              });
-            },
-            error: (err) => {
-              this.snackBar.open(
-                `Erro ao adicionar endereço: ${err.message}`,
-                'Fechar',
-                { duration: 5000 }
-              );
-            },
-          });
-        }
-      }
+      if (endereco) this.addEndereco(endereco);
     });
+  }
+
+  private addEndereco(endereco: Endereco): void {
+    const usuarioId = this.authService.getUsuarioId();
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
+      const updatedEnderecos = [...(currentUsuario.enderecos || []), endereco];
+      const payload = {
+        ...currentUsuario,
+        telefones: currentUsuario.telefones || [],
+        enderecos: updatedEnderecos,
+        perfil: currentUsuario.perfil.label.toUpperCase(),
+      };
+      this.updateUsuario(
+        payload,
+        Number(usuarioId),
+        'Endereço adicionado com sucesso!',
+        'adicionar endereço'
+      );
+    }
   }
 
   removeEndereco(enderecoId: number): void {
-    console.log('Removendo telefone com ID:', Telefone);
     const usuarioId = this.authService.getUsuarioId();
-    if (!usuarioId) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (usuarioId && currentUsuario) {
+      const updatedEnderecos =
+        currentUsuario.enderecos?.filter((e) => e.id !== enderecoId) || [];
+      const payload = {
+        ...currentUsuario,
+        telefones: currentUsuario.telefones || [],
+        enderecos: updatedEnderecos,
+        perfil: currentUsuario.perfil.label.toUpperCase(),
+      };
+      this.updateUsuario(
+        payload,
+        Number(usuarioId),
+        'Endereço removido com sucesso!',
+        'remover endereço'
+      );
     }
-
-    this.usuarioService.removeEndereco(usuarioId, enderecoId).subscribe({
-      next: (updatedUsuario) => {
-        this.authService.updateUsuarioLogado(updatedUsuario);
-        this.usuario$ = of(updatedUsuario); // Atualiza o Observable
-        this.snackBar.open('Endereço removido com sucesso!', 'Fechar', {
-          duration: 3000,
-        });
-      },
-      error: (err) => {
-        this.snackBar.open(
-          `Erro ao remover endereço: ${
-            err.error?.message || 'Endereço não encontrado'
-          }`,
-          'Fechar',
-          { duration: 5000 }
-        );
-      },
-    });
-  }
-
-  onChangePassword(): void {
-    if (this.securityForm.invalid) {
-      this.snackBar.open('Preencha todos os campos corretamente.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
-    }
-    const usuarioId = this.authService.getUsuarioId();
-    if (!usuarioId) {
-      this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
-    }
-    const { currentPassword, newPassword } = this.securityForm.value;
-    this.usuarioService
-      .changePassword(usuarioId, currentPassword, newPassword)
-      .subscribe({
-        next: () => {
-          this.passwordChanged = true;
-          this.securityForm.reset();
-          this.showChangePassword = false;
-          this.snackBar.open('Senha alterada com sucesso!', 'Fechar', {
-            duration: 3000,
-          });
-        },
-        error: (err) => {
-          this.snackBar.open(
-            err.error?.message || 'Erro ao alterar senha.',
-            'Fechar',
-            { duration: 5000 }
-          );
-        },
-      });
-  }
-
-  onRequestPasswordReset(): void {
-    const email = this.perfilForm.get('email')?.value;
-    if (!email) {
-      this.snackBar.open('E-mail não encontrado.', 'Fechar', {
-        duration: 3000,
-      });
-      return;
-    }
-    const snackBarRef = this.snackBar.open('Enviando e-mail...', 'Fechar');
-    this.authService.solicitarRecuperacaoSenha(email).subscribe({
-      next: (response) => {
-        snackBarRef.dismiss();
-        this.snackBar.open(
-          response.message || 'E-mail de recuperação enviado!',
-          'Fechar',
-          { duration: 5000 }
-        );
-      },
-      error: (err) => {
-        snackBarRef.dismiss();
-        this.snackBar.open(
-          err.error?.message || 'Erro ao enviar e-mail.',
-          'Fechar',
-          { duration: 5000 }
-        );
-      },
-    });
   }
 
   onDeleteAccount(): void {
     const dialogRef = this.dialog.open(ConfirmPasswordDialogComponent, {
       width: '400px',
     });
+
     dialogRef.afterClosed().subscribe((senha: string | null) => {
       if (!senha) return;
+
       const usuarioId = this.authService.getUsuarioId();
       if (!usuarioId) {
-        this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-          duration: 3000,
-        });
+        this.showSnackBar('Usuário não encontrado.');
         return;
       }
+
       this.authService.validarSenha(usuarioId, senha).subscribe({
         next: (valido) => {
           if (valido) {
             this.usuarioService.delete(usuarioId).subscribe({
               next: () => {
                 this.authService.logout();
-                this.snackBar.open('Conta excluída com sucesso!', 'Fechar', {
-                  duration: 3000,
-                });
+                this.showSnackBar('Conta excluída com sucesso!');
                 window.location.href = '/';
               },
               error: (err) => {
-                this.snackBar.open(
+                this.showSnackBar(
                   `Erro ao excluir conta: ${err.error?.message || err.message}`,
-                  'Fechar',
-                  { duration: 5000 }
+                  5000
                 );
               },
             });
           } else {
-            this.snackBar.open('Senha incorreta.', 'Fechar', {
-              duration: 3000,
-            });
+            this.showSnackBar('Senha incorreta.');
           }
         },
         error: () => {
-          this.snackBar.open('Erro ao validar senha.', 'Fechar', {
-            duration: 5000,
-          });
+          this.showSnackBar('Erro ao validar senha.', 5000);
         },
       });
     });
   }
 
-  openPasswordConfirmDialog(action: string): Observable<boolean> {
+  private updateUsuario(
+    payload: any,
+    usuarioId: number,
+    successMessage: string,
+    errorAction: string
+  ): void {
+    this.usuarioService.update(payload, usuarioId).subscribe({
+      next: (updatedUsuario) => {
+        this.authService.updateUsuarioLogado(updatedUsuario);
+        this.showSnackBar(successMessage);
+      },
+      error: (err) => {
+        this.showSnackBar(`Erro ao ${errorAction}: ${err.message}`, 5000);
+      },
+    });
+  }
+
+  private openPasswordConfirmDialog(action: string): Observable<boolean> {
     const dialogRef = this.dialog.open(ConfirmPasswordDialogComponent, {
       width: '400px',
       data: { action },
     });
+
     return dialogRef.afterClosed().pipe(
       switchMap((password: string | null) => {
         if (!password) return of(false);
+
         const usuarioId = this.authService.getUsuarioId();
         if (!usuarioId) {
-          this.snackBar.open('Usuário não encontrado.', 'Fechar', {
-            duration: 3000,
-          });
+          this.showSnackBar('Usuário não encontrado.');
           return of(false);
         }
+
         return this.authService.validarSenha(usuarioId, password).pipe(
           catchError(() => {
-            this.snackBar.open('Erro ao validar senha.', 'Fechar', {
-              duration: 3000,
-            });
+            this.showSnackBar('Erro ao validar senha.');
             return of(false);
           })
         );
@@ -662,20 +572,7 @@ export class AdminPerfilComponent implements OnInit {
     );
   }
 
-  hasChanges(): boolean {
-    if (!this.originalValues || !this.perfilForm) return false;
-    const currentValues = this.perfilForm.value;
-    return Object.keys(this.originalValues).some(
-      (key) => currentValues[key] !== this.originalValues[key]
-    );
-  }
-
-  formatCPF() {
-    let cpfControl = this.perfilForm.get('cpf');
-    if (cpfControl) {
-      let value = cpfControl.value.replace(/\D/g, '');
-      if (value.length > 11) value = value.substring(0, 11);
-      cpfControl.setValue(value, { emitEvent: false });
-    }
+  private showSnackBar(message: string, duration: number = 3000) {
+    return this.snackBar.open(message, 'Fechar', { duration });
   }
 }

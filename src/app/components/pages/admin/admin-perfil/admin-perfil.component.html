@@ -1,297 +1,248 @@
-<app-header></app-header>
-<div class="profile-wrapper">
-  <div class="profile-container">
-    <div class="profile-sidebar">
-      <div class="brand-section">
-        <div class="gpu-icon-container">
-          <mat-icon class="gpu-icon">account_circle</mat-icon>
+<div class="admin-dashboard">
+  <app-sidebar class="admin-sidebar"></app-sidebar>
+  
+  <main class="admin-content">
+    <div class="profile-container">
+      <div class="profile-sidebar">
+        <div class="brand-section">
+          <div class="gpu-icon-container">
+            <mat-icon class="gpu-icon">admin_panel_settings</mat-icon>
+          </div>
+          <h1 class="profile-title">{{ (usuario$ | async)?.nome || 'Perfil Admin' }}</h1>
+          <p class="profile-subtitle">{{ (usuario$ | async)?.email || 'Administrador' }}</p>
         </div>
-        <h1 class="profile-title">{{ (usuario$ | async)?.nome || 'Meu Perfil' }}</h1>
-        <p class="profile-subtitle">{{ (usuario$ | async)?.email || 'Gerencie sua conta' }}</p>
-      </div>
-      
-      <div class="profile-image-container">
-        <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
-        <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
-          <mat-icon>person</mat-icon>
-        </div>
-        <div class="image-upload-actions">
-          <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
-            <mat-icon>photo_camera</mat-icon>
-          </button>
-          <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
-          <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
-            <mat-icon>save</mat-icon>
-          </button>
-        </div>
-      </div>
-
-      <mat-nav-list class="profile-menu">
-        <a mat-list-item (click)="activeTab = ProfileTab.PERSONAL_INFO" [class.active]="activeTab === ProfileTab.PERSONAL_INFO">
-          <mat-icon>account_circle</mat-icon>
-          <span>Informações Pessoais</span>
-        </a>
-        <a mat-list-item (click)="activeTab = ProfileTab.SECURITY" [class.active]="activeTab === ProfileTab.SECURITY">
-          <mat-icon>lock</mat-icon>
-          <span>Segurança</span>
-        </a>
-        <a mat-list-item (click)="activeTab = ProfileTab.ORDERS" [class.active]="activeTab === ProfileTab.ORDERS">
-          <mat-icon>receipt</mat-icon>
-          <span>Meus Pedidos</span>
-        </a>
-      </mat-nav-list>
-    </div>
-
-    <div class="profile-content">
-      <!-- Informações Pessoais -->
-      <div class="content-box" *ngIf="activeTab === ProfileTab.PERSONAL_INFO">
-        <h2 class="content-title">Informações Pessoais</h2>
-        <p class="content-subtitle">Atualize seus dados de contato e endereços</p>
-        <form [formGroup]="perfilForm" (ngSubmit)="onSubmitPersonalInfo()" class="profile-form">
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Nome Completo</mat-label>
-              <input matInput formControlName="nome" required />
-              <mat-icon matPrefix class="input-icon">person</mat-icon>
-              <mat-error *ngIf="perfilForm.get('nome')?.hasError('required') && perfilForm.get('nome')?.touched">
-                Nome é obrigatório
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('nome')?.hasError('minlength') && perfilForm.get('nome')?.touched">
-                Nome deve ter pelo menos 3 caracteres
-              </mat-error>
-            </mat-form-field>
+        
+        <div class="profile-image-container">
+          <img *ngIf="imagePreview" [src]="imagePreview" alt="Foto de Perfil" class="profile-avatar" />
+          <div *ngIf="!imagePreview" class="profile-avatar-placeholder">
+            <mat-icon>person</mat-icon>
           </div>
-
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>E-mail</mat-label>
-              <input matInput formControlName="email" type="email" required />
-              <mat-icon matPrefix class="input-icon">email</mat-icon>
-              <mat-error *ngIf="perfilForm.get('email')?.hasError('required') && perfilForm.get('email')?.touched">
-                Email é obrigatório
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('email')?.hasError('email') && perfilForm.get('email')?.touched">
-                Email inválido
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('email')?.hasError('emailExists') && perfilForm.get('email')?.touched">
-                Email já está em uso
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="input-group">
-            <mat-form-field appearance="outline" class="w-full">
-              <mat-label>CPF</mat-label>
-              <input matInput formControlName="cpf" 
-                    placeholder="Somente números (11 dígitos)"
-                    (input)="formatCPF()">
-              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('required')">
-                CPF é obrigatório
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('pattern')">
-                Somente números são permitidos
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('cpf')?.hasError('minlength') || perfilForm.get('cpf')?.hasError('maxlength')">
-                CPF deve ter exatamente 11 dígitos
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Login</mat-label>
-              <input matInput formControlName="login" required />
-              <mat-icon matPrefix class="input-icon">alternate_email</mat-icon>
-              <mat-error *ngIf="perfilForm.get('login')?.hasError('required') && perfilForm.get('login')?.touched">
-                Login é obrigatório
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('login')?.hasError('minlength') && perfilForm.get('login')?.touched">
-                Login deve ter pelo menos 3 caracteres
-              </mat-error>
-              <mat-error *ngIf="perfilForm.get('login')?.hasError('loginExists') && perfilForm.get('login')?.touched">
-                Login já está em uso
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <button mat-raised-button color="primary" 
-            [disabled]="!hasChanges() || perfilForm.invalid"
-            (click)="onSubmitPersonalInfo()">
-            Salvar Alterações
-          </button>
-        </form>
-
-        <div class="contact-section">
-          <div class="section-header">
-            <h3>Telefones</h3>
-            <button mat-raised-button color="primary" (click)="openTelefoneDialog()" class="action-button">
-              <mat-icon>add</mat-icon>
-              Adicionar Telefone
+          <div class="image-upload-actions">
+            <button mat-icon-button class="upload-btn" (click)="fileInput.click()" matTooltip="Alterar foto">
+              <mat-icon>photo_camera</mat-icon>
             </button>
-          </div>
-
-          <mat-list class="contact-list">
-            <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
-              <p>Nenhum telefone cadastrado</p>
-            </mat-list-item>
-            <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones; let i = index" class="contact-item">
-              <mat-icon matListIcon>phone</mat-icon>
-              <div matLine>
-                <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeTelefone(telefone.id)" matTooltip="Remover telefone">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
-
-        <div class="contact-section">
-          <div class="section-header">
-            <h3>Endereços</h3>
-            <button mat-raised-button color="primary" (click)="openEnderecoDialog()" class="action-button">
-              <mat-icon>add</mat-icon>
-              Adicionar Endereço
-            </button>
-          </div>
-
-          <mat-list class="contact-list">
-            <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
-              <p>Nenhum endereço cadastrado</p>
-            </mat-list-item>
-            <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos; let i = index" class="contact-item">
-              <mat-icon matListIcon>location_on</mat-icon>
-              <div matLine>
-                <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
-                <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeEndereco(endereco.id)" matTooltip="Remover endereço">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
-      </div>
-
-      <!-- Segurança -->
-      <div class="content-box" *ngIf="activeTab === ProfileTab.SECURITY">
-        <h2 class="content-title">Segurança</h2>
-        <p class="content-subtitle">Gerencie sua senha e segurança da conta</p>
-        <div class="security-options">
-          <button mat-raised-button class="action-button" (click)="showChangePassword = true" *ngIf="!showChangePassword">
-            <mat-icon>vpn_key</mat-icon>
-            Alterar Senha
-          </button>
-          <button mat-raised-button color="warn" class="action-button" (click)="onRequestPasswordReset()" [disabled]="!perfilForm.get('email')?.valid">
-            <mat-icon>mail</mat-icon>
-            Redefinir Senha por E-mail
-          </button>
-        </div>
-
-        <form *ngIf="showChangePassword" [formGroup]="securityForm" (ngSubmit)="onChangePassword()" class="profile-form">
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Senha Atual</mat-label>
-              <input matInput type="password" formControlName="currentPassword" required />
-              <mat-icon matPrefix class="input-icon">lock</mat-icon>
-              <mat-error *ngIf="securityForm.get('currentPassword')?.hasError('required') && securityForm.get('currentPassword')?.touched">
-                Senha atual é obrigatória
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Nova Senha</mat-label>
-              <input matInput type="password" formControlName="newPassword" required />
-              <mat-icon matPrefix class="input-icon">lock_outline</mat-icon>
-              <mat-error *ngIf="securityForm.get('newPassword')?.hasError('required') && securityForm.get('newPassword')?.touched">
-                Nova senha é obrigatória
-              </mat-error>
-              <mat-error *ngIf="securityForm.get('newPassword')?.hasError('minlength') && securityForm.get('newPassword')?.touched">
-                A senha deve ter pelo menos 6 caracteres
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="input-group">
-            <mat-form-field appearance="fill">
-              <mat-label>Confirmar Nova Senha</mat-label>
-              <input matInput type="password" formControlName="confirmPassword" required />
-              <mat-icon matPrefix class="input-icon">lock_outline</mat-icon>
-              <mat-error *ngIf="securityForm.get('confirmPassword')?.hasError('required') && securityForm.get('confirmPassword')?.touched">
-                Confirmação de senha é obrigatória
-              </mat-error>
-              <mat-error *ngIf="securityForm.errors?.['mismatch'] && securityForm.get('confirmPassword')?.touched">
-                As senhas não coincidem
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-actions">
-            <button mat-raised-button class="profile-button" type="submit" [disabled]="securityForm.invalid">
+            <input type="file" #fileInput style="display: none;" (change)="onFileSelected($event)" accept="image/*" />
+            <button mat-icon-button class="upload-btn" color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" matTooltip="Salvar foto">
               <mat-icon>save</mat-icon>
-              Salvar Nova Senha
-            </button>
-            <button mat-button type="button" (click)="showChangePassword = false; securityForm.reset()" class="cancel-button">
-              Cancelar
             </button>
           </div>
-        </form>
-
-        <div *ngIf="passwordChanged" class="password-changed-message">
-          <mat-icon color="primary">check_circle</mat-icon>
-          <span>Sua senha foi alterada com sucesso!</span>
         </div>
 
-        <div class="delete-account-section">
-          <h3>Excluir Conta</h3>
-          <p>Para confirmar a exclusão da conta, clique no botão abaixo. Você será solicitado a digitar sua senha.</p>
-          <button mat-raised-button color="warn" class="action-button" (click)="onDeleteAccount()">
-            <mat-icon>delete_forever</mat-icon>
-            Excluir Conta
-          </button>
-        </div>
+        <mat-nav-list class="profile-menu">
+          <a mat-list-item (click)="activeTab = ProfileTab.PERSONAL_INFO" [class.active]="activeTab === ProfileTab.PERSONAL_INFO">
+            <mat-icon>account_circle</mat-icon>
+            <span>Informações Pessoais</span>
+          </a>
+          <a mat-list-item (click)="activeTab = ProfileTab.SECURITY" [class.active]="activeTab === ProfileTab.SECURITY">
+            <mat-icon>lock</mat-icon>
+            <span>Segurança</span>
+          </a>
+        </mat-nav-list>
       </div>
 
-      <!-- Meus Pedidos -->
-      <div class="content-box" *ngIf="activeTab === ProfileTab.ORDERS">
-        <h2 class="content-title">Meus Pedidos</h2>
-        <p class="content-subtitle">Visualize seu histórico de pedidos</p>
-        <ng-container *ngIf="pedidos$ | async as pedidos; else loading">
-          <div *ngIf="pedidos.length === 0" class="empty-orders-message">
-            <mat-icon>receipt</mat-icon>
-            <p>Você ainda não fez nenhum pedido</p>
-            <button mat-raised-button class="profile-button" routerLink="/produtos">
-              <mat-icon>shopping_cart</mat-icon>
-              Ver Produtos
+      <div class="profile-content">
+        <!-- Informações Pessoais -->
+        <div class="content-box" *ngIf="activeTab === ProfileTab.PERSONAL_INFO">
+          <h2 class="content-title">Informações Pessoais</h2>
+          <p class="content-subtitle">Atualize seus dados de administrador</p>
+          
+          <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="profile-form">
+            <div class="form-grid">
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Nome Completo</mat-label>
+                <input matInput formControlName="nome">
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="perfilForm.get('nome')?.hasError('required')">
+                  Nome é obrigatório
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('nome')?.hasError('minlength')">
+                  Nome deve ter pelo menos 3 caracteres
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>E-mail</mat-label>
+                <input matInput formControlName="email" type="email">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="perfilForm.get('email')?.hasError('required')">
+                  Email é obrigatório
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('email')?.hasError('email')">
+                  Email inválido
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('email')?.hasError('emailExists')">
+                  Email já está em uso
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>Login</mat-label>
+                <input matInput formControlName="login">
+                <mat-icon matPrefix>alternate_email</mat-icon>
+                <mat-error *ngIf="perfilForm.get('login')?.hasError('required')">
+                  Login é obrigatório
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('login')?.hasError('minlength')">
+                  Login deve ter pelo menos 3 caracteres
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('login')?.hasError('loginExists')">
+                  Login já está em uso
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="form-field">
+                <mat-label>CPF</mat-label>
+                <input matInput formControlName="cpf" mask="000.000.000-00">
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="perfilForm.get('cpf')?.hasError('required')">
+                  CPF é obrigatório
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('cpf')?.hasError('pattern')">
+                  Somente números são permitidos
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('cpf')?.hasError('minlength') || perfilForm.get('cpf')?.hasError('maxlength')">
+                  CPF deve ter exatamente 11 dígitos
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('cpf')?.hasError('cpfExists')">
+                  CPF já está em uso
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="!hasChanges() || perfilForm.invalid">
+              <mat-icon>save</mat-icon>
+              Salvar Alterações
+            </button>
+          </form>
+
+          <div class="contact-section">
+            <div class="section-header">
+              <h3>Telefones</h3>
+              <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
+                <mat-icon>add</mat-icon>
+                Adicionar Telefone
+              </button>
+            </div>
+
+            <mat-list class="contact-list">
+              <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
+                <p>Nenhum telefone cadastrado</p>
+              </mat-list-item>
+              <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones" class="contact-item">
+                <mat-icon matListIcon>phone</mat-icon>
+                <div matLine>
+                  <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
+                </div>
+                <button mat-icon-button color="warn" (click)="removeTelefone(telefone.id)" matTooltip="Remover telefone">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-list>
+          </div>
+
+          <div class="contact-section">
+            <div class="section-header">
+              <h3>Endereços</h3>
+              <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
+                <mat-icon>add</mat-icon>
+                Adicionar Endereço
+              </button>
+            </div>
+
+            <mat-list class="contact-list">
+              <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
+                <p>Nenhum endereço cadastrado</p>
+              </mat-list-item>
+              <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos" class="contact-item">
+                <mat-icon matListIcon>location_on</mat-icon>
+                <div matLine>
+                  <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
+                  <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
+                </div>
+                <button mat-icon-button color="warn" (click)="removeEndereco(endereco.id)" matTooltip="Remover endereço">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+
+        <!-- Segurança -->
+        <div class="content-box" *ngIf="activeTab === ProfileTab.SECURITY">
+          <h2 class="content-title">Segurança</h2>
+          <p class="content-subtitle">Gerencie sua senha e segurança da conta</p>
+          
+          <div class="security-options">
+            <button mat-raised-button color="primary" (click)="onRequestPasswordReset()" [disabled]="!perfilForm.get('email')?.valid">
+              <mat-icon>mail</mat-icon>
+              Redefinir Senha por E-mail
             </button>
           </div>
-          <div class="orders-list" *ngIf="pedidos.length > 0">
-            <div class="order-item" *ngFor="let pedido of pedidos" (click)="openOrderDetails(pedido)">
-              <div class="order-header">
-                <mat-icon matListIcon>receipt</mat-icon>
-                <div class="order-info">
-                  <span class="order-title">Pedido #{{ pedido.id }} - {{ formatDate(pedido.data) }}</span>
-                  <span class="secondary-text">
-                    {{ pedido.itens.length }} item(s) - Total: R$ {{ pedido.total.toFixed(2) }}
-                    <span class="order-status" [ngClass]="getStatusClass(pedido.status)">
-                      {{ pedido.status || 'Pendente' }}
-                    </span>
-                  </span>
-                </div>
-              </div>
+
+          <form [formGroup]="securityForm" (ngSubmit)="onChangePassword()" class="profile-form">
+            <div class="input-group">
+              <mat-form-field appearance="fill">
+                <mat-label>Senha Atual</mat-label>
+                <input matInput type="password" formControlName="currentPassword" required>
+                <mat-icon matPrefix>lock</mat-icon>
+                <mat-error *ngIf="securityForm.get('currentPassword')?.hasError('required')">
+                  Senha atual é obrigatória
+                </mat-error>
+              </mat-form-field>
             </div>
+
+            <div class="input-group">
+              <mat-form-field appearance="fill">
+                <mat-label>Nova Senha</mat-label>
+                <input matInput type="password" formControlName="newPassword" required>
+                <mat-icon matPrefix>lock_outline</mat-icon>
+                <mat-error *ngIf="securityForm.get('newPassword')?.hasError('required')">
+                  Nova senha é obrigatória
+                </mat-error>
+                <mat-error *ngIf="securityForm.get('newPassword')?.hasError('minlength')">
+                  A senha deve ter pelo menos 6 caracteres
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="input-group">
+              <mat-form-field appearance="fill">
+                <mat-label>Confirmar Nova Senha</mat-label>
+                <input matInput type="password" formControlName="confirmPassword" required>
+                <mat-icon matPrefix>lock_outline</mat-icon>
+                <mat-error *ngIf="securityForm.get('confirmPassword')?.hasError('required')">
+                  Confirmação de senha é obrigatória
+                </mat-error>
+                <mat-error *ngIf="securityForm.errors?.['mismatch']">
+                  As senhas não coincidem
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" type="submit" [disabled]="securityForm.invalid">
+                <mat-icon>save</mat-icon>
+                Salvar Nova Senha
+              </button>
+            </div>
+          </form>
+
+          <div *ngIf="passwordChanged" class="password-changed-message">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <span>Sua senha foi alterada com sucesso!</span>
           </div>
-        </ng-container>
-        <ng-template #loading>
-          <div class="empty-orders-message">
-            <mat-icon>hourglass_empty</mat-icon>
-            <p>Carregando pedidos...</p>
+
+          <div class="delete-account-section">
+            <h3>Excluir Conta</h3>
+            <p>Para confirmar a exclusão da conta, clique no botão abaixo. Você será solicitado a digitar sua senha.</p>
+            <button mat-raised-button color="warn" (click)="onDeleteAccount()">
+              <mat-icon>delete_forever</mat-icon>
+              Excluir Conta
+            </button>
           </div>
-        </ng-template>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 </div>
-<app-footer></app-footer>
