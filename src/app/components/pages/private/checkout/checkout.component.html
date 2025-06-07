@@ -1,156 +1,219 @@
-<div class="checkout-container">
-  <div class="checkout-box">
-    <h2 class="checkout-title">Finalizar Compra</h2>
+<div class="checkout-wrapper">
+  <div class="checkout-container">
+    <!-- Progress Steps -->
+    <div class="checkout-steps">
+      <div class="step" [class.active]="step === 1" [class.completed]="step > 1">
+        <div class="step-number">1</div>
+        <div class="step-label">Informações</div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step" [class.active]="step === 2" [class.completed]="step > 2">
+        <div class="step-number">2</div>
+        <div class="step-label">Confirmação</div>
+      </div>
+      <div class="step-divider"></div>
+      <div class="step" [class.active]="step === 3">
+        <div class="step-number">3</div>
+        <div class="step-label">Pagamento</div>
+      </div>
+    </div>
 
-    <!-- Passo 1 -->
-    <div *ngIf="step === 1" class="step-content">
-      <mat-card class="order-summary">
-        <mat-card-header>
-          <mat-card-title>Resumo do Pedido</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <mat-list>
-            <mat-list-item *ngFor="let item of items">
-              <img
-                [src]="getImageUrl(item.nomeImagem)"
-                alt="{{ item.nome }}"
-                class="cart-item-image"
-                width="60"
-                height="150"
-                (error)="onImageError($event)"
-              />
-              <div class="item-details">
-                <h3>{{ item.nome }}</h3>
-                <p>{{ item.quantidade }} x {{ item.preco | currency: 'BRL' }}</p>
+    <!-- Step 1: Informações -->
+    <div *ngIf="step === 1" class="checkout-step">
+      <div class="order-summary">
+        <h3 class="section-title">
+          <mat-icon>shopping_bag</mat-icon>
+          Resumo do Pedido
+        </h3>
+        
+        <div class="order-items">
+          <div *ngFor="let item of items" class="order-item">
+            <img [src]="getImageUrl(item.nomeImagem)" [alt]="item.nome" class="item-image" (error)="onImageError($event)">
+            <div class="item-info">
+              <h4>{{ item.nome }}</h4>
+              <div class="item-meta">
+                <span>{{ item.quantidade }} × {{ item.preco | currency:'BRL' }}</span>
+                <span class="item-total">{{ item.preco * item.quantidade | currency:'BRL' }}</span>
               </div>
-            </mat-list-item>
-          </mat-list>
-          <mat-divider></mat-divider>
-          <p class="subtotal"><strong>Subtotal:</strong> {{ subtotal | currency: 'BRL' }}</p>
-        </mat-card-content>
-      </mat-card>
+            </div>
+          </div>
+        </div>
+        
+        <div class="order-total">
+          <span>Subtotal</span>
+          <span class="total-value">{{ subtotal | currency:'BRL' }}</span>
+        </div>
+      </div>
 
       <form [formGroup]="checkoutForm" class="checkout-form">
-        <h3>Forma de Pagamento</h3>
+        <h3 class="section-title">
+          <mat-icon>payment</mat-icon>
+          Forma de Pagamento
+        </h3>
+        
         <mat-radio-group formControlName="formaPagamento" class="payment-options">
-          <mat-radio-button value="PIX">Pix</mat-radio-button>
+          <mat-radio-button value="PIX" class="payment-option">
+            <div class="payment-method">
+              <mat-icon>qr_code</mat-icon>
+              <span>Pix</span>
+            </div>
+          </mat-radio-button>
         </mat-radio-group>
-        <mat-error
-          *ngIf="
-            checkoutForm.get('formaPagamento')?.touched &&
-            checkoutForm.get('formaPagamento')?.hasError('required')
-          "
-        >
-          Selecione uma forma de pagamento
-        </mat-error>
 
-        <mat-form-field appearance="outline" class="input-field">
+        <h3 class="section-title">
+          <mat-icon>person</mat-icon>
+          Informações Pessoais
+        </h3>
+        
+        <mat-form-field appearance="outline" class="nexus-field">
           <mat-label>CPF</mat-label>
-          <input matInput formControlName="cpfCnpj" placeholder="Digite seu CPF" maxlength="11" />
-          <mat-error
-            *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('required')"
-          >
+          <input matInput formControlName="cpfCnpj" placeholder="000.000.000-00">
+          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.hasError('required')">
             CPF é obrigatório
           </mat-error>
-          <mat-error
-            *ngIf="checkoutForm.get('cpfCnpj')?.touched && checkoutForm.get('cpfCnpj')?.hasError('pattern')"
-          >
-            CPF deve conter 11 dígitos
+          <mat-error *ngIf="checkoutForm.get('cpfCnpj')?.hasError('pattern')">
+            Informe um CPF válido (11 dígitos)
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="input-field">
-          <mat-label>Nome</mat-label>
-          <input matInput formControlName="nome" placeholder="Digite seu nome" />
-          <mat-error
-            *ngIf="checkoutForm.get('nome')?.touched && checkoutForm.get('nome')?.hasError('required')"
-          >
+        <mat-form-field appearance="outline" class="nexus-field">
+          <mat-label>Nome Completo</mat-label>
+          <input matInput formControlName="nome" placeholder="Digite seu nome completo">
+          <mat-error *ngIf="checkoutForm.get('nome')?.hasError('required')">
             Nome é obrigatório
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="input-field">
+        <mat-form-field appearance="outline" class="nexus-field">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" placeholder="Digite seu email" />
-          <mat-error
-            *ngIf="checkoutForm.get('email')?.touched && checkoutForm.get('email')?.hasError('required')"
-          >
+          <input matInput formControlName="email" type="email" placeholder="seu@email.com">
+          <mat-error *ngIf="checkoutForm.get('email')?.hasError('required')">
             Email é obrigatório
           </mat-error>
-          <mat-error
-            *ngIf="checkoutForm.get('email')?.touched && checkoutForm.get('email')?.hasError('email')"
-          >
-            Email inválido
+          <mat-error *ngIf="checkoutForm.get('email')?.hasError('email')">
+            Informe um email válido
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="input-field">
+        <mat-form-field appearance="outline" class="nexus-field">
           <mat-label>Telefone</mat-label>
-          <input
-            matInput
-            formControlName="telefone"
+          <input 
+            matInput 
+            formControlName="telefone" 
             placeholder="(99) 99999-9999"
-            mask="(00) 00000-0000"
-          />
-          <mat-error
-            *ngIf="
-              checkoutForm.get('telefone')?.touched && checkoutForm.get('telefone')?.hasError('required')
-            "
+            (input)="formatarTelefone($event)"
+            maxlength="15"
           >
+          <mat-error *ngIf="checkoutForm.get('telefone')?.hasError('required')">
             Telefone é obrigatório
           </mat-error>
-          <mat-error
-            *ngIf="
-              checkoutForm.get('telefone')?.touched && checkoutForm.get('telefone')?.hasError('pattern')
-            "
-          >
-            Telefone deve estar no formato (99) 99999-9999
+          <mat-error *ngIf="checkoutForm.get('telefone')?.hasError('invalidTelefone')">
+            Informe um telefone válido com DDD (11 dígitos)
           </mat-error>
         </mat-form-field>
 
         <div class="form-actions">
-          <button mat-raised-button color="primary" (click)="nextStep()">Confirmar</button>
+          <button mat-raised-button color="primary" (click)="nextStep()" class="nexus-btn">
+            Continuar
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
         </div>
       </form>
     </div>
 
-    <!-- Passo 2 -->
-    <div *ngIf="step === 2" class="step-content">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>Confirmar Pedido</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p><strong>Forma de Pagamento:</strong> Pix</p>
-          <p><strong>CPF:</strong> {{ checkoutForm.get('cpfCnpj')?.value }}</p>
-          <p><strong>Nome:</strong> {{ checkoutForm.get('nome')?.value }}</p>
-          <p><strong>Email:</strong> {{ checkoutForm.get('email')?.value }}</p>
-          <p><strong>Telefone:</strong> {{ checkoutForm.get('telefone')?.value }}</p>
-          <p><strong>Total:</strong> {{ subtotal | currency: 'BRL' }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button color="accent" (click)="voltar()">Voltar</button>
-          <button mat-raised-button color="primary" (click)="finalizarPedido()">Finalizar Pedido</button>
-        </mat-card-actions>
-      </mat-card>
+    <!-- Step 2: Confirmação -->
+    <div *ngIf="step === 2" class="checkout-step">
+      <div class="confirmation-card">
+        <h3 class="section-title">
+          <mat-icon>fact_check</mat-icon>
+          Confirme seu Pedido
+        </h3>
+        
+        <div class="confirmation-details">
+          <div class="detail-row">
+            <span>Forma de Pagamento</span>
+            <span class="detail-value">Pix</span>
+          </div>
+          <div class="detail-row">
+            <span>CPF</span>
+            <span class="detail-value">{{ checkoutForm.get('cpfCnpj')?.value }}</span>
+          </div>
+          <div class="detail-row">
+            <span>Nome</span>
+            <span class="detail-value">{{ checkoutForm.get('nome')?.value }}</span>
+          </div>
+          <div class="detail-row">
+            <span>Email</span>
+            <span class="detail-value">{{ checkoutForm.get('email')?.value }}</span>
+          </div>
+          <div class="detail-row">
+            <span>Telefone</span>
+            <span class="detail-value">{{ checkoutForm.get('telefone')?.value }}</span>
+          </div>
+          <div class="detail-row total">
+            <span>Total</span>
+            <span class="detail-value">{{ subtotal | currency:'BRL' }}</span>
+          </div>
+        </div>
+
+        <div class="confirmation-actions">
+          <button mat-stroked-button (click)="voltar()" class="nexus-btn nexus-btn-secondary">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar
+          </button>
+          <button mat-raised-button color="primary" (click)="criarPedido()" class="nexus-btn">
+            Criar Pedido
+            <mat-icon>check_circle</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Passo 3 -->
-    <div *ngIf="step === 3" class="step-content">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>Pagamento Gerado</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Escaneie o QR Code abaixo para pagar com Pix:</p>
-          <img [src]="pixCode" alt="QR Code Pix" class="pix-qr" *ngIf="pixCode" />
-          <p *ngIf="chavePix"><strong>Código Pix:</strong> {{ chavePix }}</p>
-          <p>Instruções: Abra o app do seu banco, escaneie o QR Code ou copie o código Pix para realizar o pagamento.</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="finalizar()">Concluir</button>
-        </mat-card-actions>
-      </mat-card>
+    <!-- Step 3: Pagamento -->
+    <div *ngIf="step === 3" class="checkout-step">
+      <div class="payment-card">
+        <div class="payment-success" *ngIf="!pixCode && !chavePix">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h3>Pedido Criado!</h3>
+          <p>Prossiga com o pagamento via Pix</p>
+        </div>
+
+        <div class="payment-success" *ngIf="pixCode && chavePix">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h3>Pagamento Gerado com Sucesso!</h3>
+          <p>Escaneie o QR Code abaixo para realizar o pagamento via Pix</p>
+        </div>
+
+        <div class="pix-payment" *ngIf="pixCode && chavePix">
+          <img [src]="pixCode" alt="QR Code Pix" class="pix-qr" *ngIf="pixCode">
+          
+          <div class="pix-details">
+            <div class="pix-instructions">
+              <mat-icon>info</mat-icon>
+              <p>Abra o app do seu banco e escaneie o QR Code ou copie o código abaixo</p>
+            </div>
+            
+            <div class="pix-key">
+              <span class="key-label">Chave Pix:</span>
+              <span class="key-value">{{ chavePix }}</span>
+              <button mat-icon-button class="copy-btn" (click)="copyToClipboard(chavePix)">
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-actions">
+          <button mat-raised-button color="primary" (click)="processarPagamento()" *ngIf="!pixCode && !chavePix" class="nexus-btn">
+            Gerar Pagamento
+            <mat-icon>payment</mat-icon>
+          </button>
+          <button mat-raised-button color="primary" (click)="finalizar()" *ngIf="pixCode && chavePix" class="nexus-btn">
+            Concluir
+            <mat-icon>done_all</mat-icon>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,3 +1,105 @@
-.placas-spacer{
-    flex: 1 1 auto;
+mat-toolbar {
+  height: 64px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Ajuste para os botões de ícone */
+mat-toolbar button[mat-icon-button] {
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 0 4px; /* Espaçamento entre os ícones */
+  overflow: visible; /* Permite que o badge de notificação seja visível */
+}
+
+mat-toolbar button[mat-icon-button]:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Ajuste específico para o ícone de notificação */
+.notification-button {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Permite clicar no botão mesmo sobre o badge */
+}
+
+/* Container dos ícones à direita */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Espaço entre os ícones */
+}
+
+/* Restante do CSS permanece igual */
+.placas-spacer {
+  flex: 1 1 auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Tooltip personalizado */
+.mat-tooltip {
+  font-size: 12px !important;
+  padding: 4px 8px !important;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.beta-badge {
+  background: #3b82f6;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-weight: 500;
 }

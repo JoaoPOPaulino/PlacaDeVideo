@@ -1,0 +1,139 @@
+.dialog-container {
+  padding: 1.5rem;
+  background: rgba(15, 15, 35, 0.9);
+  border-radius: 10px;
+  color: white;
+  max-width: 500px;
+  width: 100%;
+}
+
+.dialog-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.order-info {
+  margin-bottom: 1.5rem;
+}
+
+.order-info p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.order-info strong {
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.order-status {
+  padding: 0.2rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.status-concluido {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.status-pendente {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.status-cancelado {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.items-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.items-list {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.items-list mat-list-item {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.items-list mat-list-item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.item-name {
+  font-weight: 500;
+}
+
+.item-details {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+button {
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  color: white;
+  height: 40px;
+  font-weight: 600;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.4);
+}
+
+@media (max-width: 600px) {
+  .dialog-container {
+    padding: 1rem;
+  }
+
+  .dialog-title {
+    font-size: 1.4rem;
+  }
+
+  .order-info p {
+    font-size: 0.9rem;
+  }
+
+  .items-title {
+    font-size: 1.1rem;
+  }
+
+  .items-list mat-list-item {
+    font-size: 0.9rem;
+  }
+
+  .item-details {
+    font-size: 0.8rem;
+  }
+}

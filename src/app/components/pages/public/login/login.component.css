@@ -16,24 +16,30 @@
 
 .login-container {
   display: flex;
-  position: relative;
-  max-width: 1000px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
+
 .login-box {
-  flex: 1;
-  padding: 3rem;
-  background: rgba(15, 15, 35, 0.7);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  background: rgba(15, 15, 35, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .brand-section {
@@ -169,17 +175,6 @@
 }
 
 /* Tech Decoration */
-.tech-decoration {
-  flex: 1;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(0,20,40,0.3)"/><path d="M20,20 L80,20 L80,80 L20,80 Z" stroke="rgba(0,150,255,0.1)" stroke-width="1" fill="none"/></svg>');
-  background-size: cover;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-}
 
 .circuit-line {
   height: 1px;

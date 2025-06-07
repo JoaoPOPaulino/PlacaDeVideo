@@ -36,7 +36,7 @@ import { PerfilPipe } from '../../../shared/pipes/perfil_.pipe';
   styleUrl: './usuario-list.component.css',
 })
 export class UsuarioListComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'nome', 'login', 'cpf' ,'perfil', 'acao'];
+  displayedColumns: string[] = ['id', 'nome', 'login', 'cpf', 'perfil', 'acao'];
   usuarios: Usuario[] = [];
   totalRecords = 0;
   pageSize = 8;
@@ -105,5 +105,18 @@ export class UsuarioListComponent implements OnInit {
   private showError(message: string, error: any): void {
     console.error(message, error);
     this.snackBar.open(message, 'Fechar', { duration: 3000 });
+  }
+
+  getBadgeClass(perfil: string): string {
+    switch (perfil) {
+      case 'ADMIN':
+        return 'badge-admin';
+      case 'USER':
+        return 'badge-user';
+      case 'GUEST':
+        return 'badge-guest';
+      default:
+        return 'badge-default';
+    }
   }
 }

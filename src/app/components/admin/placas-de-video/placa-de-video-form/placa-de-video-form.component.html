@@ -1,18 +1,19 @@
-<mat-toolbar color="primary" class="form-toolbar">
-  <span class="toolbar-title">
-    {{ placaId ? 'Editar Placa de Vídeo' : 'Nova Placa de Vídeo' }}
-  </span>
+<mat-toolbar color="primary" class="placa-form-toolbar">
+  <div class="toolbar-content">
+    <span class="toolbar-title">
+      {{ placaId ? 'Editar Placa de Vídeo' : 'Nova Placa de Vídeo' }}
+    </span>
+  </div>
 </mat-toolbar>
 
-
 <div class="form-container">
-  <mat-card class="form-card">
+  <mat-card class="form-card mat-elevation-z8">
     <mat-card-content>
       <form [formGroup]="placaForm">
         <!-- Nome -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Nome da Placa</mat-label>
-          <input matInput formControlName="nome">
+          <input matInput formControlName="nome" required>
           <mat-icon matSuffix>memory</mat-icon>
           <mat-error *ngIf="placaForm.get('nome')?.hasError('required')">
             Nome é obrigatório
@@ -22,7 +23,7 @@
         <!-- Preço -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Preço (R$)</mat-label>
-          <input matInput type="number" formControlName="preco" min="0">
+          <input matInput type="number" formControlName="preco" min="0" required>
           <mat-icon matSuffix>attach_money</mat-icon>
           <mat-error *ngIf="placaForm.get('preco')?.hasError('required')">
             Preço é obrigatório
@@ -32,24 +33,17 @@
           </mat-error>
         </mat-form-field>
 
-        <!-- Nome Imagem -->
-        <mat-form-field appearance="outline" class="full-width-input readonly-field">
-          <mat-label>Nome da Imagem</mat-label>
-          <input matInput formControlName="nomeImagem" readonly>
-          <mat-icon matSuffix>image</mat-icon>
-        </mat-form-field>
-
         <!-- Upload de Imagem -->
-        <div class="full-width-input upload-section">
+        <div class="upload-section">
           <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
-          <button mat-stroked-button type="button" (click)="fileInput.click()">
+          <button mat-stroked-button type="button" (click)="fileInput.click()" class="upload-button">
             <mat-icon>upload</mat-icon>
             Selecionar Imagem
           </button>
           
           <div *ngIf="selectedFile" class="file-info">
             <span>{{ selectedFile.name }}</span>
-            <button mat-icon-button (click)="uploadImage()" [disabled]="uploading" matTooltip="Enviar imagem">
+            <button mat-icon-button (click)="uploadImage()" [disabled]="uploading" matTooltip="Enviar imagem" class="action-button">
               <mat-icon>cloud_upload</mat-icon>
             </button>
             <mat-progress-bar *ngIf="uploading" mode="indeterminate"></mat-progress-bar>
@@ -57,19 +51,26 @@
           
           <div *ngIf="placaForm.get('nomeImagem')?.value && !selectedFile" class="uploaded-image">
             <span>Imagem atual: {{ placaForm.get('nomeImagem')?.value }}</span>
-            <button mat-icon-button (click)="previewImage()" matTooltip="Visualizar imagem">
+            <button mat-icon-button (click)="previewImage()" matTooltip="Visualizar imagem" class="action-button">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button (click)="removeImage()" matTooltip="Remover imagem" color="warn">
+            <button mat-icon-button (click)="removeImage()" matTooltip="Remover imagem" color="warn" class="action-button">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
         </div>
 
+        <!-- Nome Imagem -->
+        <mat-form-field appearance="outline" class="full-width-input readonly-field">
+          <mat-label>Nome da Imagem</mat-label>
+          <input matInput formControlName="nomeImagem" readonly>
+          <mat-icon matSuffix>image</mat-icon>
+        </mat-form-field>
+
         <!-- Fabricante -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Fabricante</mat-label>
-          <mat-select formControlName="idFabricante">
+          <mat-select formControlName="idFabricante" required>
             <mat-option *ngFor="let fabricante of fabricantes" [value]="fabricante.id">
               {{ fabricante.nome }}
             </mat-option>
@@ -80,27 +81,27 @@
           </mat-error>
         </mat-form-field>
 
-      <!-- Especificação Técnica -->
-      <mat-form-field appearance="outline" class="full-width-input">
-        <mat-label>Especificação Técnica</mat-label>
-        <mat-select formControlName="idEspecificacaoTecnica">
-          <mat-option *ngFor="let espec of especificacoes" [value]="espec.id">
-            {{ espec.memoria }} | {{ espec.clock }} | {{ espec.barramento }} ({{ espec.consumoEnergia }})
-          </mat-option>
-        </mat-select>
-        <mat-icon matSuffix>build</mat-icon>
-        <mat-error *ngIf="placaForm.get('idEspecificacaoTecnica')?.hasError('required')">
-          Especificação técnica é obrigatória
-        </mat-error>
-        <button mat-icon-button matSuffix (click)="openNovaEspecificacaoDialog()" matTooltip="Criar nova especificação">
-          <mat-icon>add</mat-icon>
-        </button>
-      </mat-form-field>
+        <!-- Especificação Técnica -->
+        <mat-form-field appearance="outline" class="full-width-input">
+          <mat-label>Especificação Técnica</mat-label>
+          <mat-select formControlName="idEspecificacaoTecnica" required>
+            <mat-option *ngFor="let espec of especificacoes" [value]="espec.id">
+              {{ espec.memoria }}GB | {{ espec.clock }}MHz | {{ espec.barramento }}-bit
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>build</mat-icon>
+          <mat-error *ngIf="placaForm.get('idEspecificacaoTecnica')?.hasError('required')">
+            Especificação técnica é obrigatória
+          </mat-error>
+          <button mat-icon-button matSuffix (click)="openNovaEspecificacaoDialog()" matTooltip="Criar nova especificação" class="action-button">
+            <mat-icon>add</mat-icon>
+          </button>
+        </mat-form-field>
 
         <!-- Categoria -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Categoria</mat-label>
-          <mat-select formControlName="categoria">
+          <mat-select formControlName="categoria" required>
             <mat-option *ngFor="let categoria of categorias" [value]="categoria.id">
               {{ categoria.label }}
             </mat-option>
@@ -114,7 +115,7 @@
         <!-- Estoque -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Quantidade em Estoque</mat-label>
-          <input matInput type="number" formControlName="estoque" min="0">
+          <input matInput type="number" formControlName="estoque" min="0" required>
           <mat-icon matSuffix>inventory</mat-icon>
           <mat-error *ngIf="placaForm.get('estoque')?.hasError('required')">
             Estoque é obrigatório
@@ -138,15 +139,15 @@
     </mat-card-content>
 
     <mat-card-actions class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="placaForm.invalid">
+      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="placaForm.invalid" class="action-button">
         <mat-icon>save</mat-icon>
         Salvar
       </button>
-      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="placaId">
+      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="placaId" class="action-button">
         <mat-icon>delete</mat-icon>
         Excluir
       </button>
-      <button mat-stroked-button [routerLink]="['/admin/placasdevideo']">
+      <button mat-stroked-button [routerLink]="['/admin/placasdevideo']" class="action-button">
         <mat-icon>cancel</mat-icon>
         Cancelar
       </button>

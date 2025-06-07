@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet, RouterModule, RouterLinkActive } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { HeaderComponent } from '../shared/header/header.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,6 +28,7 @@ import { MatIcon } from '@angular/material/icon';
     RouterLinkActive,
     NgClass,
     MatIcon,
+    HeaderComponent,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',

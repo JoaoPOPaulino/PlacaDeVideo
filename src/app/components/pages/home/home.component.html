@@ -1,109 +1,105 @@
-<!-- home.component.html -->
 <div class="home-container">
-    <h1 class="page-title">Dashboard</h1>
-    
-    <div class="cards-grid">
-      <!-- Card de Placas de Vídeo -->
-      <mat-card class="dashboard-card">
-        <div class="card-header">
-          <mat-icon class="card-icon">inventory_2</mat-icon>
-          <h2>Placas de Vídeo</h2>
-        </div>
-        
-        <div class="card-content">
-          <span class="card-value">{{ loading ? '--' : totalPlacas }}</span>
-          <span class="card-label">em estoque</span>
-        </div>
-        
-        <div class="card-actions">
-          <button mat-raised-button color="primary" routerLink="/admin/placasdevideo">
-            <mat-icon>list</mat-icon>
-            Ver Todas
-          </button>
-        </div>
-      </mat-card>
+  <h1 class="page-title">Dashboard Administrativo</h1>
   
-      <!-- Card de Especificações Técnicas -->
-      <mat-card class="dashboard-card">
-        <div class="card-header">
-          <mat-icon class="card-icon">memory</mat-icon>
-          <h2>Especificações Técnicas</h2>
-        </div>
-        
-        <div class="card-content">
-          <span class="card-value">{{ loading ? '--' : totalEspecificacoes }}</span>
-          <span class="card-label">cadastradas</span>
-        </div>
-        
-        <div class="card-actions">
-          <button mat-raised-button color="primary" routerLink="/admin/especificacoes-tecnicas">
-            <mat-icon>list</mat-icon>
-            Ver Todas
-          </button>
-        </div>
-      </mat-card>
-
-      <!-- Card de Fabricantes -->
-      <mat-card class="dashboard-card">
-        <div class="card-header">
-          <mat-icon class="card-icon">factory</mat-icon>
-          <h2>Fabricantes</h2>
-        </div>
-        
-        <div class="card-content">
-          <span class="card-value">{{ loading ? '--' : totalFabricante }}</span>
-          <span class="card-label">cadastradas</span>
-        </div>
-        
-        <div class="card-actions">
-          <button mat-raised-button color="primary" routerLink="/admin/fabricantes">
-            <mat-icon>list</mat-icon>
-            Ver Todas
-          </button>
-        </div>
-      </mat-card>
-
-      <!-- Card de Usuários -->
-      <mat-card class="dashboard-card">
-        <div class="card-header">
-          <mat-icon class="card-icon">groups</mat-icon>
-          <h2>Usuários</h2>
-        </div>
-        
-        <div class="card-content">
-          <span class="card-value">{{ loading ? '--' : totalUsuarios }}</span>
-          <span class="card-label">cadastrados</span>
-        </div>
-        
-        <div class="card-actions">
-          <button mat-raised-button color="primary" routerLink="/admin/usuarios">
-            <mat-icon>list</mat-icon>
-            Ver Todas
-          </button>
-        </div>
-      </mat-card>
+  <div class="cards-grid">
+    <!-- Card de Placas de Vídeo -->
+    <mat-card class="dashboard-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">inventory_2</mat-icon>
+        <h2>Placas de Vídeo</h2>
+      </div>
       
-
-      <!-- Card de Usuários -->
-      <mat-card class="dashboard-card">
-        <div class="card-header">
-          <mat-icon class="card-icon">star_rate</mat-icon>
-          <h2>Avaliações</h2>
-        </div>
-        
-        <div class="card-content">
-          <span class="card-value">{{ loading ? '--' : totalAvaliacoes }}</span>
-          <span class="card-label">cadastrados</span>
-        </div>
-        
-        <div class="card-actions">
-          <button mat-raised-button color="primary" routerLink="/admin/avaliacoes">
-            <mat-icon>list</mat-icon>
-            Ver Todas
-          </button>
-        </div>
-      </mat-card>
-
+      <div class="card-content">
+        <span class="card-value" [class.skeleton]="loading">{{ loading ? '&nbsp;' : totalPlacas }}</span>
+        <span class="card-label">Em estoque</span>
+      </div>
       
-    </div>
+      <div class="card-actions">
+        <button mat-raised-button color="primary" routerLink="/admin/placasdevideo">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Card de Especificações Técnicas -->
+    <mat-card class="dashboard-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">memory</mat-icon>
+        <h2>Especificações</h2>
+      </div>
+      
+      <div class="card-content">
+        <span class="card-value" [class.skeleton]="loading">{{ loading ? '&nbsp;' : totalEspecificacoes }}</span>
+        <span class="card-label">Cadastradas</span>
+      </div>
+      
+      <div class="card-actions">
+        <button mat-raised-button color="primary" routerLink="/admin/especificacoes-tecnicas">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Card de Fabricantes -->
+    <mat-card class="dashboard-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">factory</mat-icon>
+        <h2>Fabricantes</h2>
+      </div>
+      
+      <div class="card-content">
+        <span class="card-value" [class.skeleton]="loading">{{ loading ? '&nbsp;' : totalFabricante }}</span>
+        <span class="card-label">Cadastrados</span>
+      </div>
+      
+      <div class="card-actions">
+        <button mat-raised-button color="primary" routerLink="/admin/fabricantes">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Card de Usuários -->
+    <mat-card class="dashboard-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">groups</mat-icon>
+        <h2>Usuários</h2>
+      </div>
+      
+      <div class="card-content">
+        <span class="card-value" [class.skeleton]="loading">{{ loading ? '&nbsp;' : totalUsuarios }}</span>
+        <span class="card-label">Cadastrados</span>
+      </div>
+      
+      <div class="card-actions">
+        <button mat-raised-button color="primary" routerLink="/admin/usuarios">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar
+        </button>
+      </div>
+    </mat-card>
+    
+    <!-- Card de Avaliações -->
+    <mat-card class="dashboard-card">
+      <div class="card-header">
+        <mat-icon class="card-icon">star_rate</mat-icon>
+        <h2>Avaliações</h2>
+      </div>
+      
+      <div class="card-content">
+        <span class="card-value" [class.skeleton]="loading">{{ loading ? '&nbsp;' : totalAvaliacoes }}</span>
+        <span class="card-label">Registradas</span>
+      </div>
+      
+      <div class="card-actions">
+        <button mat-raised-button color="primary" routerLink="/admin/avaliacoes">
+          <mat-icon>list_alt</mat-icon>
+          Gerenciar
+        </button>
+      </div>
+    </mat-card>
   </div>
+</div>

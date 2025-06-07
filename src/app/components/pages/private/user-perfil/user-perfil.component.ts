@@ -16,11 +16,14 @@ import {
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { UsuarioService } from '../../../../services/usuario.service';
+import { PedidoService } from '../../../../services/pedido.service';
 import { Usuario } from '../../../../models/usuario/usuario.model';
 import { Telefone } from '../../../../models/usuario/telefone.model';
 import { Endereco } from '../../../../models/usuario/endereco.model';
 import { NovoTelefoneDialogComponent } from '../../../shared/dialog/novo-telefone-dialog/novo-telefone-dialog.component';
 import { NovoEnderecoDialogComponent } from '../../../shared/dialog/novo-endereco-dialog/novo-endereco-dialog.component';
+import { ConfirmPasswordDialogComponent } from '../../../shared/dialog/confirm-password-dialog/confirm-password-dialog.component';
+import { OrderDetailsDialogComponent } from '../../../shared/dialog/order-details-dialog/order-details-dialog.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
@@ -32,7 +35,7 @@ import {
 } from 'rxjs/operators';
 import { FooterComponent } from '../../../template/shared/footer/footer.component';
 import { PublicHeaderComponent } from '../../../template/public/public-header/public-header.component';
-import { ConfirmPasswordDialogComponent } from '../../../shared/dialog/confirm-password-dialog/confirm-password-dialog.component';
+import { Pedido } from '../../../../models/pedido/pedido.model';
 
 enum ProfileTab {
   PERSONAL_INFO = 'PERSONAL_INFO',
@@ -65,19 +68,19 @@ export class UserPerfilComponent implements OnInit {
   activeTab: ProfileTab = ProfileTab.PERSONAL_INFO;
   ProfileTab = ProfileTab;
   originalValues: any;
-
   securityForm!: FormGroup;
   showChangePassword = false;
   passwordChanged = false;
-
   usuario$!: Observable<Usuario | null>;
   perfilForm!: FormGroup;
   imagePreview: string | null = null;
   selectedFile: File | null = null;
+  pedidos$!: Observable<Pedido[]>;
 
   constructor(
     private authService: AuthService,
     private usuarioService: UsuarioService,
+    private pedidoService: PedidoService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
@@ -86,22 +89,19 @@ export class UserPerfilComponent implements OnInit {
   ngOnInit(): void {
     this.usuario$ = this.authService.getUsuarioLogado().pipe(
       switchMap((usuario) => {
-        if (usuario) {
-          return of(usuario);
-        } else {
-          const usuarioId = this.authService.getUsuarioId();
-          if (usuarioId) {
-            return this.usuarioService.findById(usuarioId.toString()).pipe(
-              catchError((err) => {
-                this.snackBar.open('Erro ao carregar usuário', 'Fechar', {
-                  duration: 3000,
-                });
-                return of(null);
-              })
-            );
-          }
-          return of(null);
+        if (usuario) return of(usuario);
+        const usuarioId = this.authService.getUsuarioId();
+        if (usuarioId) {
+          return this.usuarioService.findById(usuarioId.toString()).pipe(
+            catchError(() => {
+              this.snackBar.open('Erro ao carregar usuário', 'Fechar', {
+                duration: 3000,
+              });
+              return of(null);
+            })
+          );
         }
+        return of(null);
       })
     );
 
@@ -113,8 +113,8 @@ export class UserPerfilComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern(/^\d+$/), // Só aceita números
-          Validators.minLength(11), // Mínimo 11 dígitos
+          Validators.pattern(/^\d{11}$/),
+          Validators.minLength(11),
           Validators.maxLength(11),
         ],
       ],
@@ -122,9 +122,9 @@ export class UserPerfilComponent implements OnInit {
 
     this.securityForm = this.fb.group(
       {
-        currentPassword: ['', [Validators.required]],
+        currentPassword: ['', Validators.required],
         newPassword: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required]],
+        confirmPassword: ['', Validators.required],
       },
       { validator: this.passwordMatchValidator }
     );
@@ -137,17 +137,16 @@ export class UserPerfilComponent implements OnInit {
           login: usuario.login,
           cpf: usuario.cpf,
         });
-
         this.originalValues = {
           nome: usuario.nome,
           email: usuario.email,
           login: usuario.login,
           cpf: usuario.cpf,
         };
-
         this.imagePreview = usuario.nomeImagem
           ? `http://localhost:8080/usuarios/download/imagem/${usuario.nomeImagem}`
           : null;
+        this.loadPedidos();
       } else {
         this.snackBar.open('Usuário não encontrado.', 'Fechar', {
           duration: 3000,
@@ -156,6 +155,55 @@ export class UserPerfilComponent implements OnInit {
     });
 
     this.setupValidations();
+  }
+
+  loadPedidos(): void {
+    const usuarioId = this.authService.getUsuarioId();
+    if (usuarioId) {
+      this.pedidos$ = this.pedidoService.getPedidosByUsuario(usuarioId).pipe(
+        catchError(() => {
+          this.snackBar.open('Erro ao carregar pedidos', 'Fechar', {
+            duration: 3000,
+          });
+          return of([]);
+        })
+      );
+    } else {
+      this.pedidos$ = of([]);
+    }
+  }
+
+  openOrderDetails(pedido: Pedido): void {
+    this.dialog.open(OrderDetailsDialogComponent, {
+      width: '550px',
+      data: pedido,
+    });
+  }
+
+  getStatusClass(status?: string): string {
+    switch (status?.toLowerCase()) {
+      case 'concluído':
+        return 'status-concluido';
+      case 'pendente':
+        return 'status-pendente';
+      case 'cancelado':
+        return 'status-cancelado';
+      default:
+        return 'status-pendente';
+    }
+  }
+
+  formatDate(date: string | null): string {
+    if (!date) return 'Data não disponível';
+    try {
+      return new Date(date).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    } catch {
+      return 'Data inválida';
+    }
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -167,6 +215,7 @@ export class UserPerfilComponent implements OnInit {
   setupValidations() {
     const loginControl = this.perfilForm.get('login');
     const emailControl = this.perfilForm.get('email');
+    const cpfControl = this.perfilForm.get('cpf');
 
     if (loginControl) {
       loginControl.valueChanges
@@ -177,7 +226,6 @@ export class UserPerfilComponent implements OnInit {
         )
         .subscribe();
     }
-
     if (emailControl) {
       emailControl.valueChanges
         .pipe(
@@ -187,21 +235,25 @@ export class UserPerfilComponent implements OnInit {
         )
         .subscribe();
     }
+    if (cpfControl) {
+      cpfControl.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          switchMap((value) => this.validateCpf(value))
+        )
+        .subscribe();
+    }
   }
 
   validateLogin(login: string): Observable<boolean> {
-    if (!login || login.length < 3) {
-      return of(false);
-    }
+    if (!login || login.length < 3) return of(false);
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-    if (currentUsuario && currentUsuario.login === login) {
-      return of(false);
-    }
+    if (currentUsuario && currentUsuario.login === login) return of(false);
     return this.usuarioService.checkLoginExists(login).pipe(
       map((exists) => {
-        if (exists) {
+        if (exists)
           this.perfilForm.get('login')?.setErrors({ loginExists: true });
-        }
         return exists;
       }),
       catchError(() => of(false))
@@ -209,18 +261,27 @@ export class UserPerfilComponent implements OnInit {
   }
 
   validateEmail(email: string): Observable<boolean> {
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return of(false);
-    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return of(false);
     const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
-    if (currentUsuario && currentUsuario.email === email) {
-      return of(false);
-    }
+    if (currentUsuario && currentUsuario.email === email) return of(false);
     return this.usuarioService.checkEmailExists(email).pipe(
       map((exists) => {
-        if (exists) {
+        if (exists)
           this.perfilForm.get('email')?.setErrors({ emailExists: true });
-        }
+        return exists;
+      }),
+      catchError(() => of(false))
+    );
+  }
+
+  validateCpf(cpf: string): Observable<boolean> {
+    const cpfNumeros = cpf.replace(/\D/g, '');
+    if (!cpfNumeros || cpfNumeros.length !== 11) return of(false);
+    const currentUsuario = this.authService.getUsuarioLogadoSnapshot();
+    if (currentUsuario && currentUsuario.cpf === cpfNumeros) return of(false);
+    return this.usuarioService.checkCpfExists(cpfNumeros).pipe(
+      map((exists) => {
+        if (exists) this.perfilForm.get('cpf')?.setErrors({ cpfExists: true });
         return exists;
       }),
       catchError(() => of(false))
@@ -236,7 +297,6 @@ export class UserPerfilComponent implements OnInit {
       );
       return;
     }
-
     const usuarioAtual = this.authService.getUsuarioLogadoSnapshot();
     if (!usuarioAtual) {
       this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -244,14 +304,11 @@ export class UserPerfilComponent implements OnInit {
       });
       return;
     }
-
-    // Verificar se campos sensíveis foram alterados
     const formValues = this.perfilForm.value;
     const camposSensiveisAlterados =
       formValues.login !== usuarioAtual.login ||
       formValues.email !== usuarioAtual.email ||
       formValues.cpf !== usuarioAtual.cpf;
-
     if (camposSensiveisAlterados) {
       const senhaValida = await firstValueFrom(
         this.openPasswordConfirmDialog('alterar informações sensíveis')
@@ -265,7 +322,6 @@ export class UserPerfilComponent implements OnInit {
         return;
       }
     }
-
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
       this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -273,18 +329,14 @@ export class UserPerfilComponent implements OnInit {
       });
       return;
     }
-
-    // Criar payload simplificado - apenas campos que podem ser atualizados
     const payload = {
       nome: formValues.nome,
       email: formValues.email,
       login: formValues.login,
       cpf: formValues.cpf.replace(/\D/g, ''),
-      perfil: usuarioAtual.perfil.id, // Mantém o perfil existente
-      nomeImagem: usuarioAtual.nomeImagem, // Mantém a imagem existente
-      // Não envia telefones e endereços - devem ser gerenciados separadamente
+      perfil: usuarioAtual.perfil.id,
+      nomeImagem: usuarioAtual.nomeImagem,
     };
-
     this.usuarioService.update(payload, usuarioId).subscribe({
       next: (updatedUsuario) => {
         this.authService.updateUsuarioLogado(updatedUsuario);
@@ -299,7 +351,6 @@ export class UserPerfilComponent implements OnInit {
         });
       },
       error: (err) => {
-        console.error('Erro ao atualizar usuário:', err);
         this.snackBar.open(
           `Erro ao atualizar perfil: ${err.error?.message || err.message}`,
           'Fechar',
@@ -323,7 +374,6 @@ export class UserPerfilComponent implements OnInit {
     const usuarioId = this.authService.getUsuarioId();
     if (usuarioId && this.selectedFile) {
       const snackBarRef = this.snackBar.open('Enviando imagem...', 'Fechar');
-
       this.usuarioService.uploadImagem(usuarioId, this.selectedFile).subscribe({
         next: (updatedUsuario) => {
           snackBarRef.dismiss();
@@ -354,21 +404,17 @@ export class UserPerfilComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((telefone: Telefone) => {
       if (telefone) {
-        console.log('Telefone payload:', telefone);
         const usuarioId = this.authService.getUsuarioId();
         if (usuarioId) {
           this.usuarioService.addTelefone(usuarioId, telefone).subscribe({
             next: (updatedUsuario) => {
               this.authService.updateUsuarioLogado(updatedUsuario);
               this.usuario$ = of(updatedUsuario);
-              this.snackBar.open(
-                'Telefone adicionado com sucesso!',
-                'Sucesso',
-                { duration: 3000 }
-              );
+              this.snackBar.open('Telefone adicionado com sucesso!', 'Fechar', {
+                duration: 3000,
+              });
             },
             error: (err) => {
-              console.error('Erro ao adicionar telefone:', err);
               this.snackBar.open(
                 `Erro ao adicionar telefone: ${err.message}`,
                 'Fechar',
@@ -382,6 +428,7 @@ export class UserPerfilComponent implements OnInit {
   }
 
   removeTelefone(telefoneId: number): void {
+    console.log('Tentando remover telefone com ID:', telefoneId); // Debug
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
       this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -389,23 +436,27 @@ export class UserPerfilComponent implements OnInit {
       });
       return;
     }
-
-    const snackBarRef = this.snackBar.open('Removendo telefone...', 'Fechar');
+    if (!telefoneId) {
+      this.snackBar.open('ID do telefone inválido.', 'Fechar', {
+        duration: 3000,
+      });
+      return;
+    }
 
     this.usuarioService.removeTelefone(usuarioId, telefoneId).subscribe({
       next: (updatedUsuario) => {
-        snackBarRef.dismiss();
         this.authService.updateUsuarioLogado(updatedUsuario);
         this.usuario$ = of(updatedUsuario);
-        this.snackBar.open('Telefone removido com sucesso!', 'Sucesso', {
+        this.snackBar.open('Telefone removido com sucesso!', 'Fechar', {
           duration: 3000,
         });
       },
       error: (err) => {
-        snackBarRef.dismiss();
-        console.error('Erro ao remover telefone:', err);
+        console.error('Erro ao remover telefone:', err); // Debug
         this.snackBar.open(
-          `Erro ao remover telefone: ${err.error?.message || err.message}`,
+          `Erro ao remover telefone: ${
+            err.error?.message || 'Telefone não encontrado'
+          }`,
           'Fechar',
           { duration: 5000 }
         );
@@ -419,21 +470,17 @@ export class UserPerfilComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((endereco: Endereco) => {
       if (endereco) {
-        console.log('Endereço payload:', endereco); // Add this
         const usuarioId = this.authService.getUsuarioId();
         if (usuarioId) {
           this.usuarioService.addEndereco(usuarioId, endereco).subscribe({
             next: (updatedUsuario) => {
               this.authService.updateUsuarioLogado(updatedUsuario);
               this.usuario$ = of(updatedUsuario);
-              this.snackBar.open(
-                'Endereço adicionado com sucesso!',
-                'Sucesso',
-                { duration: 3000 }
-              );
+              this.snackBar.open('Endereço adicionado com sucesso!', 'Fechar', {
+                duration: 3000,
+              });
             },
             error: (err) => {
-              console.error('Erro ao adicionar endereço:', err);
               this.snackBar.open(
                 `Erro ao adicionar endereço: ${err.message}`,
                 'Fechar',
@@ -447,6 +494,7 @@ export class UserPerfilComponent implements OnInit {
   }
 
   removeEndereco(enderecoId: number): void {
+    console.log('Removendo telefone com ID:', Telefone);
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
       this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -455,22 +503,19 @@ export class UserPerfilComponent implements OnInit {
       return;
     }
 
-    const snackBarRef = this.snackBar.open('Removendo endereço...', 'Fechar');
-
     this.usuarioService.removeEndereco(usuarioId, enderecoId).subscribe({
       next: (updatedUsuario) => {
-        snackBarRef.dismiss();
         this.authService.updateUsuarioLogado(updatedUsuario);
-        this.usuario$ = of(updatedUsuario);
-        this.snackBar.open('Endereço removido com sucesso!', 'Sucesso', {
+        this.usuario$ = of(updatedUsuario); // Atualiza o Observable
+        this.snackBar.open('Endereço removido com sucesso!', 'Fechar', {
           duration: 3000,
         });
       },
       error: (err) => {
-        snackBarRef.dismiss();
-        console.error('Erro ao remover endereço:', err);
         this.snackBar.open(
-          `Erro ao remover endereço: ${err.error?.message || err.message}`,
+          `Erro ao remover endereço: ${
+            err.error?.message || 'Endereço não encontrado'
+          }`,
           'Fechar',
           { duration: 5000 }
         );
@@ -485,7 +530,6 @@ export class UserPerfilComponent implements OnInit {
       });
       return;
     }
-
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
       this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -493,22 +537,21 @@ export class UserPerfilComponent implements OnInit {
       });
       return;
     }
-
     const { currentPassword, newPassword } = this.securityForm.value;
-
     this.usuarioService
       .changePassword(usuarioId, currentPassword, newPassword)
       .subscribe({
         next: () => {
           this.passwordChanged = true;
           this.securityForm.reset();
+          this.showChangePassword = false;
           this.snackBar.open('Senha alterada com sucesso!', 'Fechar', {
             duration: 3000,
           });
         },
         error: (err) => {
           this.snackBar.open(
-            err.error?.message || 'Erro ao alterar senha',
+            err.error?.message || 'Erro ao alterar senha.',
             'Fechar',
             { duration: 5000 }
           );
@@ -545,32 +588,12 @@ export class UserPerfilComponent implements OnInit {
     });
   }
 
-  validateCpf(cpf: string) {
-    const cpfNumeros = cpf.replace(/\D/g, '');
-
-    if (!cpfNumeros || cpfNumeros.length !== 11) {
-      return of(false);
-    }
-
-    return this.usuarioService.checkCpfExists(cpfNumeros).pipe(
-      map((exists) => {
-        if (exists) {
-          this.perfilForm.get('cpf')?.setErrors({ cpfExists: true });
-        }
-        return exists;
-      }),
-      catchError(() => of(false))
-    );
-  }
-
   onDeleteAccount(): void {
     const dialogRef = this.dialog.open(ConfirmPasswordDialogComponent, {
       width: '400px',
     });
-
     dialogRef.afterClosed().subscribe((senha: string | null) => {
       if (!senha) return;
-
       const usuarioId = this.authService.getUsuarioId();
       if (!usuarioId) {
         this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -578,8 +601,6 @@ export class UserPerfilComponent implements OnInit {
         });
         return;
       }
-
-      // Verifica a senha antes de excluir
       this.authService.validarSenha(usuarioId, senha).subscribe({
         next: (valido) => {
           if (valido) {
@@ -619,11 +640,9 @@ export class UserPerfilComponent implements OnInit {
       width: '400px',
       data: { action },
     });
-
     return dialogRef.afterClosed().pipe(
       switchMap((password: string | null) => {
         if (!password) return of(false);
-
         const usuarioId = this.authService.getUsuarioId();
         if (!usuarioId) {
           this.snackBar.open('Usuário não encontrado.', 'Fechar', {
@@ -631,7 +650,6 @@ export class UserPerfilComponent implements OnInit {
           });
           return of(false);
         }
-
         return this.authService.validarSenha(usuarioId, password).pipe(
           catchError(() => {
             this.snackBar.open('Erro ao validar senha.', 'Fechar', {
@@ -645,12 +663,8 @@ export class UserPerfilComponent implements OnInit {
   }
 
   hasChanges(): boolean {
-    if (!this.originalValues || !this.perfilForm) {
-      return false;
-    }
-
+    if (!this.originalValues || !this.perfilForm) return false;
     const currentValues = this.perfilForm.value;
-
     return Object.keys(this.originalValues).some(
       (key) => currentValues[key] !== this.originalValues[key]
     );
@@ -659,15 +673,8 @@ export class UserPerfilComponent implements OnInit {
   formatCPF() {
     let cpfControl = this.perfilForm.get('cpf');
     if (cpfControl) {
-      // Remove tudo que não é dígito
       let value = cpfControl.value.replace(/\D/g, '');
-
-      // Limita a 11 caracteres
-      if (value.length > 11) {
-        value = value.substring(0, 11);
-      }
-
-      // Atualiza o valor no controle
+      if (value.length > 11) value = value.substring(0, 11);
       cpfControl.setValue(value, { emitEvent: false });
     }
   }

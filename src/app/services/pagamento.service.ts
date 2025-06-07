@@ -8,7 +8,8 @@ import { Pagamento } from '../models/pagamento/pagamento.model';
   providedIn: 'root',
 })
 export class PagamentoService {
-  private url = 'http://localhost:8080/pagamentos';
+  // Corrigido: aponta diretamente para a rota do backend com Google Pay
+  private url = 'http://localhost:8080/pagamentos/googlepay';
 
   constructor(private http: HttpClient) {}
 
@@ -39,20 +40,21 @@ export class PagamentoService {
     });
 
     console.log('Enviando para o backend:', {
-      url: this.url,
+      url: `${this.url}/${pedidoId}`,
       payload: paymentData,
       headers: headers.keys(),
     });
 
+    // Corrigido: URL inclui o idPedido
     return this.http
-      .post<Pagamento>(this.url, paymentData, { headers })
-      .pipe(catchError(this.handleError));
+      .post<Pagamento>(`${this.url}/${pedidoId}`, paymentData, { headers })
+      .pipe(catchError((error) => this.handleError(error)));
   }
 
   verificarStatusPagamento(pedidoId: number): Observable<Pagamento> {
     return this.http
-      .get<Pagamento>(`${this.url}/pedido/${pedidoId}`)
-      .pipe(catchError(this.handleError));
+      .get<Pagamento>(`http://localhost:8080/pagamentos/pedido/${pedidoId}`)
+      .pipe(catchError((error) => this.handleError(error)));
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

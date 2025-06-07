@@ -1,69 +1,74 @@
-<mat-toolbar color="primary" class="placa-toolbar">
-    <div class="flex-container">
-      <span class="toolbar-title">Controle de Especificações Técnicas</span>
-      <button mat-fab color="accent" [routerLink]="['new']" matTooltip="Adicionar nova especificação">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-  </mat-toolbar>
-  
-  <div class="table-container">
-    <table mat-table [dataSource]="especificacoes" class="mat-elevation-z8">
-      <!-- Coluna ID -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let element">{{element.id}}</td>
-      </ng-container>
-  
-      <!-- Coluna Memória -->
-      <ng-container matColumnDef="memoria">
-        <th mat-header-cell *matHeaderCellDef>Memória</th>
-        <td mat-cell *matCellDef="let element">{{element.memoria}}</td>
-      </ng-container>
-  
-      <!-- Coluna Clock -->
-      <ng-container matColumnDef="clock">
-        <th mat-header-cell *matHeaderCellDef>Clock</th>
-        <td mat-cell *matCellDef="let element">{{element.clock}}</td>
-      </ng-container>
-  
-      <!-- Coluna Barramento -->
-      <ng-container matColumnDef="barramento">
-        <th mat-header-cell *matHeaderCellDef>Barramento</th>
-        <td mat-cell *matCellDef="let element">{{element.barramento}}</td>
-      </ng-container>
-  
-      <!-- Coluna Consumo de Energia -->
-      <ng-container matColumnDef="consumoEnergia">
-        <th mat-header-cell *matHeaderCellDef>Consumo</th>
-        <td mat-cell *matCellDef="let element">{{element.consumoEnergia}}</td>
-      </ng-container>
-  
-      <!-- Coluna Ações -->
-      <ng-container matColumnDef="acao">
-        <th mat-header-cell *matHeaderCellDef>Ações</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="primary" 
+<mat-toolbar color="primary" class="especificacao-toolbar">
+  <div class="toolbar-content">
+    <span class="toolbar-title">Controle de Especificações Técnicas</span>
+    <button mat-fab color="accent" class="add-button" 
+            [routerLink]="['new']" matTooltip="Adicionar nova especificação">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<div class="table-container">
+  <table mat-table [dataSource]="especificacoes" class="mat-elevation-z8">
+    
+    <!-- Coluna ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef class="column-id">ID</th>
+      <td mat-cell *matCellDef="let element" class="column-id">{{element.id}}</td>
+    </ng-container>
+
+    <!-- Coluna Memória -->
+    <ng-container matColumnDef="memoria">
+      <th mat-header-cell *matHeaderCellDef class="column-memoria">Memória</th>
+      <td mat-cell *matCellDef="let element" class="column-memoria">{{element.memoria}} GB</td>
+    </ng-container>
+
+    <!-- Coluna Clock -->
+    <ng-container matColumnDef="clock">
+      <th mat-header-cell *matHeaderCellDef class="column-clock">Clock</th>
+      <td mat-cell *matCellDef="let element" class="column-clock">{{element.clock}} MHz</td>
+    </ng-container>
+
+    <!-- Coluna Barramento -->
+    <ng-container matColumnDef="barramento">
+      <th mat-header-cell *matHeaderCellDef class="column-barramento">Barramento</th>
+      <td mat-cell *matCellDef="let element" class="column-barramento">{{element.barramento}}-bit</td>
+    </ng-container>
+
+    <!-- Coluna Consumo de Energia -->
+    <ng-container matColumnDef="consumoEnergia">
+      <th mat-header-cell *matHeaderCellDef class="column-consumo">Consumo</th>
+      <td mat-cell *matCellDef="let element" class="column-consumo">{{element.consumoEnergia}} W</td>
+    </ng-container>
+
+    <!-- Coluna Ações -->
+    <ng-container matColumnDef="acao">
+      <th mat-header-cell *matHeaderCellDef class="column-actions">Ações</th>
+      <td mat-cell *matCellDef="let element" class="column-actions">
+        <div class="action-buttons">
+          <button mat-icon-button color="primary" class="edit-button"
                   [routerLink]="['edit', element.id]"
                   matTooltip="Editar">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" 
+          <button mat-icon-button color="warn" class="delete-button"
                   (click)="excluir(element.id)"
                   matTooltip="Excluir">
             <mat-icon>delete</mat-icon>
           </button>
-        </td>
-      </ng-container>
-  
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
-                   showFirstLastButtons
-                   [length]="totalRecords"
-                   [pageSize]="pageSize"
-                   (page)="paginar($event)">
-    </mat-paginator>
-  </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                showFirstLastButtons
+                [length]="totalRecords"
+                [pageSize]="pageSize"
+                (page)="paginar($event)"
+                class="custom-paginator">
+  </mat-paginator>
+</div>

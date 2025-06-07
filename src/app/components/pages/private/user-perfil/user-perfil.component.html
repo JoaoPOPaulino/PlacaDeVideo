@@ -258,14 +258,38 @@
       <div class="content-box" *ngIf="activeTab === ProfileTab.ORDERS">
         <h2 class="content-title">Meus Pedidos</h2>
         <p class="content-subtitle">Visualize seu histórico de pedidos</p>
-        <div class="empty-orders-message">
-          <mat-icon>receipt</mat-icon>
-          <p>Você ainda não fez nenhum pedido</p>
-          <button mat-raised-button class="profile-button" routerLink="/produtos">
-            <mat-icon>shopping_cart</mat-icon>
-            Ver Produtos
-          </button>
-        </div>
+        <ng-container *ngIf="pedidos$ | async as pedidos; else loading">
+          <div *ngIf="pedidos.length === 0" class="empty-orders-message">
+            <mat-icon>receipt</mat-icon>
+            <p>Você ainda não fez nenhum pedido</p>
+            <button mat-raised-button class="profile-button" routerLink="/produtos">
+              <mat-icon>shopping_cart</mat-icon>
+              Ver Produtos
+            </button>
+          </div>
+          <div class="orders-list" *ngIf="pedidos.length > 0">
+            <div class="order-item" *ngFor="let pedido of pedidos" (click)="openOrderDetails(pedido)">
+              <div class="order-header">
+                <mat-icon matListIcon>receipt</mat-icon>
+                <div class="order-info">
+                  <span class="order-title">Pedido #{{ pedido.id }} - {{ formatDate(pedido.data) }}</span>
+                  <span class="secondary-text">
+                    {{ pedido.itens.length }} item(s) - Total: R$ {{ pedido.total.toFixed(2) }}
+                    <span class="order-status" [ngClass]="getStatusClass(pedido.status)">
+                      {{ pedido.status || 'Pendente' }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-template #loading>
+          <div class="empty-orders-message">
+            <mat-icon>hourglass_empty</mat-icon>
+            <p>Carregando pedidos...</p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

@@ -15,7 +15,7 @@ export class PedidoService {
 
   criarPedido(items: ItemCarrinho[], usuarioId: number): Observable<Pedido> {
     const pedidoDto = {
-      itens: items.map(item => ({
+      itens: items.map((item) => ({
         idPlacaDeVideo: item.id,
         quantidade: item.quantidade,
       })),
@@ -54,5 +54,11 @@ export class PedidoService {
       default:
         return `Erro ${error.status}: ${error.message}`;
     }
+  }
+
+  getPedidosByUsuario(usuarioId: number): Observable<Pedido[]> {
+    return this.http
+      .get<Pedido[]>(`${this.url}/usuario/${usuarioId}`)
+      .pipe(catchError(this.handleError));
   }
 }

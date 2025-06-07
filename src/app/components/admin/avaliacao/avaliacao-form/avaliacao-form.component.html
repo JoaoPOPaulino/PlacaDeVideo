@@ -1,4 +1,4 @@
-<mat-toolbar color="primary" class="form-toolbar">
+<mat-toolbar class="form-toolbar">
   <span class="toolbar-title">
     {{ formGroup.get('id')?.value ? 'Editar Avaliação' : 'Nova Avaliação' }}
   </span>
@@ -12,31 +12,55 @@
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Usuário</mat-label>
           <mat-select formControlName="usuario" required>
-            <mat-option *ngFor="let usuario of usuarios" [value]="usuario.id">
-              {{usuario.nome}} ({{usuario.email}})
-            </mat-option>
+            @for (usuario of usuarios; track usuario.id) {
+              <mat-option [value]="usuario.id">
+                <div class="user-option">
+                  <span>{{ usuario.nome }}</span>
+                  <small>{{ usuario.email }}</small>
+                </div>
+              </mat-option>
+            }
           </mat-select>
           <mat-icon matSuffix>person</mat-icon>
+          <mat-error *ngIf="formGroup.get('usuario')?.hasError('required')">
+            Selecione um usuário
+          </mat-error>
         </mat-form-field>
 
         <!-- Placa de Vídeo -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Placa de Vídeo</mat-label>
           <mat-select formControlName="placaDeVideo" required>
-            <mat-option *ngFor="let placa of placas" [value]="placa.id">
-              {{placa.nome}} ({{placa.fabricante.nome}})
-            </mat-option>
+            @for (placa of placas; track placa.id) {
+              <mat-option [value]="placa.id">
+                <div class="placa-option">
+                  <span>{{ placa.nome }}</span>
+                  <small>{{ placa.fabricante.nome }}</small>
+                </div>
+              </mat-option>
+            }
           </mat-select>
           <mat-icon matSuffix>memory</mat-icon>
+          <mat-error *ngIf="formGroup.get('placaDeVideo')?.hasError('required')">
+            Selecione uma placa de vídeo
+          </mat-error>
         </mat-form-field>
 
+        <!-- Nota -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Nota</mat-label>
           <mat-select formControlName="nota">
             <mat-option [value]="null">Sem nota</mat-option>
-            <mat-option *ngFor="let nota of [1, 2, 3, 4, 5]" [value]="nota">
-              {{ nota }} - {{ nota === 1 ? 'Péssimo' : nota === 2 ? 'Ruim' : nota === 3 ? 'Bom' : nota === 4 ? 'Ótimo' : 'Excelente' }}
-            </mat-option>
+            @for (nota of [1, 2, 3, 4, 5]; track nota) {
+              <mat-option [value]="nota">
+                <div class="nota-option">
+                  <span>{{ nota }}</span>
+                  <span class="nota-descricao">
+                    {{ nota === 1 ? 'Péssimo' : nota === 2 ? 'Ruim' : nota === 3 ? 'Bom' : nota === 4 ? 'Ótimo' : 'Excelente' }}
+                  </span>
+                </div>
+              </mat-option>
+            }
           </mat-select>
           <mat-icon matSuffix>star</mat-icon>
         </mat-form-field>
@@ -45,7 +69,7 @@
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Comentário</mat-label>
           <textarea matInput formControlName="comentario" required
-                   placeholder="Digite seu comentário sobre a placa de vídeo"></textarea>
+                  placeholder="Digite seu comentário sobre a placa de vídeo"></textarea>
           <mat-icon matSuffix>comment</mat-icon>
           <mat-hint>{{ formGroup.get('comentario')?.value?.length || 0 }}/500</mat-hint>
           <mat-error *ngIf="formGroup.get('comentario')?.hasError('required')">
@@ -59,18 +83,24 @@
     </mat-card-content>
 
     <mat-card-actions class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid || uploading">
+      <button mat-raised-button class="action-button save-button" 
+              (click)="salvar()" [disabled]="formGroup.invalid || uploading">
         <mat-icon>save</mat-icon>
-        <span *ngIf="!uploading">Salvar</span>
-        <span *ngIf="uploading">Salvando...</span>
+        <span>{{ uploading ? 'Salvando...' : 'Salvar' }}</span>
       </button>
-      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value" [disabled]="uploading">
-        <mat-icon>delete</mat-icon>
-        Excluir
-      </button>
-      <button mat-stroked-button routerLink="/admin/avaliacoes" [disabled]="uploading">
+      
+      @if (formGroup.get('id')?.value) {
+        <button mat-raised-button class="action-button delete-button" 
+                (click)="excluir()" [disabled]="uploading">
+          <mat-icon>delete</mat-icon>
+          <span>Excluir</span>
+        </button>
+      }
+      
+      <button mat-stroked-button class="action-button cancel-button" 
+              routerLink="/admin/avaliacoes" [disabled]="uploading">
         <mat-icon>cancel</mat-icon>
-        Cancelar
+        <span>Cancelar</span>
       </button>
     </mat-card-actions>
     

@@ -1,7 +1,8 @@
-<mat-toolbar color="primary" class="placa-toolbar">
-  <div class="flex-container">
+<mat-toolbar color="primary" class="usuario-toolbar">
+  <div class="toolbar-content">
     <span class="toolbar-title">Controle de Usuários</span>
-    <button mat-fab color="accent" [routerLink]="['new']" matTooltip="Adicionar novo usuário">
+    <button mat-fab color="accent" class="add-button" 
+            [routerLink]="['new']" matTooltip="Adicionar novo usuário">
       <mat-icon>add</mat-icon>
     </button>
   </div>
@@ -24,52 +25,54 @@
   <table mat-table [dataSource]="usuarios" class="mat-elevation-z8">
     <!-- Coluna ID -->
     <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let element">{{element.id}}</td>
+      <th mat-header-cell *matHeaderCellDef class="column-id">ID</th>
+      <td mat-cell *matCellDef="let element" class="column-id">{{element.id}}</td>
     </ng-container>
 
     <!-- Coluna Nome -->
     <ng-container matColumnDef="nome">
-      <th mat-header-cell *matHeaderCellDef>Nome</th>
-      <td mat-cell *matCellDef="let element">{{element.nome}}</td>
+      <th mat-header-cell *matHeaderCellDef class="column-nome">Nome</th>
+      <td mat-cell *matCellDef="let element" class="column-nome">{{element.nome}}</td>
     </ng-container>
 
     <!-- Coluna CPF -->
     <ng-container matColumnDef="cpf">
-      <th mat-header-cell *matHeaderCellDef>CPF</th>
-      <td mat-cell *matCellDef="let element">{{ element.cpf }}</td>
+      <th mat-header-cell *matHeaderCellDef class="column-cpf">CPF</th>
+      <td mat-cell *matCellDef="let element" class="column-cpf">{{element.cpf}}</td>
     </ng-container>
 
     <!-- Coluna Login -->
     <ng-container matColumnDef="login">
-      <th mat-header-cell *matHeaderCellDef>Login</th>
-      <td mat-cell *matCellDef="let element">{{element.login}}</td>
+      <th mat-header-cell *matHeaderCellDef class="column-login">Login</th>
+      <td mat-cell *matCellDef="let element" class="column-login">{{element.login}}</td>
     </ng-container>
 
     <!-- Coluna Perfil -->
     <ng-container matColumnDef="perfil">
-      <th mat-header-cell *matHeaderCellDef>Perfil</th>
-      <td mat-cell *matCellDef="let element">
-        <span class="badge {{element.perfil?.id === 1 ? 'usuario' : 'admin'}}">
-          {{ element.perfil | perfilLabel }}
+      <th mat-header-cell *matHeaderCellDef class="column-perfil">Perfil</th>
+      <td mat-cell *matCellDef="let element" class="column-perfil">
+        <span class="perfil-badge" [class.admin]="element.perfil?.id !== 1" [class.usuario]="element.perfil?.id === 1">
+          {{ element.perfil?.label || 'N/A' }}
         </span>
       </td>
     </ng-container>
 
     <!-- Coluna Ações -->
     <ng-container matColumnDef="acao">
-      <th mat-header-cell *matHeaderCellDef>Ações</th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="primary" 
-                [routerLink]="['edit', element.id]"
-                matTooltip="Editar">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" 
-                (click)="excluir(element.id)"
-                matTooltip="Excluir">
-          <mat-icon>delete</mat-icon>
-        </button>
+      <th mat-header-cell *matHeaderCellDef class="column-actions">Ações</th>
+      <td mat-cell *matCellDef="let element" class="column-actions">
+        <div class="action-buttons">
+          <button mat-icon-button color="primary" class="edit-button"
+                  [routerLink]="['edit', element.id]"
+                  matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" class="delete-button"
+                  (click)="excluir(element.id)"
+                  matTooltip="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </td>
     </ng-container>
 
@@ -77,10 +80,11 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 
-  <mat-paginator [length]="totalRecords"
-               [pageSize]="pageSize"
-               [pageSizeOptions]="[8, 16, 24, 32]"
-               (page)="paginar($event)"
-               showFirstLastButtons>
-</mat-paginator>
+  <mat-paginator [pageSizeOptions]="[8, 16, 24, 32]" 
+                showFirstLastButtons
+                [length]="totalRecords"
+                [pageSize]="pageSize"
+                (page)="paginar($event)"
+                class="custom-paginator">
+  </mat-paginator>
 </div>

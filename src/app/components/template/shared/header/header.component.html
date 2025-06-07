@@ -1,13 +1,35 @@
-<mat-toolbar color="primary">
-    <button (click)="clickMenu()" mat-icon-button>
-        <mat-icon>menu</mat-icon>
-    </button>
-
-    <span>NexusGPU</span>
-
-    <span class="placas-spacer"></span>
-
-    <button mat-icon-button (click)="logout()">
-    <mat-icon>exit_to_app</mat-icon>
+<mat-toolbar>
+  <button (click)="clickMenu()" mat-icon-button aria-label="Menu" matTooltip="Alternar menu">
+    <mat-icon>menu</mat-icon>
   </button>
+
+  <div class="logo-container">
+    <span>NexusGPU Admin</span>
+    <span class="beta-badge">v2.4</span>
+  </div>
+
+  <span class="placas-spacer"></span>
+
+  @if (authService.getUsuario()) {
+    <div class="user-info">
+      <div class="user-avatar">
+        {{ authService.getUsuario()?.nome?.charAt(0) || 'U' }}
+      </div>
+      <div class="user-details">
+        <div class="user-name">{{ authService.getUsuario()?.nome || 'Usuário' }}</div>
+        <div class="user-role">Administrador</div>
+      </div>
+    </div>
+  }
+
+  <div class="header-actions">
+    <button mat-icon-button aria-label="Notificações" matTooltip="Notificações" class="notification-button">
+      <mat-icon>notifications</mat-icon>
+      <span class="notification-badge">3</span>
+    </button>
+    
+    <button mat-icon-button (click)="logout()" aria-label="Sair" matTooltip="Sair do sistema">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>

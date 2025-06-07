@@ -82,75 +82,89 @@ export class AvaliacaoFormComponent implements OnInit {
   }
 
   private loadDependencies(): void {
+    this.uploading = true; // Mostra loading
+
     forkJoin({
-      usuarios: this.usuarioService.findAll(),
-      placas: this.placaService.findAll(),
+      usuarios: this.usuarioService.findAll(0, 1000),
+      placas: this.placaService.findAll(0, 1000),
     }).subscribe({
       next: ({ usuarios, placas }) => {
-        this.usuarios = usuarios;
-        this.placas = placas;
+        this.usuarios = usuarios || usuarios;
+        this.placas = placas || placas;
+        this.uploading = false;
       },
       error: (error) => {
         console.error('Erro ao carregar dependências:', error);
-        this.snackBar.open('Erro ao carregar dependências.', 'Fechar', {
-          duration: 3000,
-        });
+        this.snackBar.open(
+          'Erro ao carregar usuários e placas de vídeo.',
+          'Fechar',
+          {
+            duration: 5000,
+          }
+        );
+        this.uploading = false;
       },
     });
   }
 
   salvar(): void {
-  if (this.formGroup.invalid) {
-    this.snackBar.open(
-      'Formulário inválido. Verifique os campos obrigatórios.',
-      'Fechar',
-      { duration: 3000 }
-    );
-    return;
-  }
-
-  const formValue = this.formGroup.value;
-  console.log('IDs:', formValue.usuario, formValue.placaDeVideo);
-
-  // Encontra o usuário e placa selecionados nas listas carregadas
-  const usuarioSelecionado = this.usuarios.find(u => u.id === formValue.usuario);
-  const placaSelecionada = this.placas.find(p => p.id === formValue.placaDeVideo);
-
-  if (!usuarioSelecionado || !placaSelecionada) {
-    this.snackBar.open('Usuário ou Placa de Vídeo inválidos', 'Fechar', { duration: 3000 });
-    return;
-  }
-
-  const avaliacao: Avaliacao = {
-    id: formValue.id || 0,
-    comentario: formValue.comentario,
-    nota: formValue.nota ? +formValue.nota : undefined,
-    usuario: usuarioSelecionado,
-    placaDeVideo: placaSelecionada,
-    dataCriacao: new Date().toISOString(),
-  };
-
-  const request = avaliacao.id
-    ? this.avaliacaoService.update(avaliacao)
-    : this.avaliacaoService.insert(avaliacao);
-
-  request.subscribe({
-    next: () => {
-      this.snackBar.open('Avaliação salva com sucesso!', 'Fechar', {
-        duration: 3000,
-      });
-      this.router.navigateByUrl('/admin/avaliacoes');
-    },
-    error: (error) => {
-      console.error('Erro ao salvar avaliação:', error);
+    if (this.formGroup.invalid) {
       this.snackBar.open(
-        'Erro ao salvar avaliação. Tente novamente.',
+        'Formulário inválido. Verifique os campos obrigatórios.',
         'Fechar',
         { duration: 3000 }
       );
-    },
-  });
-}
+      return;
+    }
+
+    const formValue = this.formGroup.value;
+    console.log('IDs:', formValue.usuario, formValue.placaDeVideo);
+
+    // Encontra o usuário e placa selecionados nas listas carregadas
+    const usuarioSelecionado = this.usuarios.find(
+      (u) => u.id === formValue.usuario
+    );
+    const placaSelecionada = this.placas.find(
+      (p) => p.id === formValue.placaDeVideo
+    );
+
+    if (!usuarioSelecionado || !placaSelecionada) {
+      this.snackBar.open('Usuário ou Placa de Vídeo inválidos', 'Fechar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    const avaliacao: Avaliacao = {
+      id: formValue.id || 0,
+      comentario: formValue.comentario,
+      nota: formValue.nota ? +formValue.nota : undefined,
+      usuario: usuarioSelecionado,
+      placaDeVideo: placaSelecionada,
+      dataCriacao: new Date().toISOString(),
+    };
+
+    const request = avaliacao.id
+      ? this.avaliacaoService.update(avaliacao)
+      : this.avaliacaoService.insert(avaliacao);
+
+    request.subscribe({
+      next: () => {
+        this.snackBar.open('Avaliação salva com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
+        this.router.navigateByUrl('/admin/avaliacoes');
+      },
+      error: (error) => {
+        console.error('Erro ao salvar avaliação:', error);
+        this.snackBar.open(
+          'Erro ao salvar avaliação. Tente novamente.',
+          'Fechar',
+          { duration: 3000 }
+        );
+      },
+    });
+  }
   excluir(): void {
     const id = this.formGroup.get('id')?.value;
     if (id && confirm('Tem certeza que deseja excluir esta avaliação?')) {

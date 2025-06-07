@@ -119,7 +119,7 @@ export class UsuarioService {
     );
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError = (error: HttpErrorResponse) => {
     let errorMessage = 'Erro desconhecido';
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Erro: ${error.error.message}`;
@@ -132,7 +132,7 @@ export class UsuarioService {
       }
     }
     return throwError(() => new Error(errorMessage));
-  }
+  };
 
   private getServerErrorMessage(error: HttpErrorResponse): string {
     switch (error.status) {
@@ -175,11 +175,29 @@ export class UsuarioService {
     }
 
     if (usuario.telefones) {
-      result.telefones = usuario.telefones.map((t: any) => ({
-        id: t.id,
-        codigoArea: t.codigoArea,
-        numero: t.numero,
+      result.telefones = usuario.telefones.map((t: any) => {
+        const telefone = new Telefone();
+        telefone.id = t.id; // Ensure id is explicitly set
+        telefone.codigoArea = t.codigoArea;
+        telefone.numero = t.numero;
+        return telefone;
+      });
+    } else {
+      result.telefones = [];
+    }
+
+    if (usuario.enderecos) {
+      result.enderecos = usuario.enderecos.map((e: any) => ({
+        id: e.id,
+        cep: e.cep,
+        estado: e.estado,
+        cidade: e.cidade,
+        quadra: e.quadra,
+        rua: e.rua,
+        numero: e.numero,
       }));
+    } else {
+      result.enderecos = [];
     }
 
     return result;

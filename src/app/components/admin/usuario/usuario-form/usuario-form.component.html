@@ -1,11 +1,13 @@
-<mat-toolbar color="primary" class="form-toolbar">
-  <span class="toolbar-title">
-    {{ formGroup.get('id')?.value ? 'Editar Usuário' : 'Novo Usuário' }}
-  </span>
+<mat-toolbar color="primary" class="usuario-form-toolbar">
+  <div class="toolbar-content">
+    <span class="toolbar-title">
+      {{ formGroup.get('id')?.value ? 'Editar Usuário' : 'Novo Usuário' }}
+    </span>
+  </div>
 </mat-toolbar>
 
 <div class="form-container">
-  <mat-card class="form-card">
+  <mat-card class="form-card mat-elevation-z8">
     <mat-card-content>
       <form [formGroup]="formGroup">
         <!-- Nome -->
@@ -17,10 +19,7 @@
             Nome é obrigatório
           </mat-error>
           <mat-error *ngIf="formGroup.get('nome')?.hasError('minlength')">
-            Nome deve ter no mínimo 3 caracteres
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('nome')?.hasError('maxlength')">
-            Nome não pode exceder 255 caracteres
+            Mínimo 3 caracteres
           </mat-error>
         </mat-form-field>
 
@@ -32,33 +31,21 @@
           <mat-error *ngIf="formGroup.get('login')?.hasError('required')">
             Login é obrigatório
           </mat-error>
-          <mat-error *ngIf="formGroup.get('login')?.hasError('minlength')">
-            Login deve ter no mínimo 3 caracteres
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('login')?.hasError('maxlength')">
-            Login não pode exceder 50 caracteres
-          </mat-error>
           <mat-error *ngIf="formGroup.get('login')?.hasError('loginExists')">
-            Este login já está em uso
+            Login já em uso
           </mat-error>
         </mat-form-field>
 
         <!-- CPF -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>CPF</mat-label>
-          <input matInput type="text" formControlName="cpf" required maxlength="11">
+          <input matInput type="text" formControlName="cpf" required maxlength="14">
           <mat-icon matSuffix>credit_card</mat-icon>
           <mat-error *ngIf="formGroup.get('cpf')?.hasError('required')">
             CPF é obrigatório
           </mat-error>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('pattern')">
-            CPF deve conter exatamente 11 dígitos numéricos
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('cpf')?.hasError('maxlength')">
-            CPF não pode exceder 11 dígitos
-          </mat-error>
           <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfExists')">
-            Este CPF já está registrado
+            CPF já registrado
           </mat-error>
           <mat-error *ngIf="formGroup.get('cpf')?.hasError('cpfInvalid')">
             CPF inválido
@@ -76,33 +63,24 @@
           <mat-error *ngIf="formGroup.get('email')?.hasError('email')">
             Email inválido
           </mat-error>
-          <mat-error *ngIf="formGroup.get('email')?.hasError('maxlength')">
-            Email não pode exceder 255 caracteres
-          </mat-error>
           <mat-error *ngIf="formGroup.get('email')?.hasError('emailExists')">
-            Este email já está registrado
+            Email já registrado
           </mat-error>
         </mat-form-field>
 
         <!-- Senha -->
         <mat-form-field appearance="outline" class="full-width-input">
           <mat-label>Senha</mat-label>
-          <input
-            matInput
-            type="password"
-            formControlName="senha"
-            [placeholder]="formGroup.get('id')?.value ? 'Deixe em branco para não alterar' : 'Senha obrigatória'"
-            maxlength="255"
-          >
+          <input matInput type="password" formControlName="senha" 
+                 [required]="!formGroup.get('id')?.value" 
+                 maxlength="255">
           <mat-icon matSuffix>lock</mat-icon>
+          <mat-hint *ngIf="formGroup.get('id')?.value">Deixe em branco para manter atual</mat-hint>
           <mat-error *ngIf="formGroup.get('senha')?.hasError('required')">
             Senha é obrigatória
           </mat-error>
           <mat-error *ngIf="formGroup.get('senha')?.hasError('minlength')">
-            Senha deve ter no mínimo 6 caracteres
-          </mat-error>
-          <mat-error *ngIf="formGroup.get('senha')?.hasError('maxlength')">
-            Senha não pode exceder 255 caracteres
+            Mínimo 6 caracteres
           </mat-error>
         </mat-form-field>
 
@@ -123,50 +101,52 @@
         <div class="section-container">
           <div class="section-header">
             <h3>Telefones</h3>
-            <button mat-mini-fab color="primary" (click)="abrirDialogNovoTelefone()" type="button">
+            <button mat-mini-fab color="primary" (click)="abrirDialogNovoTelefone()" type="button" class="action-button">
               <mat-icon>add</mat-icon>
             </button>
           </div>
           <mat-list *ngIf="telefones.length > 0" class="items-list">
             <mat-list-item *ngFor="let telefone of telefones; let i = index" class="item-row">
               <span>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
-              <button mat-icon-button (click)="removerTelefone(i)" color="warn">
+              <button mat-icon-button (click)="removerTelefone(i)" color="warn" class="action-button">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-list-item>
           </mat-list>
+          <mat-hint *ngIf="telefones.length === 0">Nenhum telefone adicionado</mat-hint>
         </div>
 
         <!-- Endereços -->
         <div class="section-container">
           <div class="section-header">
             <h3>Endereços</h3>
-            <button mat-mini-fab color="primary" (click)="abrirDialogNovoEndereco()" type="button">
+            <button mat-mini-fab color="primary" (click)="abrirDialogNovoEndereco()" type="button" class="action-button">
               <mat-icon>add</mat-icon>
             </button>
           </div>
           <mat-list *ngIf="enderecos.length > 0" class="items-list">
             <mat-list-item *ngFor="let endereco of enderecos; let i = index" class="item-row">
               <span>{{ endereco.rua }}, {{ endereco.numero }} - {{ endereco.cidade }}/{{ endereco.estado }}</span>
-              <button mat-icon-button (click)="removerEndereco(i)" color="warn">
+              <button mat-icon-button (click)="removerEndereco(i)" color="warn" class="action-button">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-list-item>
           </mat-list>
+          <mat-hint *ngIf="enderecos.length === 0">Nenhum endereço adicionado</mat-hint>
         </div>
       </form>
     </mat-card-content>
 
     <mat-card-actions class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid || isLoading">
+      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid || isLoading" class="action-button">
         <mat-icon>save</mat-icon>
         Salvar
       </button>
-      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value">
+      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value" class="action-button">
         <mat-icon>delete</mat-icon>
         Excluir
       </button>
-      <button mat-stroked-button routerLink="/admin/usuarios">
+      <button mat-stroked-button routerLink="/admin/usuarios" class="action-button">
         <mat-icon>cancel</mat-icon>
         Cancelar
       </button>

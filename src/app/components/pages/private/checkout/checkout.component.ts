@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  AbstractControl,
+  ValidatorFn,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -61,7 +68,7 @@ export class CheckoutComponent implements OnInit {
       cpfCnpj: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
       nome: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telefone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\)\s\d{5}-\d{4}$/)]],
+      telefone: ['', [Validators.required, this.telefoneValidator()]],
     });
   }
 
@@ -77,46 +84,105 @@ export class CheckoutComponent implements OnInit {
         cpfCnpj: usuario.cpf,
         nome: usuario.nome,
         email: usuario.email,
-        telefone: usuario.telefones, // Corrigido de 'telefones' para 'telefone'
+        telefone:
+          usuario.telefones && usuario.telefones.length > 0
+            ? this.formatarTelefoneValue(usuario.telefones[0].numero)
+            : '',
       });
     }
+  }
+
+  private telefoneValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const value = control.value;
+      if (!value) {
+        return null;
+      }
+
+      const onlyNumbers = value.replace(/\D/g, '');
+      const isValid = /^\d{11}$/.test(onlyNumbers);
+
+      return isValid ? null : { invalidTelefone: true };
+    };
+  }
+
+  private formatarTelefoneValue(value: string): string {
+    const onlyNumbers = value.replace(/\D/g, '');
+    if (onlyNumbers.length === 11) {
+      return `(${onlyNumbers.substring(0, 2)}) ${onlyNumbers.substring(
+        2,
+        7
+      )}-${onlyNumbers.substring(7, 11)}`;
+    }
+    return value;
+  }
+
+  formatarTelefone(event: any): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+
+    if (value.length > 0) {
+      value = `(${value.substring(0, 2)}) ${value.substring(
+        2,
+        7
+      )}-${value.substring(7, 11)}`;
+    }
+
+    input.value = value;
+    this.checkoutForm.get('telefone')?.setValue(value, { emitEvent: false });
   }
 
   nextStep() {
     if (this.step === 1 && this.checkoutForm.valid) {
       const usuario = this.authService.getUsuario();
       if (usuario?.cpf !== this.checkoutForm.get('cpfCnpj')?.value) {
-        this.snackBar.open('CPF informado não corresponde ao usuário autenticado.', 'Fechar', {
-          duration: 5000,
-        });
+        this.snackBar.open(
+          'CPF informado não corresponde ao usuário autenticado.',
+          'Fechar',
+          {
+            duration: 5000,
+          }
+        );
         return;
       }
       this.step = 2;
     } else {
       this.checkoutForm.markAllAsTouched();
-      this.snackBar.open('Por favor, preencha todos os campos corretamente.', 'Fechar', {
-        duration: 3000,
-      });
+      this.snackBar.open(
+        'Por favor, preencha todos os campos corretamente.',
+        'Fechar',
+        {
+          duration: 3000,
+        }
+      );
     }
   }
 
-  finalizarPedido() {
+  criarPedido() {
     if (this.checkoutForm.invalid || !this.items.length) {
       this.checkoutForm.markAllAsTouched();
-      this.snackBar.open('Formulário inválido ou carrinho vazio.', 'Fechar', { duration: 5000 });
+      this.snackBar.open('Formulário inválido ou carrinho vazio.', 'Fechar', {
+        duration: 5000,
+      });
       return;
     }
 
     const usuarioId = this.authService.getUsuarioId();
     if (!usuarioId) {
-      this.snackBar.open('Usuário não autenticado.', 'Fechar', { duration: 5000 });
+      this.snackBar.open('Usuário não autenticado.', 'Fechar', {
+        duration: 5000,
+      });
       return;
     }
 
     const customer = {
       name: this.checkoutForm.get('nome')?.value,
       email: this.checkoutForm.get('email')?.value,
-      cellphone: this.checkoutForm.get('telefone')?.value,
+      cellphone: this.checkoutForm.get('telefone')?.value.replace(/\D/g, ''),
       taxId: this.checkoutForm.get('cpfCnpj')?.value,
     };
 
@@ -128,11 +194,45 @@ export class CheckoutComponent implements OnInit {
           throw new Error('Falha ao criar pedido.');
         }
         this.pedidoId = pedido.id;
-
-        return this.pagamentoService
-          .processarPagamento(this.pedidoId, this.subtotal, 'PIX', customer)
-          .toPromise();
+        this.step = 3; // Avança para a etapa de pagamento
+        this.snackBar.open(
+          'Pedido criado com sucesso! Prossiga com o pagamento.',
+          'Fechar',
+          {
+            duration: 3000,
+          }
+        );
       })
+      .catch((error: any) => {
+        console.error('Erro:', error);
+        this.snackBar.open(
+          error.message || 'Falha ao criar pedido. Tente novamente.',
+          'Fechar',
+          {
+            duration: 5000,
+          }
+        );
+      });
+  }
+
+  processarPagamento() {
+    if (!this.pedidoId) {
+      this.snackBar.open('Nenhum pedido criado. Tente novamente.', 'Fechar', {
+        duration: 5000,
+      });
+      return;
+    }
+
+    const customer = {
+      name: this.checkoutForm.get('nome')?.value,
+      email: this.checkoutForm.get('email')?.value,
+      cellphone: this.checkoutForm.get('telefone')?.value.replace(/\D/g, ''),
+      taxId: this.checkoutForm.get('cpfCnpj')?.value,
+    };
+
+    this.pagamentoService
+      .processarPagamento(this.pedidoId, this.subtotal, 'PIX', customer)
+      .toPromise()
       .then((pagamento: Pagamento | undefined) => {
         if (!pagamento || !pagamento.chavePix || !pagamento.qrCodeBase64) {
           throw new Error('Chave Pix ou QR Code não retornados.');
@@ -140,14 +240,19 @@ export class CheckoutComponent implements OnInit {
         this.chavePix = pagamento.chavePix;
         this.pixCode = pagamento.qrCodeBase64;
         this.cartService.clearCart();
-        this.step = 3;
-        this.snackBar.open('Pagamento gerado com sucesso!', 'Fechar', { duration: 3000 });
+        this.snackBar.open('Pagamento gerado com sucesso!', 'Fechar', {
+          duration: 3000,
+        });
       })
       .catch((error: any) => {
         console.error('Erro:', error);
-        this.snackBar.open(error.message || 'Falha ao finalizar pedido. Tente novamente.', 'Fechar', {
-          duration: 5000,
-        });
+        this.snackBar.open(
+          error.message || 'Falha ao processar pagamento. Tente novamente.',
+          'Fechar',
+          {
+            duration: 5000,
+          }
+        );
       });
   }
 
@@ -165,11 +270,33 @@ export class CheckoutComponent implements OnInit {
 
   getImageUrl(imageName: string | undefined): string {
     return imageName
-      ? `${this.placaService.url}/download/imagem/${encodeURIComponent(imageName)}`
+      ? `${this.placaService.url}/download/imagem/${encodeURIComponent(
+          imageName
+        )}`
       : 'assets/images/default-card.png';
   }
 
   onImageError(event: Event): void {
     (event.target as HTMLImageElement).src = 'assets/images/default-card.png';
+  }
+
+  copyToClipboard(text: string | null): void {
+    if (!text) return;
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.snackBar.open('Chave PIX copiada!', 'Fechar', {
+          duration: 3000,
+          panelClass: 'success-snackbar',
+        });
+      })
+      .catch((err) => {
+        console.error('Falha ao copiar texto: ', err);
+        this.snackBar.open('Falha ao copiar chave PIX', 'Fechar', {
+          duration: 3000,
+          panelClass: 'error-snackbar',
+        });
+      });
   }
 }

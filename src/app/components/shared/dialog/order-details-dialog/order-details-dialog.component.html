@@ -1,0 +1,34 @@
+<div class="dialog-container">
+  <h2 class="dialog-title">Detalhes do Pedido #{{ pedido.id }}</h2>
+  <div class="order-info">
+    <p><strong>Data:</strong> {{ formatDate(pedido.data) }}</p>
+    <p><strong>Total:</strong> R$ {{ pedido.total.toFixed(2) }}</p>
+    <p>
+      <strong>Status:</strong>
+      <span class="order-status" [ngClass]="getStatusClass(pedido.status)">
+        {{ pedido.status || 'Pendente' }}
+      </span>
+    </p>
+    <p><strong>Itens:</strong> {{ pedido.itens.length }}</p>
+  </div>
+  <h3 class="items-title">Itens do Pedido</h3>
+  <mat-list class="items-list">
+    <mat-list-item *ngFor="let item of pedido.itens">
+      <div class="item-info">
+        <span class="item-name">
+          {{ item.nomePlaca || 'Placa de Vídeo ID: ' + item.idPlacaDeVideo }}
+        </span>
+        <span class="item-details">
+          Quantidade: {{ item.quantidade }}
+          <span *ngIf="item.unitPrice"> - R$ {{ item.unitPrice }}</span>
+        </span>
+      </div>
+    </mat-list-item>
+  </mat-list>
+  <div class="dialog-actions">
+    <button mat-raised-button color="primary" [mat-dialog-close]="true">
+      <mat-icon>close</mat-icon>
+      Fechar
+    </button>
+  </div>
+</div>

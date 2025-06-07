@@ -1,13 +1,14 @@
 export interface Pedido {
   id: number;
-  usuario: { id: number; nome: string; email: string; cpf: string };
-  itens: Array<{
-    id: number;
-    placaDeVideo: { id: number; nome: string; preco: number };
+  usuarioId?: number;
+  data: string;
+  total: number;
+  status?: string;
+  itens: {
+    id: string;
+    idPlacaDeVideo: number;
     quantidade: number;
-    precoUnitario: number;
-  }>;
-  status: 'AGUARDANDO_PAGAMENTO' | 'PAGO' | 'ENVIADO' | 'ENTREGUE' | 'CANCELADO';
-  valorTotal: number;
-  dataPedido: string;
+    nomePlaca?: string;
+    unitPrice?: number;
+  }[];
 }

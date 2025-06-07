@@ -1,17 +1,19 @@
-<mat-toolbar color="primary" class="form-toolbar">
-  <span class="toolbar-title">
-    {{ formGroup.get('id')?.value ? 'Editar Especificação Técnica' : 'Nova Especificação Técnica' }}
-  </span>
+<mat-toolbar color="primary" class="especificacao-form-toolbar">
+  <div class="toolbar-content">
+    <span class="toolbar-title">
+      {{ formGroup.get('id')?.value ? 'Editar Especificação Técnica' : 'Nova Especificação Técnica' }}
+    </span>
+  </div>
 </mat-toolbar>
 
 <div class="form-container">
-  <mat-card class="form-card">
+  <mat-card class="form-card mat-elevation-z8">
     <mat-card-content>
       <form [formGroup]="formGroup">
         <!-- Memória -->
         <mat-form-field appearance="outline" class="full-width-input">
-          <mat-label>Memória</mat-label>
-          <input matInput type="text" formControlName="memoria" required>
+          <mat-label>Memória (GB)</mat-label>
+          <input matInput type="number" formControlName="memoria" required>
           <mat-icon matSuffix>memory</mat-icon>
           <mat-error *ngIf="formGroup.get('memoria')?.hasError('required')">
             Memória é obrigatória
@@ -20,8 +22,8 @@
 
         <!-- Clock -->
         <mat-form-field appearance="outline" class="full-width-input">
-          <mat-label>Clock</mat-label>
-          <input matInput type="text" formControlName="clock" required>
+          <mat-label>Clock (MHz)</mat-label>
+          <input matInput type="number" formControlName="clock" required>
           <mat-icon matSuffix>speed</mat-icon>
           <mat-error *ngIf="formGroup.get('clock')?.hasError('required')">
             Clock é obrigatório
@@ -30,8 +32,8 @@
 
         <!-- Barramento -->
         <mat-form-field appearance="outline" class="full-width-input">
-          <mat-label>Barramento</mat-label>
-          <input matInput type="text" formControlName="barramento" required>
+          <mat-label>Barramento (bit)</mat-label>
+          <input matInput type="number" formControlName="barramento" required>
           <mat-icon matSuffix>device_hub</mat-icon>
           <mat-error *ngIf="formGroup.get('barramento')?.hasError('required')">
             Barramento é obrigatório
@@ -40,8 +42,8 @@
 
         <!-- Consumo de Energia -->
         <mat-form-field appearance="outline" class="full-width-input">
-          <mat-label>Consumo de Energia</mat-label>
-          <input matInput type="text" formControlName="consumoEnergia" required>
+          <mat-label>Consumo de Energia (W)</mat-label>
+          <input matInput type="number" formControlName="consumoEnergia" required>
           <mat-icon matSuffix>bolt</mat-icon>
           <mat-error *ngIf="formGroup.get('consumoEnergia')?.hasError('required')">
             Consumo de energia é obrigatório
@@ -51,15 +53,15 @@
     </mat-card-content>
 
     <mat-card-actions class="form-actions">
-      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid">
+      <button mat-raised-button color="primary" (click)="salvar()" [disabled]="formGroup.invalid" class="action-button">
         <mat-icon>save</mat-icon>
         Salvar
       </button>
-      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value">
+      <button mat-raised-button color="warn" (click)="excluir()" *ngIf="formGroup.get('id')?.value" class="action-button">
         <mat-icon>delete</mat-icon>
         Excluir
       </button>
-      <button mat-stroked-button routerLink="/admin/especificacoes-tecnicas">
+      <button mat-stroked-button routerLink="/admin/especificacoes-tecnicas" class="action-button">
         <mat-icon>cancel</mat-icon>
         Cancelar
       </button>

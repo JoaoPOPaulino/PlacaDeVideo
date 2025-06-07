@@ -1,51 +1,56 @@
-<mat-toolbar color="primary" class="placa-toolbar">
-    <div class="flex-container">
-      <span class="toolbar-title">Controle de Fabricantes</span>
-      <button mat-fab color="accent" [routerLink]="['new']" matTooltip="Adicionar novo fabricante">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-  </mat-toolbar>
-  
-  <div class="table-container">
-    <table mat-table [dataSource]="fabricantes" class="mat-elevation-z8">
-      <!-- Coluna ID -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let element">{{element.id}}</td>
-      </ng-container>
-  
-      <!-- Coluna Nome -->
-      <ng-container matColumnDef="nome">
-        <th mat-header-cell *matHeaderCellDef>Nome</th>
-        <td mat-cell *matCellDef="let element">{{element.nome}}</td>
-      </ng-container>
-  
-      <!-- Coluna Ações -->
-      <ng-container matColumnDef="acao">
-        <th mat-header-cell *matHeaderCellDef>Ações</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="primary" 
-                [routerLink]="['edit', element.id]"
-                matTooltip="Editar">
-          <mat-icon>edit</mat-icon>
+<mat-toolbar color="primary" class="fabricante-toolbar">
+  <div class="toolbar-content">
+    <span class="toolbar-title">Controle de Fabricantes</span>
+    <button mat-fab color="accent" class="add-button" 
+            [routerLink]="['new']" matTooltip="Adicionar novo fabricante">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<div class="table-container">
+  <table mat-table [dataSource]="fabricantes" class="mat-elevation-z8">
+    
+    <!-- Coluna ID -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef class="column-id">ID</th>
+      <td mat-cell *matCellDef="let element" class="column-id">{{element.id}}</td>
+    </ng-container>
+
+    <!-- Coluna Nome -->
+    <ng-container matColumnDef="nome">
+      <th mat-header-cell *matHeaderCellDef class="column-nome">Nome</th>
+      <td mat-cell *matCellDef="let element" class="column-nome">{{element.nome}}</td>
+    </ng-container>
+
+    <!-- Coluna Ações -->
+    <ng-container matColumnDef="acao">
+      <th mat-header-cell *matHeaderCellDef class="column-actions">Ações</th>
+      <td mat-cell *matCellDef="let element" class="column-actions">
+        <div class="action-buttons">
+          <button mat-icon-button color="primary" class="edit-button"
+                  [routerLink]="['edit', element.id]"
+                  matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" 
+          <button mat-icon-button color="warn" class="delete-button"
                   (click)="excluir(element.id)"
                   matTooltip="Excluir">
             <mat-icon>delete</mat-icon>
           </button>
-        </td>
-      </ng-container>
-  
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
-                   showFirstLastButtons
-                   [length]="totalRecords"
-                   [pageSize]="pageSize"
-                   (page)="paginar($event)">
-    </mat-paginator>
-  </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" 
+                showFirstLastButtons
+                [length]="totalRecords"
+                [pageSize]="pageSize"
+                (page)="paginar($event)"
+                class="custom-paginator">
+  </mat-paginator>
+</div>

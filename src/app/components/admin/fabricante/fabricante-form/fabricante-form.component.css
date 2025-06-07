@@ -1,89 +1,169 @@
-.toolbar-title {
-    flex: 1;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-.form-container {
-    display: flex;
-    justify-content: center;
-    padding: 2rem;
+/* Toolbar Styles */
+.fabricante-toolbar,
+.fabricante-form-toolbar {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+  color: white;
+  border-radius: 8px;
+  padding: 12px 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-mat-card {
-    width: 100%;
-    max-width: 600px; /* Tamanho máximo do card */
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    border-radius: 8px; /* Bordas arredondadas */
-    padding: 16px;
+.toolbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.toolbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.add-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.add-button:hover {
+  transform: scale(1.05);
+}
+
+/* Table Container */
+.table-container {
+  padding: 0 16px;
+  overflow-x: auto;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th.mat-header-cell {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.875rem;
+}
+
+td.mat-cell, th.mat-header-cell {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Column Specific Styles */
+.column-id {
+  width: 80px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.column-nome {
+  min-width: 200px;
+}
+
+.column-actions {
+  width: 140px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Form Container */
+.form-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Form Card */
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 mat-card-content {
-    padding-bottom: 16px; /* Espaço inferior para o conteúdo */
+  padding: 24px;
 }
 
+/* Form Fields */
 mat-form-field {
-    width: 100%;
-    margin-bottom: 16px; /* Espaçamento entre campos de formulário */
+  width: 100%;
+  margin-bottom: 16px;
 }
 
-mat-card-actions {
-    display: flex;
-    justify-content: space-between;
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Paginator Styles */
+.custom-paginator {
+  margin-top: 16px;
+  background: transparent;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .table-container {
+    padding: 0 8px;
+  }
+  
+  .toolbar-title {
+    font-size: 1rem;
+  }
+  
+  td.mat-cell, th.mat-header-cell {
+    padding: 8px 12px;
+  }
+  
+  .form-container {
+    padding: 8px;
+  }
+  
+  mat-card-content {
     padding: 16px;
-    gap: 10px; /* Espaçamento entre os botões */
-}
-
-button[mat-raised-button] {
-    min-width: 120px; /* Largura mínima dos botões */
-    padding: 8px 16px; /* Mais espaço interno nos botões */
-    font-size: 0.875rem;
-    border-radius: 4px; /* Bordas arredondadas para os botões */
-    transition: background-color 0.3s ease; /* Animação suave ao passar o mouse */
-}
-
-button[mat-raised-button]:hover {
-    background-color: #303f9f;  /* Efeito de hover para os botões */
-}
-
-button[mat-raised-button][color="primary"] {
-    background-color: #3f51b5; /* Cor principal */
-    color: white;
-}
-
-button[mat-raised-button][color="warn"] {
-    background-color: #f44336; /* Cor de alerta */
-    color: white;
-}
-
-/* Estilo para mat-error */
-mat-error {
-    color: #f44336; /* Cor de erro */
-    font-size: 0.875rem;
-    margin-top: 4px;
-}
-
-/* Estilos do table */
-table {
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .action-button {
     width: 100%;
-    border-collapse: collapse; /* Evitar espaços entre células */
-    margin-top: 20px; /* Espaçamento superior para tabelas */
-}
-
-.mat-column-id {
-    width: 5em;
-    text-align: center;
-    padding-right: 24px;
-}
-
-.mat-column-nome {
-    flex-grow: 1;
-}
-
-.mat-column-acao {
-    width: 10em;
-    text-align: center;
+    justify-content: center;
+  }
 }

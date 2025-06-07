@@ -10,14 +10,10 @@
   align-items: center;
   min-height: 100vh;
   padding: 2rem;
-  position: relative;
-  overflow: hidden;
 }
 
 .login-container {
-  display: flex;
-  position: relative;
-  max-width: 1000px;
+  max-width: 500px;
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -28,12 +24,8 @@
 }
 
 .login-box {
-  flex: 1;
   padding: 3rem;
   background: rgba(15, 15, 35, 0.7);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .brand-section {
@@ -173,48 +165,9 @@
   text-decoration: underline;
 }
 
-/* Tech Decoration */
-.tech-decoration {
-  flex: 1;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="rgba(0,20,40,0.3)"/><path d="M20,20 L80,20 L80,80 L20,80 Z" stroke="rgba(0,150,255,0.1)" stroke-width="1" fill="none"/></svg>');
-  background-size: cover;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-}
-
-.circuit-line {
-  height: 1px;
-  width: 80%;
-  background: linear-gradient(90deg, transparent, rgba(0, 198, 255, 0.3), transparent);
-  margin: 20px 0;
-}
-
-.hexagon {
-  width: 80px;
-  height: 80px;
-  background: rgba(0, 114, 255, 0.1);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  border: 1px solid rgba(0, 198, 255, 0.2);
-  animation: pulse 4s infinite ease-in-out;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 1; }
-}
-
-/* Responsividade */
 @media (max-width: 768px) {
   .login-container {
-    flex-direction: column;
-  }
-  
-  .tech-decoration {
-    display: none;
+    max-width: 100%;
   }
   
   .login-box {

@@ -190,7 +190,6 @@ export class UsuarioFormComponent implements OnInit {
       return of(false);
     }
 
-    // Validação dos dígitos verificadores do CPF
     if (!this.isValidCpf(cpf)) {
       this.formGroup.get('cpf')?.setErrors({ cpfInvalid: true });
       return of(false);
@@ -244,12 +243,10 @@ export class UsuarioFormComponent implements OnInit {
       return false;
     }
 
-    // Verifica se todos os dígitos são iguais
     if (/^(\d)\1+$/.test(cpf)) {
       return false;
     }
 
-    // Calcula o primeiro dígito verificador
     let sum = 0;
     for (let i = 0; i < 9; i++) {
       sum += parseInt(cpf.charAt(i)) * (10 - i);
@@ -263,7 +260,6 @@ export class UsuarioFormComponent implements OnInit {
       return false;
     }
 
-    // Calcula o segundo dígito verificador
     sum = 0;
     for (let i = 0; i < 10; i++) {
       sum += parseInt(cpf.charAt(i)) * (11 - i);

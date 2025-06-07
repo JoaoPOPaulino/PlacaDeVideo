@@ -1,102 +1,103 @@
-<mat-drawer-container class="container">
-  <mat-drawer-content class="content">
-    <mat-card class="profile-card">
-      <div class="avatar-container">
-        <img *ngIf="imagePreview; else noImage" [src]="imagePreview" alt="Imagem de perfil" class="profile-avatar">
-        <ng-template #noImage>
-          <div class="profile-avatar-placeholder">
-            <mat-icon>person</mat-icon>
-          </div>
-        </ng-template>
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden #fileInput>
-        <button mat-raised-button color="primary" (click)="fileInput.click()" class="upload-button">
-          <mat-icon>camera_alt</mat-icon> Escolher Foto
-        </button>
-        <button mat-raised-button color="primary" (click)="uploadImagem()" [disabled]="!selectedFile" class="upload-button">
-          <mat-icon>cloud_upload</mat-icon> Atualizar Foto
+<div class="admin-dashboard">
+  <app-sidebar class="admin-sidebar"></app-sidebar>
+  
+  <main class="admin-content">
+    <header class="admin-header">
+      <h1 class="admin-title">Meu Perfil</h1>
+      <div class="admin-actions">
+        <button mat-raised-button class="btn-primary">
+          <mat-icon>save</mat-icon> Salvar Alterações
         </button>
       </div>
+    </header>
 
-      <mat-card-content>
-        <form [formGroup]="perfilForm" (ngSubmit)="onSubmit()" class="profile-form">
-          <mat-form-field appearance="fill">
-            <mat-label>Nome Completo</mat-label>
-            <input matInput formControlName="nome" required />
-            <mat-icon matPrefix>person</mat-icon>
-            <mat-error *ngIf="perfilForm.get('nome')?.hasError('required')">Nome é obrigatório</mat-error>
-            <mat-error *ngIf="perfilForm.get('nome')?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>E-mail</mat-label>
-            <input matInput formControlName="email" type="email" required />
-            <mat-icon matPrefix>email</mat-icon>
-            <mat-error *ngIf="perfilForm.get('email')?.hasError('required')">Email é obrigatório</mat-error>
-            <mat-error *ngIf="perfilForm.get('email')?.hasError('email')">Email inválido</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Login</mat-label>
-            <input matInput formControlName="login" required />
-            <mat-icon matPrefix>alternate_email</mat-icon>
-            <mat-error *ngIf="perfilForm.get('login')?.hasError('required')">Login é obrigatório</mat-error>
-            <mat-error *ngIf="perfilForm.get('login')?.hasError('minlength')">Mínimo 3 caracteres</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Senha</mat-label>
-            <input matInput type="password" formControlName="senha" />
-            <mat-icon matPrefix>vpn_key</mat-icon>
-            <mat-hint>Deixe em branco para não alterar</mat-hint>
-            <mat-error *ngIf="perfilForm.get('senha')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" type="submit" [disabled]="perfilForm.invalid">
-            <mat-icon>save</mat-icon> Salvar Alterações
-          </button>
-        </form>
-
-        <div class="contact-section">
-          <h3>Telefones</h3>
-          <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
-            <mat-icon>add</mat-icon> Adicionar Telefone
-          </button>
-          <mat-list>
-            <mat-list-item *ngIf="(usuario$ | async)?.telefones?.length === 0">
-              Nenhum telefone cadastrado
-            </mat-list-item>
-            <mat-list-item *ngFor="let telefone of (usuario$ | async)?.telefones">
-              <mat-icon matListIcon>phone</mat-icon>
-              <span matLine>({{ telefone.codigoArea }}) {{ telefone.numero }}</span>
-              <button mat-icon-button color="warn" (click)="removeTelefone(telefone.id)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
-
-        <div class="contact-section">
-          <h3>Endereços</h3>
-          <button mat-raised-button color="primary" (click)="openEnderecoDialog()">
-            <mat-icon>add</mat-icon> Adicionar Endereço
-          </button>
-          <mat-list>
-            <mat-list-item *ngIf="(usuario$ | async)?.enderecos?.length === 0">
-              Nenhum endereço cadastrado
-            </mat-list-item>
-            <mat-list-item *ngFor="let endereco of (usuario$ | async)?.enderecos">
-              <mat-icon matListIcon>location_on</mat-icon>
-              <div matLine>
-                <span>{{ endereco.rua }}, {{ endereco.numero }}</span>
-                <span class="secondary-text">{{ endereco.cidade }} - {{ endereco.estado }}, {{ endereco.cep }}</span>
+    <div class="admin-profile-content">
+      <mat-tab-group class="admin-tabs" animationDuration="0ms">
+        <!-- Aba Informações -->
+        <mat-tab label="Informações">
+          <div class="tab-content">
+            <section class="profile-section">
+              <div class="avatar-upload">
+                <div class="avatar-preview">
+                  <img [src]="imagePreview || 'assets/images/default-avatar.png'" alt="Avatar">
+                  <button mat-icon-button class="edit-avatar" (click)="fileInput.click()">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <input #fileInput type="file" hidden (change)="onFileSelected($event)">
+                </div>
+                <button mat-stroked-button (click)="uploadImagem()" [disabled]="!selectedFile">
+                  <mat-icon>cloud_upload</mat-icon> Atualizar Foto
+                </button>
               </div>
-              <button mat-icon-button color="warn" (click)="removeEndereco(endereco.id)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-list-item>
-          </mat-list>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </mat-drawer-content>
-</mat-drawer-container>
+
+              <form [formGroup]="perfilForm" class="profile-form">
+                <div class="form-grid">
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Nome Completo</mat-label>
+                    <input matInput formControlName="nome">
+                    <mat-icon matPrefix>person</mat-icon>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>E-mail</mat-label>
+                    <input matInput formControlName="email" type="email">
+                    <mat-icon matPrefix>email</mat-icon>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Login</mat-label>
+                    <input matInput formControlName="login">
+                    <mat-icon matPrefix>alternate_email</mat-icon>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>CPF</mat-label>
+                    <input matInput formControlName="cpf" mask="000.000.000-00">
+                    <mat-icon matPrefix>badge</mat-icon>
+                  </mat-form-field>
+                </div>
+              </form>
+            </section>
+
+            <section class="contacts-section">
+              <div class="section-header">
+                <h2><mat-icon>contacts</mat-icon> Contatos</h2>
+                <button mat-raised-button color="primary" (click)="openTelefoneDialog()">
+                  <mat-icon>add</mat-icon> Novo Telefone
+                </button>
+              </div>
+              
+              <div class="contacts-list">
+                <!-- Lista de telefones -->
+              </div>
+            </section>
+          </div>
+        </mat-tab>
+
+        <!-- Aba Segurança -->
+        <mat-tab label="Segurança">
+          <div class="tab-content">
+            <section class="security-section">
+              <h2 class="section-title">Alterar Senha</h2>
+              <form [formGroup]="securityForm" class="security-form">
+                <!-- Campos de senha -->
+              </form>
+
+              <div class="danger-zone">
+                <h3 class="danger-title">
+                  <mat-icon>warning</mat-icon> Zona de Perigo
+                </h3>
+                <div class="danger-content">
+                  <p>Essas ações são irreversíveis. Tenha certeza do que está fazendo.</p>
+                  <button mat-stroked-button color="warn" (click)="onDeleteAccount()">
+                    <mat-icon>delete_forever</mat-icon> Excluir Conta
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </main>
+</div>
