@@ -1,0 +1,77 @@
+/* oferta.component.css */
+.offer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+}
+
+.offer-card {
+  max-width: 600px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.offer-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, #ff4444, #ff7878);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.offer-image {
+  max-height: 300px;
+  object-fit: contain;
+  margin: 1rem auto;
+}
+
+h2 {
+  color: #302b63;
+  margin: 1.5rem 0;
+  font-weight: 500;
+}
+
+.progress-container {
+  margin: 2rem 0;
+}
+
+.progress-container small {
+  display: block;
+  margin-top: 0.5rem;
+  color: #666;
+}
+
+.fun-fact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
+.fun-fact mat-icon {
+  margin-right: 0.5rem;
+  color: #302b63;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem !important;
+}
+
+mat-card-actions button mat-icon {
+  margin-right: 0.5rem;
+}

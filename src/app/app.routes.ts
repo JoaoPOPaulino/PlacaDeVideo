@@ -32,6 +32,7 @@ import { PlacaDeVideoFormComponent } from './components/admin/placas-de-video/pl
 import { avaliacaoResolver } from './components/admin/avaliacao/avaliacao.resolver';
 import { RecuperarSenhaComponent } from './components/pages/public/recuperar-senha/recuperar-senha.component';
 import { ResetarSenhaComponent } from './components/pages/public/resetar-senha/resetar-senha.component';
+import { OfertaComponent } from './components/pages/public/oferta/oferta.component';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,11 @@ export const routes: Routes = [
         title: 'Placas de Vídeo',
       },
       {
+        path: 'ofertas',
+        component: OfertaComponent,
+        title: 'Ofertas',
+      },
+      {
         path: 'produto/:id',
         component: ProdutoDetalhesComponent,
         title: 'Detalhes do Produto',
@@ -56,7 +62,7 @@ export const routes: Routes = [
       {
         path: 'login',
         component: LoginComponent,
-        title: 'Login'
+        title: 'Login',
       },
       {
         path: 'recuperar-senha',

@@ -98,8 +98,10 @@ export class UsuarioService {
       email: usuario.email,
       login: usuario.login,
       cpf: usuario.cpf,
-      perfil: usuario.perfil || 1, // Garante que perfil seja um número
+      perfil: usuario.perfil || 1,
       nomeImagem: usuario.nomeImagem || null,
+      telefones: usuario.telefones || [],
+      enderecos: usuario.enderecos || [],
     };
 
     console.log('Payload enviado:', payload);
